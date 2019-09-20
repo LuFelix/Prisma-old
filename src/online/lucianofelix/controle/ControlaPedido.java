@@ -1,37 +1,18 @@
 package online.lucianofelix.controle;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-
-import org.apache.log4j.BasicConfigurator;
-
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.Result;
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
 
 import online.lucianofelix.beans.Lancamento;
 import online.lucianofelix.beans.Pedido;
@@ -40,6 +21,7 @@ import online.lucianofelix.dao.DAOLancamento;
 import online.lucianofelix.dao.DAOPedidoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosEstoque;
 import online.lucianofelix.dao.DAOProdutosPedidos;
+import online.lucianofelix.util.CapturaQR;
 import online.lucianofelix.visao.AbaNegocios;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
@@ -416,76 +398,78 @@ public class ControlaPedido {
 
 	// TODO Capturar o QR code do CUPOM FISCAL
 	public void capturaQR() {
-		BasicConfigurator.configure();
-		JButton btnFoto = new JButton("Foto");
-		Webcam cam = Webcam.getDefault();
-		Result result = null;
-		BufferedImage image = null;
-		WebcamPanel panel = new WebcamPanel(cam);
-		panel.setLayout(new BorderLayout());
-		panel.setFPSDisplayed(true);
-		panel.setDisplayDebugInfo(true);
-		panel.setImageSizeDisplayed(true);
-		panel.setMirrored(true);
-		panel.add(btnFoto, BorderLayout.NORTH);
-
-		JFrame window = new JFrame("Captura");
-		window.add(panel);
-		window.setResizable(true);
-		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		window.pack();
-		window.setVisible(true);
-
-		if (cam != null) {
-			// System.out.println("Webcam Detectada: " + cam.getName());
-			cam.open();
-
-			do {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				if (cam.isOpen()) {
-					if ((image = cam.getImage()) == null) {
-						continue;
-					}
-					LuminanceSource source = new BufferedImageLuminanceSource(
-							image);
-					BinaryBitmap bitmap = new BinaryBitmap(
-							new HybridBinarizer(source));
-					try {
-						result = new MultiFormatReader().decode(bitmap);
-
-					} catch (NotFoundException e) {
-						// fall thru, it means there is no QR code in image
-					}
-				}
-				if (result != null) {
-					System.out.println(result);
-				}
-			} while (true);
-
-		} else {
-			JOptionPane.showMessageDialog(null, "Sem detectou a câmera!",
-					"Erro", JOptionPane.ERROR_MESSAGE);
-
-		}
-
-		btnFoto.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					ImageIO.write(cam.getImage(), "PNG",
-							new File("C:\\SIMPRO\\foto.png"));
-				} catch (IOException e1) {
-					cam.close();
-					e1.printStackTrace();
-				}
-
-			}
-		});
+		new CapturaQR();
+		// BasicConfigurator.configure();
+		// JButton btnFoto = new JButton("Foto");
+		// Webcam cam = Webcam.getDefault();
+		// Result result = null;
+		// BufferedImage image = null;
+		// WebcamPanel panel = new WebcamPanel(cam);
+		// panel.setLayout(new BorderLayout());
+		// panel.setFPSDisplayed(true);
+		// panel.setDisplayDebugInfo(true);
+		// panel.setImageSizeDisplayed(true);
+		// panel.setMirrored(true);
+		// panel.add(btnFoto, BorderLayout.NORTH);
+		//
+		// JFrame window = new JFrame("Captura");
+		// window.add(panel);
+		// window.setResizable(true);
+		// window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// window.pack();
+		// window.setVisible(true);
+		//
+		// if (cam != null) {
+		// // System.out.println("Webcam Detectada: " + cam.getName());
+		// cam.open();
+		//
+		// do {
+		// try {
+		// Thread.sleep(1000);
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+		//
+		// if (cam.isOpen()) {
+		// if ((image = cam.getImage()) == null) {
+		// continue;
+		// }
+		// LuminanceSource source = new BufferedImageLuminanceSource(
+		// image);
+		// BinaryBitmap bitmap = new BinaryBitmap(
+		// new HybridBinarizer(source));
+		// try {
+		// result = new MultiFormatReader().decode(bitmap);
+		//
+		// } catch (NotFoundException e) {
+		// // fall thru, it means there is no QR code in image
+		// System.out.println("Sem imagem");
+		// }
+		// }
+		// if (result != null) {
+		// System.out.println(result);
+		// }
+		// } while (true);
+		//
+		// } else {
+		// JOptionPane.showMessageDialog(null, "Sem detectar a câmera!",
+		// "Erro", JOptionPane.ERROR_MESSAGE);
+		//
+		// }
+		//
+		// btnFoto.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// try {
+		// ImageIO.write(cam.getImage(), "PNG",
+		// new File("C:\\SIMPRO\\foto.png"));
+		// } catch (IOException e1) {
+		// cam.close();
+		// e1.printStackTrace();
+		// }
+		//
+		// }
+		// });
 
 	}
 

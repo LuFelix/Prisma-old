@@ -1,6 +1,7 @@
 package online.lucianofelix.visao;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -202,6 +203,8 @@ public class PainelPedidos extends JPanel {
 		// TODO Configuração do Painel Superior
 		lblLogoEmpresa = new JLabel(
 				new ImageIcon("C:\\SIMPRO\\img\\logo\\perfilsti180X180.jpg"));
+
+		lblLogoEmpresa.setSize(new Dimension(200, 200));
 		scrImagem = new JScrollPane(lblLogoEmpresa);
 		scrImagem.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -210,6 +213,7 @@ public class PainelPedidos extends JPanel {
 
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppImagem.add(lblTituloTela);
+
 		sppImagem.add(scrImagem);
 		sppImagem.setDividerLocation(50);
 		sppImagem.setEnabled(false);
