@@ -218,7 +218,8 @@ public class AbaRelatorios extends JPanel implements TreeSelectionListener {
 			}
 			if (node.isLeaf() & node.isNodeAncestor(produtos)) {
 				if (node.getAllowsChildren()) {
-					FrameInicial.pesquisaProduto();
+					FrameInicial.getContProd()
+							.iniciar(AbaCadastros.getNomeNo());
 				}
 			}
 			if (node.isLeaf() & node.isNodeAncestor(contatos)) {

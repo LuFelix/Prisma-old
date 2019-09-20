@@ -159,7 +159,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 				FrameInicial.getContPess().iniciar(nomeNo);
 			}
 			if (nomeNo.equals("Produtos")) {
-				FrameInicial.pesquisaProduto();
+				FrameInicial.getContProd().iniciar(nomeNo);
 			}
 			if (nomeNo.equals("Serviços")) {
 				FrameInicial.getContServ().iniciar();

@@ -1,5 +1,7 @@
 package online.lucianofelix.controle;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -21,10 +24,13 @@ import online.lucianofelix.beans.ProdutoEstoque;
 import online.lucianofelix.dao.DAOProdutoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosCotacao;
 import online.lucianofelix.dao.DAOProdutosEstoque;
+import online.lucianofelix.tableModels.commom.TableModelProdutos;
+import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
-import online.lucianofelix.visao.PainelPedidos;
-import online.lucianofelix.visao.PainelProdutos;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
+import online.lucianofelix.visao.PainelPedidos;
+import online.lucianofelix.visao.PainelPessoa;
+import online.lucianofelix.visao.PainelProdutos;
 
 public class ControlaProduto {
 	String resposta;
@@ -33,7 +39,8 @@ public class ControlaProduto {
 	ControlaListaProdutos controledaLista;
 	private DAOProdutosCotacao daoProdCota;
 	private DAOProdutosEstoque daoProdEstoque;
-	private JTable tabela;
+	private JTable tbl01;
+	TableModelProdutos mdlTabela;
 	List<Produto> listProd;
 
 	public ControlaProduto() {
@@ -52,6 +59,61 @@ public class ControlaProduto {
 				codiProduto, quantidade, codiPedido, tipoMovimento);
 	}
 
+	public void iniciar(String tipo) {
+		System.out.println("FrameInicial.controleProdutosIniciar");
+		configuraBotoes();
+		configuraTxtPesquisa();
+		FrameInicial.setTabela(tabelaProdutos(""));
+		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		prod = mdlTabela.getProduto(FrameInicial.getTabela().getSelectedRow());
+
+		FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+		carregaDetalhes(prod);
+	}
+	void configuraBotoes() {
+		ControlaBotoes.limpaTodosBotoes();
+		ControlaBotoes.desHabilitaEdicaoBotoes();
+		FrameInicial.getBtnEditar().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ControlaBotoes.habilitaEdicaoBotoes();
+				funcaoSobrescrever();
+			}
+		});
+		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FrameInicial.setTabela(new JTable());
+				ControlaBotoes.habilitaNovoBotoes();
+				PainelPessoa.habilitaNovo();
+				FrameInicial.atualizaTela();
+				funcaoSalvar();
+			}
+		});
+		FrameInicial.getBtnCancelar().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ControlaBotoes.desHabilitaEdicaoBotoes();
+				funcaoCancelar();
+			}
+		});
+		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ControlaBotoes.desHabilitaEdicaoBotoes();
+				funcaoSalvar();
+			}
+		});
+		FrameInicial.getBtnExcluir().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ControlaBotoes.desHabilitaEdicaoBotoes();
+				funcaoExcluir();
+			}
+		});
+
+	}
+
 	// TODO Salvar
 	public void funcaoSalvar() {
 		System.out.println("ControlaProduto.funcaoSalvar");
@@ -63,13 +125,12 @@ public class ControlaProduto {
 				prod = PainelProdutos.lerCampos();
 				if (!prod.equals(null) & daoProd.cadastrar(prod)) {
 					PainelProdutos.limparCampos();
-					FrameInicial
-							.setTabela(pesqNomeTabela(prod.getCodi_prod_1()));
+					FrameInicial.setTabela(tabelaProdutos(""));
 					FrameInicial.setPainelVisualiza(
 							new PainelProdutos(prod.getCodi_prod_1()));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					FrameInicial.pesquisaProduto();
+					iniciar("");
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Problemas: Erro de acesso ao banco",
@@ -87,7 +148,8 @@ public class ControlaProduto {
 				PainelProdutos.desHabilitaEdicao();
 				prod = PainelProdutos.lerCampos();
 				if (daoProd.excluir(prod)) {
-					FrameInicial.pesquisaProduto();
+					FrameInicial.getContProd()
+							.iniciar(AbaCadastros.getNomeNo());
 					funcaoCancelar();
 				} else {
 					JOptionPane.showMessageDialog(null,
@@ -115,7 +177,7 @@ public class ControlaProduto {
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Erro de acesso ao banco",
 					"Erro", JOptionPane.ERROR_MESSAGE);
-			FrameInicial.pesquisaProduto();
+			FrameInicial.getContProd().iniciar(AbaCadastros.getNomeNo());
 			e.printStackTrace();
 		}
 	}
@@ -131,13 +193,13 @@ public class ControlaProduto {
 				prod = PainelProdutos.lerCampos();
 				if (!prod.equals(null) & daoProd.alterar(prod)) {
 					PainelProdutos.limparCampos();
-					FrameInicial
-							.setTabela(pesqNomeTabela(prod.getCodi_prod_1()));
-					FrameInicial.setPainelVisualiza(
-							new PainelProdutos(prod.getCodi_prod_1()));
+					FrameInicial.setTabela(tabelaProdutos(""));
+					FrameInicial.setPainelVisualiza(new PainelProdutos(
+							mdlTabela.getProduto(tbl01.getSelectedRow())));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					FrameInicial.pesquisaProduto();
+					FrameInicial.getContProd()
+							.iniciar(AbaCadastros.getNomeNo());
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Favor verificar os campos informados. ",
@@ -155,7 +217,7 @@ public class ControlaProduto {
 		if (daoProd.excluir(prod)) {
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
-			FrameInicial.pesquisaProduto();
+			FrameInicial.getContProd().iniciar(AbaCadastros.getNomeNo());
 			return true;
 		} else {
 			JOptionPane.showMessageDialog(null,
@@ -171,7 +233,7 @@ public class ControlaProduto {
 		FrameInicial.getBtnCancelar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				FrameInicial.pesquisaProduto();
+				iniciar(AbaCadastros.getNomeNo());
 			}
 		});
 	}
@@ -224,9 +286,9 @@ public class ControlaProduto {
 
 	public JTable tabela() {
 		ArrayList<String> colunas = new ArrayList<>();
-		tabela = new JTable();
+		tbl01 = new JTable();
 		DefaultTableModel modelotabela = new DefaultTableModel();
-		modelotabela = (DefaultTableModel) tabela.getModel();
+		modelotabela = (DefaultTableModel) tbl01.getModel();
 		colunas.add("Nome");
 		colunas.add("Descrição");
 		// colunas.add("Email");
@@ -238,17 +300,17 @@ public class ControlaProduto {
 					String.valueOf(dados.get(i).getDesc_prod())};
 			modelotabela.addRow(linha);
 		}
-		tabela.setShowGrid(true);
-		tabela.setModel(modelotabela);
-		return tabela;
+		tbl01.setShowGrid(true);
+		tbl01.setModel(modelotabela);
+		return tbl01;
 	}
 
 	// TODO Ajustar tamanho das colunas
 	private void ajusta_tamanho_coluna() {
 		// tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tabela.getColumnModel().getColumn(0).setPreferredWidth(80);
-		tabela.getColumnModel().getColumn(1).setPreferredWidth(260);
-		tabela.getColumnModel().getColumn(2).setPreferredWidth(80);
+		tbl01.getColumnModel().getColumn(0).setPreferredWidth(80);
+		tbl01.getColumnModel().getColumn(1).setPreferredWidth(260);
+		tbl01.getColumnModel().getColumn(2).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(3).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(4).setPreferredWidth(300);
 		// tabela.getColumnModel().getColumn(5).setPreferredWidth(80);
@@ -256,12 +318,11 @@ public class ControlaProduto {
 	}
 
 	// TODO Tabela ligada ao painel de produtos
-	public JTable pesqNomeTabela(String nome) {
-		ArrayList<String> colunas = new ArrayList<String>();
-		tabela = new JTable();
-		DefaultTableModel modelotabela = new DefaultTableModel();
-		modelotabela = (DefaultTableModel) tabela.getModel();
-		tabela.addKeyListener(new KeyListener() {
+	public JTable tabelaProdutos(String str) {
+		mdlTabela = new TableModelProdutos(listProd);
+		tbl01 = new JTable(mdlTabela);
+		tbl01.addKeyListener(new KeyListener() {
+
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 			}
@@ -270,21 +331,23 @@ public class ControlaProduto {
 			public void keyReleased(KeyEvent tecla) {
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
-					int posicao = tabela.getSelectedRow();
-					PainelProdutos.irParaPoicao(posicao);
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					PainelProdutos.carregarCampos(prod);
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent tecla) {
-				int posicao = tabela.getSelectedRow();
+				int posicao = tbl01.getSelectedRow();
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
-					PainelProdutos.irParaPoicao(posicao);
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					PainelProdutos.carregarCampos(prod);
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
-					PainelProdutos.irParaPoicao(posicao);
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					PainelProdutos.carregarCampos(prod);
 					PainelProdutos.getBtnEditar().doClick();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
@@ -292,16 +355,22 @@ public class ControlaProduto {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
+		tbl01.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				PainelProdutos.carregarCampos(prod);
+				tbl01.grabFocus();
 
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				PainelProdutos.carregarCampos(prod);
+				tbl01.grabFocus();
 
 			}
 
@@ -319,36 +388,25 @@ public class ControlaProduto {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				PainelProdutos.irParaPoicao(tabela.getSelectedRow());
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				PainelProdutos.carregarCampos(prod);
+				tbl01.grabFocus();
 
 			}
 		});
-		colunas.add("Código");
-		colunas.add("Nome");
-		colunas.add("Preço");
-		listProd = new ArrayList<Produto>();
-		listProd = daoProd.pesquisaString(nome);
-		modelotabela.setColumnIdentifiers(colunas.toArray());
-		for (int i = 0; i < listProd.size(); i++) {
-			prod = listProd.get(i);
-			Object linha[] = {prod.getCodi_prod_1(),
-					String.valueOf(prod.getNome_prod()), prod.getPrec_prod_1()};
-			modelotabela.addRow(linha);
-		}
+
 		ajusta_tamanho_coluna();
-		tabela.setShowGrid(true);
-		tabela.setModel(modelotabela);
-		// FrameInicial.getTabela().getParent().setBackground(Color.WHITE);
-		return tabela;
+		tbl01.setShowGrid(true);
+		return tbl01;
 	}
 
 	// TODO Tabela ligada ao painel de pedidos
 	public JTable pesqNomeTabelaAdicionaItemAopedido(String nome) {
 		ArrayList<String> colunas = new ArrayList<>();
-		tabela = new JTable();
+		tbl01 = new JTable();
 		DefaultTableModel modelotabela = new DefaultTableModel();
-		modelotabela = (DefaultTableModel) tabela.getModel();
-		tabela.addKeyListener(new KeyListener() {
+		modelotabela = (DefaultTableModel) tbl01.getModel();
+		tbl01.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 				// TODO Ao escrever
@@ -359,13 +417,13 @@ public class ControlaProduto {
 
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
-					int posicao = tabela.getSelectedRow();
+					int posicao = tbl01.getSelectedRow();
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent tecla) {
-				int posicao = tabela.getSelectedRow();
+				int posicao = tbl01.getSelectedRow();
 				System.out.println(tecla.getExtendedKeyCode());
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
@@ -378,7 +436,7 @@ public class ControlaProduto {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
+		tbl01.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Ao soltar o botão do mouse
@@ -406,7 +464,7 @@ public class ControlaProduto {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// TODO Ao Clicar
-				int posicao = tabela.getSelectedRow();
+				int posicao = tbl01.getSelectedRow();
 				PainelPedidos.adicionaItem(listProd.get(posicao));
 			}
 		});
@@ -421,12 +479,92 @@ public class ControlaProduto {
 					prod.getPrec_prod_1()};
 			modelotabela.addRow(linha);
 		}
-		tabela.setShowGrid(true);
-		tabela.setModel(modelotabela);
-		return tabela;
+		tbl01.setShowGrid(true);
+		tbl01.setModel(modelotabela);
+		return tbl01;
+	}
+	void configuraTxtPesquisa() {
+		FrameInicial.limparTxtfPesquisa();
+		FrameInicial.getTxtfPesquisa().grabFocus();
+		FrameInicial.getTxtfPesquisa().addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				if (tecla.getExtendedKeyCode() == 40) {
+					if (FrameInicial.getTabela().getRowCount() > 0) {
+						FrameInicial.getTabela().grabFocus();
+						FrameInicial.getScrFluxo().setViewportView(null);
+					}
+				} else if (tecla.getExtendedKeyCode() == 27) {
+					funcaoCancelar();
+				} else {
+					String str = FrameInicial.getTxtfPesquisa().getText();
+					FrameInicial.setTabela(tabelaProdutos(str));
+					if (tbl01.getRowCount() > 0) {
+						FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+						prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+						carregaDetalhes(prod);
+						FrameInicial.getScrFluxo().setViewportView(null);
+					} else {
+						FrameInicial.setTabela(new JTable());
+						prod = new Produto();
+						carregaDetalhes(prod);
+						JLabel label = new JLabel("Nada encontrado!!");
+						label.setFont(
+								new Font("Times New Roman", Font.BOLD, 48));
+						label.setForeground(Color.RED);
+						FrameInicial.getScrFluxo().setViewportView(label);
+					}
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				if (tecla.getExtendedKeyCode() == 40) {
+					if (tbl01.getRowCount() > 0) {
+						FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+						prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+						carregaDetalhes(prod);
+						FrameInicial.getScrFluxo().setViewportView(null);
+					}
+
+				} else if (tecla.getExtendedKeyCode() == 27) {
+					funcaoCancelar();
+				} else {
+					String str = FrameInicial.getTxtfPesquisa().getText();
+					FrameInicial.setTabela(tabelaProdutos(str));
+					if (FrameInicial.getTabela().getRowCount() > 0) {
+						FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+						prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+						carregaDetalhes(prod);
+
+						FrameInicial.getScrFluxo().setViewportView(null);
+					} else {
+						FrameInicial.setTabela(new JTable());
+						prod = new Produto();
+						carregaDetalhes(prod);
+						JLabel label = new JLabel("Nada encontrado!!");
+						label.setFont(
+								new Font("Times New Roman", Font.BOLD, 48));
+						label.setForeground(Color.RED);
+						FrameInicial.getScrFluxo().setViewportView(label);
+					}
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+		});
+
+	}
+	public void carregaDetalhes(Produto prod) {
+		PainelProdutos.carregarCampos(prod);
+		FrameInicial.atualizaTela();
 	}
 
 	public Produto carregarCotacoes(Produto prod) {
+		System.out.println("codigo cotações" + prod.getCodi_prod_1());
+
 		prod.setListCotacaoProduto(daoProdCota.conCotProdOrdSeqDesc(prod));
 		return prod;
 	}

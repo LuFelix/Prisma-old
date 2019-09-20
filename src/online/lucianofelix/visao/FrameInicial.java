@@ -1149,71 +1149,6 @@ public class FrameInicial {
 		});
 	}
 
-	// TODO Pesquisa produto.
-	public static void pesquisaProduto() {
-		System.out.println("FrameInicial.pesquisaProduto");
-		ControlaBotoes.limpaTodosBotoes();
-		ControlaBotoes.desHabilitaEdicaoBotoes();
-		limparTxtfPesquisa();
-		setTabela(contProd.pesqNomeTabela(""));
-		setPainelVisualiza(new PainelProdutos(""));
-		atualizaTela();
-		txtfPesquisa.grabFocus();
-
-		getBtnNovo().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaNovoBotoes();
-				PainelProdutos.habilitaNovo();
-				contProd.funcaoSalvar();
-			}
-		});
-		getBtnEditar().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaEdicaoBotoes();
-				PainelProdutos.habilitaEdicao();
-				contProd.funcaoSobrescrever();
-			}
-		});
-		getBtnExcluir().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.desHabilitaEdicaoBotoes();
-				contProd.funcaoExcluir();
-			}
-		});
-		txtfPesquisa.addKeyListener(new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent tecla) {
-				if (tecla.getExtendedKeyCode() == 40) {// seta para baixo
-					getTabela().grabFocus();
-					getTabela().changeSelection(0, 0, false, false);
-				} else if (tecla.getExtendedKeyCode() == 27) {
-					contProd.funcaoCancelar();
-				} else {
-					// System.out.println(tecla.getExtendedKeyCode());
-					nome = txtfPesquisa.getText();
-					setTabela(contProd.pesqNomeTabela(nome));
-					setPainelVisualiza(new PainelProdutos(nome));
-					atualizaTela();
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent tecla) {
-				nome = txtfPesquisa.getText();
-				setTabela(contProd.pesqNomeTabela(nome));
-				setPainelVisualiza(new PainelProdutos(nome));
-				atualizaTela();
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-		});
-	}
-
 	// TODO Pesquisa Produto para adição de itens ao pedido
 	public static void pesquisaProdutoAdicaoItem() {
 		limparTxtfPesquisa();
@@ -1569,6 +1504,14 @@ public class FrameInicial {
 
 	public static void setContTipS(ControlaTipoSistema contTipS) {
 		FrameInicial.contTipS = contTipS;
+	}
+
+	public static ControlaProduto getContProd() {
+		return contProd;
+	}
+
+	public static void setContProd(ControlaProduto contProd) {
+		FrameInicial.contProd = contProd;
 	}
 
 }

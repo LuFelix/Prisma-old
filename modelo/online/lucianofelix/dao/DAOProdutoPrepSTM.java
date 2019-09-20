@@ -9,7 +9,6 @@ import java.util.List;
 import online.lucianofelix.beans.Produto;
 import online.lucianofelix.util.Conexao;
 import online.lucianofelix.util.ConexaoSTM;
-import online.lucianofelix.visao.FrameInicial;
 
 public class DAOProdutoPrepSTM {
 	private Conexao c;
@@ -65,7 +64,6 @@ public class DAOProdutoPrepSTM {
 			// TODO: handle exception
 			c.desconectar();
 			e.printStackTrace();
-			FrameInicial.pesquisaProduto();
 			return false;
 		}
 	}
