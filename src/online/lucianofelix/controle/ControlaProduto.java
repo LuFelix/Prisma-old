@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -47,7 +48,6 @@ public class ControlaProduto {
 		daoProd = new DAOProdutoPrepSTM();
 		daoProdCota = new DAOProdutosCotacao();
 		daoProdEstoque = new DAOProdutosEstoque();
-		listProd = new ArrayList<Produto>(daoProd.pesquisaString(""));
 	}
 
 	// TODO Novo Movimento
@@ -59,17 +59,33 @@ public class ControlaProduto {
 				codiProduto, quantidade, codiPedido, tipoMovimento);
 	}
 
-	public void iniciar(String tipo) {
+	public void iniciar(String categoria) {
+		System.out.println("FrameInicial.controleProdutosIniciar");
+		configuraBotoes();
+		configuraTxtPesquisa();
+		FrameInicial.setTabela(tabelaProdutos(categoria));
+		if (FrameInicial.getTabela().getSelectedRowCount() <= 0) {
+			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+		} else {
+			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+			prod = mdlTabela
+					.getProduto(FrameInicial.getTabela().getSelectedRow());
+			FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+			carregaDetalhes(prod);
+		}
+
+	}
+	public void iniciar() {
 		System.out.println("FrameInicial.controleProdutosIniciar");
 		configuraBotoes();
 		configuraTxtPesquisa();
 		FrameInicial.setTabela(tabelaProdutos(""));
 		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 		prod = mdlTabela.getProduto(FrameInicial.getTabela().getSelectedRow());
-
 		FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
 		carregaDetalhes(prod);
 	}
+
 	void configuraBotoes() {
 		ControlaBotoes.limpaTodosBotoes();
 		ControlaBotoes.desHabilitaEdicaoBotoes();
@@ -125,9 +141,8 @@ public class ControlaProduto {
 				prod = PainelProdutos.lerCampos();
 				if (!prod.equals(null) & daoProd.cadastrar(prod)) {
 					PainelProdutos.limparCampos();
-					FrameInicial.setTabela(tabelaProdutos(""));
-					FrameInicial.setPainelVisualiza(
-							new PainelProdutos(prod.getCodi_prod_1()));
+					FrameInicial.setTabela(tabelaProdutos(prod.getNome_prod()));
+					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
 					iniciar("");
@@ -185,21 +200,23 @@ public class ControlaProduto {
 	// TODO Função sobrescrever
 	public void funcaoSobrescrever() {
 		System.out.println("ControlaProduto.funcaoSobrescrever");
-		funcaoCancelar();
 		ControlaBotoes.limparBtnSalvar();
+		PainelProdutos.habilitaEdicao();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				prod = PainelProdutos.lerCampos();
 				if (!prod.equals(null) & daoProd.alterar(prod)) {
+
 					PainelProdutos.limparCampos();
-					FrameInicial.setTabela(tabelaProdutos(""));
-					FrameInicial.setPainelVisualiza(new PainelProdutos(
-							mdlTabela.getProduto(tbl01.getSelectedRow())));
+					FrameInicial
+							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
+					FrameInicial.getTabela().setColumnSelectionInterval(0, 0);
+					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					FrameInicial.getContProd()
-							.iniciar(AbaCadastros.getNomeNo());
+					iniciar(AbaCadastros.getNomeNo());
+
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Favor verificar os campos informados. ",
@@ -211,6 +228,20 @@ public class ControlaProduto {
 	}
 
 	// TODO Funcao excluir
+	public boolean funcaoExcluir(Produto prod) {
+		System.out.println("ControlaProduto.excluir");
+		if (daoProd.excluir(prod)) {
+			FrameInicial.limpaTela();
+			JOptionPane.showMessageDialog(null, "Feito!");
+			FrameInicial.getContProd().iniciar(AbaCadastros.getNomeNo());
+			return true;
+		} else {
+			JOptionPane.showMessageDialog(null,
+					"Favor verificar os campos informados. ",
+					"Não foi possivel excluir!", JOptionPane.ERROR_MESSAGE);
+		}
+		return false;
+	}
 	public boolean funcaoExcluir() {
 		System.out.println("ControlaProduto.excluir");
 		prod = PainelProdutos.lerCampos();
@@ -284,32 +315,33 @@ public class ControlaProduto {
 		return daoProd.procurarTodos();
 	}
 
-	public JTable tabela() {
-		ArrayList<String> colunas = new ArrayList<>();
-		tbl01 = new JTable();
-		DefaultTableModel modelotabela = new DefaultTableModel();
-		modelotabela = (DefaultTableModel) tbl01.getModel();
-		colunas.add("Nome");
-		colunas.add("Descrição");
-		// colunas.add("Email");
-		List<Produto> dados = new ArrayList<>();
-		dados = daoProd.procurarTodos();
-		modelotabela.setColumnIdentifiers(colunas.toArray());
-		for (int i = 0; i < dados.size(); i++) {
-			Object linha[] = {dados.get(i).getNome_prod(),
-					String.valueOf(dados.get(i).getDesc_prod())};
-			modelotabela.addRow(linha);
+	public void alteraPreco(Produto prod) {
+		String data = String.valueOf(new Timestamp(System.currentTimeMillis()))
+				.substring(0, 10);
+		float valor = Float.parseFloat(
+				JOptionPane.showInputDialog("Informe o novo valor:"));
+		try {
+			novoPreco(PainelProdutos.getCmbTabPreco().getItemAt(0),
+					Date.valueOf(data), prod.getCodi_prod_1(), valor);
+			carregaDetalhes(prod);
+			// txtF09.setText(String.valueOf(valor));
+			PainelProdutos.habilitaTabelaPrecos(prod);
+			funcaoSobrescrever();
+			FrameInicial.getBtnSalvar().doClick();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Problemas: ",
+					" Erro ao Cadastrar: " + e1.getMessage(),
+					JOptionPane.ERROR_MESSAGE);
 		}
-		tbl01.setShowGrid(true);
-		tbl01.setModel(modelotabela);
-		return tbl01;
+
 	}
 
 	// TODO Ajustar tamanho das colunas
 	private void ajusta_tamanho_coluna() {
 		// tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tbl01.getColumnModel().getColumn(0).setPreferredWidth(80);
-		tbl01.getColumnModel().getColumn(1).setPreferredWidth(260);
+		tbl01.getColumnModel().getColumn(0).setPreferredWidth(100);
+		tbl01.getColumnModel().getColumn(1).setPreferredWidth(240);
 		tbl01.getColumnModel().getColumn(2).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(3).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(4).setPreferredWidth(300);
@@ -319,7 +351,7 @@ public class ControlaProduto {
 
 	// TODO Tabela ligada ao painel de produtos
 	public JTable tabelaProdutos(String str) {
-		mdlTabela = new TableModelProdutos(listProd);
+		mdlTabela = new TableModelProdutos(daoProd.pesquisaString(str));
 		tbl01 = new JTable(mdlTabela);
 		tbl01.addKeyListener(new KeyListener() {
 
@@ -332,7 +364,9 @@ public class ControlaProduto {
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					carregaDetalhes(prod);
 					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
 				}
 			}
 
@@ -343,11 +377,12 @@ public class ControlaProduto {
 						|| tecla.getExtendedKeyCode() == 38) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
 					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
-					PainelProdutos.carregarCampos(prod);
+					carregaDetalhes(prod);
 					PainelProdutos.getBtnEditar().doClick();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
@@ -360,7 +395,7 @@ public class ControlaProduto {
 			public void mouseReleased(MouseEvent arg0) {
 				//
 				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
-				PainelProdutos.carregarCampos(prod);
+				carregaDetalhes(prod);
 				tbl01.grabFocus();
 
 			}
@@ -369,7 +404,7 @@ public class ControlaProduto {
 			public void mousePressed(MouseEvent arg0) {
 				//
 				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
-				PainelProdutos.carregarCampos(prod);
+				carregaDetalhes(prod);
 				tbl01.grabFocus();
 
 			}
@@ -389,7 +424,7 @@ public class ControlaProduto {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
-				PainelProdutos.carregarCampos(prod);
+				carregaDetalhes(prod);
 				tbl01.grabFocus();
 
 			}
@@ -558,6 +593,7 @@ public class ControlaProduto {
 
 	}
 	public void carregaDetalhes(Produto prod) {
+		carregarCotacoes(prod);
 		PainelProdutos.carregarCampos(prod);
 		FrameInicial.atualizaTela();
 	}

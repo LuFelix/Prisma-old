@@ -21,8 +21,10 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import online.lucianofelix.beans.CentroCusto;
+import online.lucianofelix.beans.GrupoSubgrupo;
 import online.lucianofelix.beans.TipoSistema;
 import online.lucianofelix.controle.ControlaCentroCusto;
+import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaTipoSistema;
 import online.lucianofelix.dao.DAOCentroCusto;
 import online.lucianofelix.treeModels.TreeModelCentroCusto;
@@ -37,14 +39,15 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	private static JTree arvore;
 	private static JTree arvoreContas;
 	private static String nomeNo;
-	static ControlaCentroCusto controlaCCusto;
+	static ControlaCentroCusto contCCusto;
 	static ControlaTipoSistema contTipoS;
+	static ControlaGrupoSubgrupo contGrupo;
 	private static DefaultMutableTreeNode root;
 	private static DefaultMutableTreeNode clientes;
 	private static DefaultMutableTreeNode fornecedores;
 	private static DefaultMutableTreeNode funcionarios;
 	private static DefaultMutableTreeNode pessoas;
-	private static DefaultMutableTreeNode produtos;
+	private static DefaultMutableTreeNode nodProdutos;
 
 	private static JScrollPane scrArvNegocios;
 	private static DefaultTreeModel modArvore;
@@ -52,6 +55,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	private static JSplitPane sppPrincipal;
 	private static DefaultMutableTreeNode nodGrupos;
 	private static DefaultMutableTreeNode leafGrupos;
+	private static DefaultMutableTreeNode leafProdutos;
 	private static DefaultMutableTreeNode contas;
 	private static DefaultMutableTreeNode nodCentroCusto;
 	private static DefaultMutableTreeNode leafCentroCusto;
@@ -159,6 +163,9 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 				FrameInicial.getContPess().iniciar(nomeNo);
 			}
 			if (nomeNo.equals("Produtos")) {
+				FrameInicial.getContProd().iniciar();
+			}
+			if (node.isLeaf() && node.isNodeAncestor(nodProdutos)) {
 				FrameInicial.getContProd().iniciar(nomeNo);
 			}
 			if (nomeNo.equals("Serviços")) {
@@ -200,7 +207,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	static void carregarNoCCusto() {
 		nodCentroCusto = new DefaultMutableTreeNode("Centros de Custo");
 		List<CentroCusto> listCCusto = new ArrayList<CentroCusto>(
-				controlaCCusto.pesqNomeArray(""));;
+				contCCusto.pesqNomeArray(""));;
 
 		for (int i = 0; i < listCCusto.size(); i++) {
 			CentroCusto c = listCCusto.get(i);
@@ -229,12 +236,22 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			nodGrupos.add(leafGrupos);
 		}
 	}
+	static void carregarNoProdutos() {
+		nodProdutos = new DefaultMutableTreeNode("Produtos");
+		List<GrupoSubgrupo> listGrupo = new ArrayList<GrupoSubgrupo>(contGrupo
+				.pesquisarPorSubgrupoProdutos("Categorias de Produtos"));;
+		for (int i = 0; i < listGrupo.size(); i++) {
+			GrupoSubgrupo grupo = listGrupo.get(i);
+			leafProdutos = new DefaultMutableTreeNode(grupo.getNomeGrupo());
+			nodProdutos.add(leafProdutos);
+		}
+	}
 
 	public static void criaNos() {
 		root = new DefaultMutableTreeNode("Cadastros e Tabelas");
-		controlaCCusto = new ControlaCentroCusto();
+		contCCusto = new ControlaCentroCusto();
 		contTipoS = new ControlaTipoSistema();
-		produtos = new DefaultMutableTreeNode("Produtos");
+		contGrupo = new ControlaGrupoSubgrupo();
 		clientes = new DefaultMutableTreeNode("Clientes");
 		fornecedores = new DefaultMutableTreeNode("Fornecedores");
 		funcionarios = new DefaultMutableTreeNode("Funcionários");
@@ -242,17 +259,18 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		pessoas.add(clientes);
 		pessoas.add(fornecedores);
 		pessoas.add(funcionarios);
-		produtos = new DefaultMutableTreeNode("Produtos");
 		// grupos = new DefaultMutableTreeNode("Grupos");
 		// contas = new DefaultMutableTreeNode("Contas");
 		carregarNoCCusto();
 		carregarNoGrupos();
+		carregarNoProdutos();
+
 		condPagamento = new DefaultMutableTreeNode("Condições de Pagamento");
 		servicos = new DefaultMutableTreeNode("Serviços");
 		tabelasPrecos = new DefaultMutableTreeNode("Tabelas de Preços");
 
 		root.add(pessoas);
-		root.add(produtos);
+		root.add(nodProdutos);
 		root.add(servicos);
 		root.add(nodCentroCusto);
 		// root.add(contas);

@@ -5,9 +5,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -30,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import online.lucianofelix.beans.Produto;
+import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaListaProdutos;
 import online.lucianofelix.controle.ControlaProduto;
 import online.lucianofelix.controle.ControlaTabelaPreco;
@@ -74,6 +72,8 @@ public class PainelProdutos extends JPanel {
 	private static JCheckBox chkBListaPrecos;
 
 	private static JComboBox<String> cmbTabPreco;
+	private static JComboBox<String> cmbGrupo;
+	private static JComboBox<String> cmbSubGrupo;
 
 	private JButton btnProximo;
 	private JButton btnAnterior;
@@ -91,7 +91,7 @@ public class PainelProdutos extends JPanel {
 	private static JScrollPane scrPrecos;
 	private static JScrollPane scrEstoque;
 	private static JScrollPane scrImagem;
-	private static JScrollPane scrImagemProd;
+	private static JScrollPane scrImagensProd;
 	private static JScrollPane scrDetalhes;
 	private static JTextArea txtADetalhes;
 	// objetos de controle
@@ -99,177 +99,15 @@ public class PainelProdutos extends JPanel {
 	private static ControlaListaProdutos controledaLista;
 	private static ControlaProduto contProd;
 	private ControlaTabelaPreco contTabPreco;
+	private ControlaGrupoSubgrupo contGrupo;
 	private static Produto prod;
 	private DAOProdutoPrepSTM daoP;
 	private List<Produto> listProd;
 	int tam;
 	private DAOTabelaPreco daoTabPreco;
+	private JPanel pnlImagensProd;
 
 	// TODO Construtor
-	public PainelProdutos(String nome) {
-
-		UIManager.put("TextField.font",
-				new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Label.font", new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Button.font",
-				new Font("Times New Roman", Font.BOLD, 12));
-		// Controle
-
-		contProd = new ControlaProduto();
-		contTabPreco = new ControlaTabelaPreco();
-		// Dados
-		daoP = new DAOProdutoPrepSTM();
-		daoTabPreco = new DAOTabelaPreco();
-		// telaProduto.setContentPane(painelPrincipal);
-
-		// TODO Configuração dos Labels e text fields
-
-		lblTituloTela = new JLabel("   Produto");
-		lblTituloTela.setBounds(10, 0, 150, 40);
-		lblTituloTela.setFont(new Font("Times New Roman", Font.BOLD, 32));
-
-		lbl02 = new JLabel("Sequencia:");
-		txtF02 = new JTextField();
-		lbl03 = new JLabel("Código Interno:");
-		txtF03 = new JTextField(0);
-		lbl04 = new JLabel("Código Fábrica/EAN:");
-		txtF04 = new JTextField(0);
-		lbl05 = new JLabel("Produto:");
-		txtF05 = new JTextField();
-		lbl06 = new JLabel("Alíquota ICMS:");
-		txtF06 = new JTextField();
-		lbl07 = new JLabel("Descrição:");
-		txtF07 = new JTextField();
-		lbl08 = new JLabel("Estoque:");
-		txtF08 = new JTextField();
-		lbl09 = new JLabel("Preço Atual:");
-		txtF09 = new JTextField();
-
-		btnEditarPreco = new JButton("Alterar Preço");
-
-		cmbTabPreco = new JComboBox<String>();
-		cmbTabPreco.addItem("Tabela de Preços");
-		for (int i = 0; i < daoTabPreco.pesquisaString("").size(); i++) {
-			cmbTabPreco.addItem(
-					daoTabPreco.pesquisaString("").get(i).getDescTabela());
-		}
-		chkBListaPrecos = new JCheckBox("Exibir");
-		chkBListaPrecos.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if (chkBListaPrecos.isSelected()) {
-					habilitaTabelaPrecos(prod);
-				} else {
-					desabilitaTabelaPrecos();
-				}
-			}
-		});
-
-		// Tabela de Visualiza
-
-		tabelaPrecos = new JTable();
-		tabelaMovEstoque = new JTable();
-
-		scrPrecos = new JScrollPane();
-		scrPrecos.setViewportView(tabelaPrecos);
-		tabelaPrecos.getParent().setBackground(Color.WHITE);
-
-		lblImagem = new JLabel("Image not Found");
-
-		scrImagem = new JScrollPane(lblImagem);
-		scrImagem.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		txtADetalhes = new JTextArea();
-		txtADetalhes.setLineWrap(true);
-		txtADetalhes.setWrapStyleWord(true);
-		scrDetalhes = new JScrollPane(txtADetalhes);
-		tabVisualiza = new JTabbedPane();
-
-		tabVisualiza.addTab("Detalhes", scrDetalhes);
-		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
-		tabVisualiza.add("Estoque", scrEstoque);
-
-		// Ações
-		btnEditarPreco.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				alteraPreco();
-			}
-		});
-
-		// TODO Painel principal
-		painelGrid = new JPanel();
-		painelGrid.setBorder(BorderFactory.createEtchedBorder());
-		painelGrid.setLayout(new GridLayout(9, 2));
-		painelGrid.setBackground(Color.WHITE);
-		painelGrid.add(lbl02);
-		painelGrid.add(txtF02);
-		painelGrid.add(lbl03);
-		painelGrid.add(txtF03);
-		painelGrid.add(lbl04);
-		painelGrid.add(txtF04);
-		painelGrid.add(lbl05);
-		painelGrid.add(txtF05);
-		painelGrid.add(lbl07);
-		painelGrid.add(txtF07);
-		painelGrid.add(lbl06);
-		painelGrid.add(txtF06);
-		painelGrid.add(lbl08);
-		painelGrid.add(txtF08);
-		painelGrid.add(lbl09);
-		painelGrid.add(txtF09);
-		painelGrid.add(cmbTabPreco);
-		painelGrid.add(btnEditarPreco);
-
-		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		sppImagem.add(lblTituloTela);
-		sppImagem.add(scrImagem);
-		sppImagem.setDividerLocation(50);
-		sppImagem.setEnabled(false);
-		sppImagem.setBackground(Color.WHITE);
-		sppImagem.setForeground(Color.WHITE);
-		sppImagem.setDividerSize(3);
-
-		sppSuperior = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		sppSuperior.setDividerLocation(200);
-		sppSuperior.setDividerSize(3);
-		sppSuperior.setEnabled(false);
-		sppSuperior.add(sppImagem);
-		sppSuperior.add(painelGrid);
-
-		painelMovimento = new JPanel();
-		painelMovimento.setBorder(BorderFactory.createEtchedBorder());
-		painelMovimento.setLayout(new GridLayout());
-		painelMovimento.setBackground(Color.WHITE);
-		painelMovimento.add(tabVisualiza);
-
-		desHabilitaEdicao();
-		listProd = contProd.pesqNomeArray(nome);
-		tam = listProd.size();
-		tam--;
-		if (tam < 0) {
-			FrameInicial.setPainelVisualiza(null);
-			FrameInicial.getScrVisualiza()
-					.setViewportView(FrameInicial.getPainelVisualiza());
-		} else {
-			controledaLista = new ControlaListaProdutos(listProd);
-			prod = controledaLista.first();
-			prod.setEstoqueAtual(contProd.consultaEstoque(prod));
-			carregarCampos(prod);
-		}
-		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		jspPrincipal.setDividerSize(3);
-		jspPrincipal.setDividerLocation(250);
-		jspPrincipal.setEnabled(false);
-		jspPrincipal.setBackground(Color.WHITE);
-		jspPrincipal.add(sppSuperior);
-		jspPrincipal.add(painelMovimento);
-		setLayout(new GridLayout());
-		setBackground(Color.WHITE);
-		add(jspPrincipal);
-	}
 	public PainelProdutos(Produto p) {
 
 		UIManager.put("TextField.font",
@@ -280,6 +118,7 @@ public class PainelProdutos extends JPanel {
 		// Controle
 		prod = p;
 		contProd = new ControlaProduto();
+		contGrupo = new ControlaGrupoSubgrupo();
 		contTabPreco = new ControlaTabelaPreco();
 		// Dados
 		daoP = new DAOProdutoPrepSTM();
@@ -302,14 +141,15 @@ public class PainelProdutos extends JPanel {
 		txtF05 = new JTextField();
 		lbl06 = new JLabel("Alíquota ICMS:");
 		txtF06 = new JTextField();
-		lbl07 = new JLabel("Descrição:");
-		txtF07 = new JTextField();
 		lbl08 = new JLabel("Estoque:");
 		txtF08 = new JTextField();
 		lbl09 = new JLabel("Preço Atual:");
 		txtF09 = new JTextField();
 
 		btnEditarPreco = new JButton("Alterar Preço");
+
+		cmbGrupo = contGrupo.carregarRaizes();
+		cmbSubGrupo = contGrupo.carregarSubGrupos();
 
 		cmbTabPreco = new JComboBox<String>();
 		cmbTabPreco.addItem("Tabela de Preços");
@@ -345,6 +185,8 @@ public class PainelProdutos extends JPanel {
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrImagem.setHorizontalScrollBarPolicy(
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		pnlImagensProd = new JPanel();
+		scrImagensProd = new JScrollPane(pnlImagensProd);
 		txtADetalhes = new JTextArea();
 		txtADetalhes.setLineWrap(true);
 		txtADetalhes.setWrapStyleWord(true);
@@ -352,6 +194,7 @@ public class PainelProdutos extends JPanel {
 		tabVisualiza = new JTabbedPane();
 
 		tabVisualiza.addTab("Detalhes", scrDetalhes);
+		tabVisualiza.addTab("Imagens", scrImagensProd);
 		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
 		tabVisualiza.add("Estoque", scrEstoque);
 
@@ -359,7 +202,7 @@ public class PainelProdutos extends JPanel {
 		btnEditarPreco.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				alteraPreco();
+				contProd.alteraPreco(lerCampos());
 			}
 		});
 
@@ -376,8 +219,8 @@ public class PainelProdutos extends JPanel {
 		painelGrid.add(txtF04);
 		painelGrid.add(lbl05);
 		painelGrid.add(txtF05);
-		painelGrid.add(lbl07);
-		painelGrid.add(txtF07);
+		painelGrid.add(cmbGrupo);
+		painelGrid.add(cmbSubGrupo);
 		painelGrid.add(lbl06);
 		painelGrid.add(txtF06);
 		painelGrid.add(lbl08);
@@ -411,8 +254,8 @@ public class PainelProdutos extends JPanel {
 
 		desHabilitaEdicao();
 
-		prod.setEstoqueAtual(contProd.consultaEstoque(prod));
-		carregarCampos(prod);
+		contProd.carregaDetalhes(prod);
+		contProd.carregarCotacoes(prod);
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setDividerSize(3);
 		jspPrincipal.setDividerLocation(250);
@@ -426,28 +269,6 @@ public class PainelProdutos extends JPanel {
 	}
 
 	// TODO Fim contrutor inicio Habilita/Desab./Carrega/Le/Limpa Campos
-
-	private void alteraPreco() {
-		prod = lerCampos();
-		String data = String.valueOf(new Timestamp(System.currentTimeMillis()))
-				.substring(0, 10);
-		float valor = Float.parseFloat(
-				JOptionPane.showInputDialog("Informe o novo valor:"));
-		try {
-			contProd.novoPreco(cmbTabPreco.getItemAt(0), Date.valueOf(data),
-					prod.getCodi_prod_1(), valor);
-			txtF09.setText(String.valueOf(valor));
-			habilitaTabelaPrecos(prod);
-			contProd.funcaoSobrescrever();
-			FrameInicial.getBtnSalvar().doClick();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Problemas: ",
-					" Erro ao Cadastrar: " + e1.getMessage(),
-					JOptionPane.ERROR_MESSAGE);
-		}
-
-	}
 
 	public static void desabilitaTabelaPrecos() {
 		setTabelaPrecos(null);
@@ -493,7 +314,6 @@ public class PainelProdutos extends JPanel {
 					"Erro ao Salvar. Campos com * são necessários",
 					JOptionPane.ERROR_MESSAGE);
 		}
-		prod.setDesc_prod(txtF07.getText());
 		if (!txtF06.getText().equals(null) & !txtF06.getText().equals("")) {
 			prod.setAliq_prod(txtF06.getText());
 		} else {
@@ -524,10 +344,11 @@ public class PainelProdutos extends JPanel {
 			txtF02.setText(String.valueOf(prod.getSeq_produto()));
 			txtF03.setText(String.valueOf(prod.getCodi_prod_1()));
 			txtF05.setText(prod.getNome_prod());
-			txtF07.setText(prod.getDesc_prod());
 			txtF06.setText(prod.getAliq_prod());
-			txtF09.setText(String.valueOf(prod.getPrec_prod_1()));
 			txtF08.setText(String.valueOf(prod.getEstoqueAtual()));
+			txtF09.setText(String
+					.valueOf(prod.getListCotacaoProduto().get(0).getValor()));
+
 			txtADetalhes.setText(prod.getDesc_prod());
 			habilitaTabelaPrecos(prod);
 			carregarImagem(prod.getCodi_prod_1());
@@ -540,10 +361,11 @@ public class PainelProdutos extends JPanel {
 	public static void habilitaEdicao() {
 		txtF03.setEditable(false);
 		txtF05.setEditable(true);
-		txtF07.setEditable(true);
-		txtF08.setEditable(true);
 		txtF06.setEditable(true);
-		txtF09.setEditable(true);
+		txtF08.setEditable(true);
+		txtF09.setEditable(false);
+		cmbGrupo.setEnabled(true);
+		cmbSubGrupo.setEnabled(true);
 
 		btnEditarPreco.setEnabled(true);
 		cmbTabPreco.setEnabled(true);
@@ -558,13 +380,13 @@ public class PainelProdutos extends JPanel {
 		txtF04.setEditable(true);
 		txtF04.grabFocus();
 		txtF05.setEditable(true);
-		txtF07.setEditable(true);
-		txtF08.setEditable(true);
 		txtF06.setEditable(true);
-		// txtFPrecoAtual.setEditable(true);
-
+		txtF08.setEditable(true);
+		txtF09.setEditable(true);
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(true);
+		cmbGrupo.setEnabled(true);
+		cmbSubGrupo.setEnabled(true);
 	}
 
 	// TODO Desabilita edição
@@ -572,13 +394,15 @@ public class PainelProdutos extends JPanel {
 		txtF02.setEditable(false);
 		txtF03.setEditable(false);
 		txtF05.setEditable(false);
-		txtF07.setEditable(false);
-		txtF08.setEditable(false);
 		txtF06.setEditable(false);
+		txtF08.setEditable(false);
+		txtF09.setEditable(false);
 
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(false);
 		chkBListaPrecos.setSelected(false);
+		cmbGrupo.setEnabled(false);
+		cmbSubGrupo.setEnabled(false);
 
 	}
 
@@ -587,7 +411,6 @@ public class PainelProdutos extends JPanel {
 		txtF02.setText(null);
 		txtF03.setText(null);
 		txtF05.setText(null);
-		txtF07.setText(null);
 		txtF08.setText(null);
 		txtF06.setText(null);
 		txtF09.setText(null);

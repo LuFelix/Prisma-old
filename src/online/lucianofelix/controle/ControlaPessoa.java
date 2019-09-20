@@ -382,7 +382,7 @@ public class ControlaPessoa {
 			public void actionPerformed(ActionEvent e) {
 				p = PainelPessoa.lerCampos();
 				if (!p.equals(null) & daoP.altera(p)) {
-					FrameInicial.setTabela(pesqNomeTabela(p.getCodiPessoa()));
+					FrameInicial.setTabela(tblPessoas((p.getCodiPessoa())));
 					FrameInicial.setPainelVisualiza(new PainelPessoa(p));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");

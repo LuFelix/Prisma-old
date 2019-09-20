@@ -27,6 +27,7 @@ public class DAOTiposSistema {
 			prepStm = c.getCon().prepareStatement(sql);
 			prepStm.setString(1, nome);
 			result = prepStm.executeQuery();
+			result.next();
 			int seq = result.getInt("seq_tipo_sistema");
 			c.desconectar();
 			return seq;

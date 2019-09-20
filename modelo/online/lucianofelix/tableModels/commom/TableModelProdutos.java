@@ -37,7 +37,7 @@ public class TableModelProdutos extends AbstractTableModel {
 			case Nome :
 				return p.getNome_prod();
 			case Preco :
-				return p.getPrec_prod_1();
+				return 0;
 
 			default :
 				throw new IndexOutOfBoundsException(

@@ -103,6 +103,12 @@ public class ControlaGrupoSubgrupo {
 	public List<GrupoSubgrupo> pesqNomeArray(String str) {
 		return daoGrupo.pesquisarString(str);
 	}
+	public List<GrupoSubgrupo> pesquisarPorSubgrupoProdutos(String str) {
+
+		int grupoRaiz = daoTipoS.buscaSeqNome(str);
+		listGrupo = daoGrupo.listPorGrupoRaiz(grupoRaiz);
+		return listGrupo;
+	}
 
 	// tabela fora de utilização
 	public JTable pesqNomeTabelaOld(String str) {

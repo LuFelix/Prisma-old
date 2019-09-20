@@ -99,6 +99,32 @@ public class DAOGrupoSubgrupo {
 			return null;
 		}
 	}
+	public String pesquisarSequenciaNome(String str) {
+		System.out.println("DAOGrupo.pesquisarString");
+		String sql = "select seq_grupo from grupos where nome_grupo = ? ;";
+
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, str);
+			ResultSet res = prepStm.executeQuery();
+			if (res.next()) {
+				String codiGrupo = res.getString("codi_grupo");
+				c.desconectar();
+				return codiGrupo;
+			} else {
+				c.desconectar();
+				return null;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
 	public String pesquisarCodigoNome(String str) {
 		System.out.println("DAOGrupo.pesquisarString");
 		String sql = "select codi_grupo from grupos where nome_grupo = ? ;";
@@ -137,6 +163,34 @@ public class DAOGrupoSubgrupo {
 			prepStm.setString(1, str);
 			prepStm.setString(2, str);
 			prepStm.setString(3, str);
+			ResultSet res = prepStm.executeQuery();
+			while (res.next()) {
+				grupo = new GrupoSubgrupo();
+				grupo.setSeqGrupo(res.getInt("seq_grupo"));
+				grupo.setCodiGrupo(res.getString("codi_grupo"));
+				grupo.setNomeGrupo(res.getString("nome_grupo"));
+				grupo.setNoAncora(res.getString("codi_no_ancora"));
+				grupo.setIsroot(res.getBoolean("isroot"));
+				listGrupo.add(grupo);
+			}
+			c.desconectar();
+			return listGrupo;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	public List<GrupoSubgrupo> listPorGrupoRaiz(int grupoRaiz) {
+		System.out.println("DAOGrupo.pesquisarString");
+		String sql = "select * from grupos where seq_tipo_sistema = ? order by codi_no_ancora;";
+		listGrupo = new ArrayList<GrupoSubgrupo>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setInt(1, grupoRaiz);
 			ResultSet res = prepStm.executeQuery();
 			while (res.next()) {
 				grupo = new GrupoSubgrupo();
