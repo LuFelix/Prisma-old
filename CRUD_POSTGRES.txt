@@ -1,0 +1,4 @@
+SELECT produtos.seq_produto, produtos.codi_prod_1, produtos.nome_prod, 
+produtos.desc_prod, produtos.aliq_prod, produtos.prec_custo, 
+produtos.prec_prod_1
+FROM produtos, produtos_grupos WHERE produtos_grupos.codi_grupo = '';

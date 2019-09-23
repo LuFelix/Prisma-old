@@ -145,11 +145,10 @@ public class PainelProdutos extends JPanel {
 		txtF08 = new JTextField();
 		lbl09 = new JLabel("Preço Atual:");
 		txtF09 = new JTextField();
+		lbl10 = new JLabel("Adicionar à categoria");
+		cmbSubGrupo = contGrupo.carregarSubGrupos();
 
 		btnEditarPreco = new JButton("Alterar Preço");
-
-		cmbGrupo = contGrupo.carregarRaizes();
-		cmbSubGrupo = contGrupo.carregarSubGrupos();
 
 		cmbTabPreco = new JComboBox<String>();
 		cmbTabPreco.addItem("Tabela de Preços");
@@ -219,14 +218,14 @@ public class PainelProdutos extends JPanel {
 		painelGrid.add(txtF04);
 		painelGrid.add(lbl05);
 		painelGrid.add(txtF05);
-		painelGrid.add(cmbGrupo);
-		painelGrid.add(cmbSubGrupo);
 		painelGrid.add(lbl06);
 		painelGrid.add(txtF06);
 		painelGrid.add(lbl08);
 		painelGrid.add(txtF08);
 		painelGrid.add(lbl09);
 		painelGrid.add(txtF09);
+		painelGrid.add(lbl10);
+		painelGrid.add(cmbSubGrupo);
 		painelGrid.add(cmbTabPreco);
 		painelGrid.add(btnEditarPreco);
 
@@ -255,7 +254,7 @@ public class PainelProdutos extends JPanel {
 		desHabilitaEdicao();
 
 		contProd.carregaDetalhes(prod);
-		contProd.carregarCotacoes(prod);
+
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setDividerSize(3);
 		jspPrincipal.setDividerLocation(250);
@@ -328,6 +327,7 @@ public class PainelProdutos extends JPanel {
 		} else {
 			prod.setPrec_prod_1(Float.parseFloat(txtF09.getText()));
 		}
+		prod.setDesc_prod(txtADetalhes.getText());
 		return prod;
 	}
 
@@ -364,7 +364,7 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
 		txtF09.setEditable(false);
-		cmbGrupo.setEnabled(true);
+		txtADetalhes.setEditable(true);
 		cmbSubGrupo.setEnabled(true);
 
 		btnEditarPreco.setEnabled(true);
@@ -383,9 +383,9 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
 		txtF09.setEditable(true);
+		txtADetalhes.setEditable(true);
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(true);
-		cmbGrupo.setEnabled(true);
 		cmbSubGrupo.setEnabled(true);
 	}
 
@@ -397,11 +397,11 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(false);
 		txtF08.setEditable(false);
 		txtF09.setEditable(false);
+		txtADetalhes.setEditable(false);
 
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(false);
 		chkBListaPrecos.setSelected(false);
-		cmbGrupo.setEnabled(false);
 		cmbSubGrupo.setEnabled(false);
 
 	}

@@ -22,9 +22,11 @@ import javax.swing.table.DefaultTableModel;
 
 import online.lucianofelix.beans.Produto;
 import online.lucianofelix.beans.ProdutoEstoque;
+import online.lucianofelix.dao.DAOGrupoSubgrupo;
 import online.lucianofelix.dao.DAOProdutoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosCotacao;
 import online.lucianofelix.dao.DAOProdutosEstoque;
+import online.lucianofelix.dao.DAOTiposSistema;
 import online.lucianofelix.tableModels.commom.TableModelProdutos;
 import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
@@ -37,9 +39,12 @@ public class ControlaProduto {
 	String resposta;
 	Produto prod;
 	DAOProdutoPrepSTM daoProd;
-	ControlaListaProdutos controledaLista;
+
+	private ControlaListaProdutos controledaLista;
 	private DAOProdutosCotacao daoProdCota;
 	private DAOProdutosEstoque daoProdEstoque;
+	private DAOTiposSistema daoTipoS;
+	private DAOGrupoSubgrupo daoGrupo;
 	private JTable tbl01;
 	TableModelProdutos mdlTabela;
 	List<Produto> listProd;
@@ -48,6 +53,8 @@ public class ControlaProduto {
 		daoProd = new DAOProdutoPrepSTM();
 		daoProdCota = new DAOProdutosCotacao();
 		daoProdEstoque = new DAOProdutosEstoque();
+		daoTipoS = new DAOTiposSistema();
+		daoGrupo = new DAOGrupoSubgrupo();
 	}
 
 	// TODO Novo Movimento
@@ -63,8 +70,8 @@ public class ControlaProduto {
 		System.out.println("FrameInicial.controleProdutosIniciar");
 		configuraBotoes();
 		configuraTxtPesquisa();
-		FrameInicial.setTabela(tabelaProdutos(categoria));
-		if (FrameInicial.getTabela().getSelectedRowCount() <= 0) {
+		FrameInicial.setTabela(tabelaProdutosGrupo(categoria));
+		if (FrameInicial.getTabela().getRowCount() <= 0) {
 			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
 		} else {
 			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
@@ -349,9 +356,100 @@ public class ControlaProduto {
 		// tabela.getColumnModel().getColumn(6).setPreferredWidth(80);
 	}
 
-	// TODO Tabela ligada ao painel de produtos
+	// TODO Tabela ligada ao painel de produtos; Tabela geral de produtos
 	public JTable tabelaProdutos(String str) {
 		mdlTabela = new TableModelProdutos(daoProd.pesquisaString(str));
+		tbl01 = new JTable(mdlTabela);
+		tbl01.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					carregaDetalhes(prod);
+					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				int posicao = tbl01.getSelectedRow();
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 10) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					carregaDetalhes(prod);
+					PainelProdutos.getBtnEditar().doClick();
+					FrameInicial.getTabela().changeSelection(--posicao, 0,
+							false, false);
+					PainelProdutos.getTxtFNomeProd().grabFocus();
+				}
+			}
+		});
+		tbl01.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				//
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				//
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+		});
+
+		ajusta_tamanho_coluna();
+		tbl01.setShowGrid(true);
+		return tbl01;
+	}
+	public JTable tabelaProdutosGrupo(String grupo) {
+
+		String codiGrupo = daoGrupo.pesquisarCodigoNome(grupo);
+		System.out.println("               ");
+		System.out.println(codiGrupo);
+		System.out.println("               ");
+		listProd = daoProd.pesquisaProdutosCategoria(codiGrupo);
+
+		mdlTabela = new TableModelProdutos(listProd);
 		tbl01 = new JTable(mdlTabela);
 		tbl01.addKeyListener(new KeyListener() {
 
@@ -612,19 +710,6 @@ public class ControlaProduto {
 
 	public Produto procurar(String codiProduto) {
 		return daoProd.procurar(codiProduto);
-	}
-
-	public Produto procurarProximo(int codiProd) {
-		if (codiProd == 0) {
-			codiProd++;
-		}
-		return daoProd.procurarProximo(codiProd);
-	}
-
-	public Produto procurarAnterior(int codiProd) {
-		--codiProd;
-		prod = daoProd.procurarAnterior(codiProd);
-		return prod;
 	}
 
 	public int consultaUltimo() {

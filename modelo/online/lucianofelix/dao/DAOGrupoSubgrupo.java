@@ -37,7 +37,7 @@ public class DAOGrupoSubgrupo {
 
 	public boolean cadastrar(GrupoSubgrupo grupo) {
 		System.out.println("DAOGruposSubgrupo.cadastrar");
-		String sql = "insert into grupos (codi_grupo, nome_grupo, codi_no_ancora, isroot) values (?,?,?,?);";
+		String sql = "insert into grupos (codi_grupo, nome_grupo, codi_no_ancora, isroot, seq__tipo_sistema) values (?,?,?,?,?);";
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
@@ -45,6 +45,7 @@ public class DAOGrupoSubgrupo {
 			prepStm.setString(2, grupo.getNomeGrupo());
 			prepStm.setString(3, grupo.getNoAncora());
 			prepStm.setBoolean(4, grupo.getIsroot());
+			prepStm.setInt(5, grupo.getNoRaiz());
 			prepStm.execute();
 			c.desconectar();
 			System.out.println("Inseriu");
@@ -99,7 +100,7 @@ public class DAOGrupoSubgrupo {
 			return null;
 		}
 	}
-	public String pesquisarSequenciaNome(String str) {
+	public int pesquisarSequenciaNome(String str) {
 		System.out.println("DAOGrupo.pesquisarString");
 		String sql = "select seq_grupo from grupos where nome_grupo = ? ;";
 
@@ -111,18 +112,18 @@ public class DAOGrupoSubgrupo {
 			prepStm.setString(1, str);
 			ResultSet res = prepStm.executeQuery();
 			if (res.next()) {
-				String codiGrupo = res.getString("codi_grupo");
+				int seqGrupo = res.getInt("seq_grupo");
 				c.desconectar();
-				return codiGrupo;
+				return seqGrupo;
 			} else {
 				c.desconectar();
-				return null;
+				return 0;
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			c.desconectar();
-			return null;
+			return e.getErrorCode();
 		}
 	}
 	public String pesquisarCodigoNome(String str) {
@@ -191,6 +192,34 @@ public class DAOGrupoSubgrupo {
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 			prepStm.setInt(1, grupoRaiz);
+			ResultSet res = prepStm.executeQuery();
+			while (res.next()) {
+				grupo = new GrupoSubgrupo();
+				grupo.setSeqGrupo(res.getInt("seq_grupo"));
+				grupo.setCodiGrupo(res.getString("codi_grupo"));
+				grupo.setNomeGrupo(res.getString("nome_grupo"));
+				grupo.setNoAncora(res.getString("codi_no_ancora"));
+				grupo.setIsroot(res.getBoolean("isroot"));
+				listGrupo.add(grupo);
+			}
+			c.desconectar();
+			return listGrupo;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	public List<GrupoSubgrupo> listPorGrupoAncora(int grupoAncora) {
+		System.out.println("DAOGrupo.pesquisarString");
+		String sql = "select * from grupos where codi_no_ancora = ? order by nome_grupo;";
+		listGrupo = new ArrayList<GrupoSubgrupo>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setInt(1, grupoAncora);
 			ResultSet res = prepStm.executeQuery();
 			while (res.next()) {
 				grupo = new GrupoSubgrupo();

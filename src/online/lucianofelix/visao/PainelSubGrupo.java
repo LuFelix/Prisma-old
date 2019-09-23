@@ -316,6 +316,9 @@ public class PainelSubGrupo extends JPanel {
 		if (!chkIsroot.equals(null)) {
 			grupo.setIsroot(chkIsroot.isSelected());
 		}
+		if (AbaCadastros.getNomeNo().equals("Categorias de Produtos")) {
+			grupo.setNoRaiz(2);
+		}
 
 		return grupo;
 	}

@@ -263,6 +263,74 @@ public class ControlaGrupoSubgrupo {
 		tbl01.setShowHorizontalLines(true);
 		return tbl01;
 	}
+	public JTable tblSubGrupo(String str) {
+		tbl01 = new JTable();
+		mdlTblGrupo = new TableModelGrupoCategoria(daoGrupo.listRaizes());
+		tbl01.setModel(mdlTblGrupo);
+		tbl01.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					grupo = mdlTblGrupo.getGrupo(tbl01.getSelectedRow());
+					PainelSubGrupo.carregarCampos(grupo);
+					FrameInicial.atualizaTela();
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				int posicao = tbl01.getSelectedRow();
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					grupo = mdlTblGrupo.getGrupo(tbl01.getSelectedRow());
+					PainelSubGrupo.carregarCampos(grupo);
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 10) {
+					grupo = mdlTblGrupo.getGrupo(tbl01.getSelectedRow());
+					PainelSubGrupo.carregarCampos(grupo);
+					funcaoSobrescrever();
+					FrameInicial.getTabela().changeSelection(--posicao, 0,
+							false, false);
+					PainelConta.getTxtFNomeConta().grabFocus();
+				}
+			}
+		});
+		tbl01.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				grupo = mdlTblGrupo.getGrupo(tbl01.getSelectedRow());
+				PainelSubGrupo.carregarCampos(grupo);
+				FrameInicial.atualizaTela();
+			}
+		});
+
+		tbl01.setShowHorizontalLines(true);
+		return tbl01;
+	}
 
 	// TODO Função sobrescrever
 	public void funcaoSobrescrever() {
@@ -396,6 +464,16 @@ public class ControlaGrupoSubgrupo {
 		configuraBotoes();
 		configuraTxtPesquisa();
 		FrameInicial.setTabela(tblGrupo(""));
+		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		grupo = mdlTblGrupo.getGrupo(FrameInicial.getTabela().getSelectedRow());
+		FrameInicial.setPainelVisualiza(new PainelSubGrupo(grupo));
+		FrameInicial.atualizaTela();
+	}
+	public void iniciar(String tipoSistema) {
+		System.out.println("FrameInicial.pesquisaGrupo");
+		configuraBotoes();
+		configuraTxtPesquisa();
+		FrameInicial.setTabela(tblGrupo(tipoSistema));
 		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 		grupo = mdlTblGrupo.getGrupo(FrameInicial.getTabela().getSelectedRow());
 		FrameInicial.setPainelVisualiza(new PainelSubGrupo(grupo));

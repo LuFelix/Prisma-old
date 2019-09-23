@@ -22,6 +22,7 @@ public class DAOTiposSistema {
 	}
 	public int buscaSeqNome(String nome) {
 		String sql = "select seq_tipo_sistema from tipos_sistema where nome_tipo_sistema=? ;";
+		System.out.println(nome + "    " + nome);
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);

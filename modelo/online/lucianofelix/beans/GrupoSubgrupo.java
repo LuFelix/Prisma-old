@@ -5,6 +5,7 @@ public class GrupoSubgrupo {
 	private int seqGrupo;// Código sequencial
 	private String codiGrupo; // Código composto para administração da tabela.
 	private String nomeGrupo;// Nome para o grupo.
+	private int noRaiz;
 	private String noAncora;// Grupo pai para esse elemento, se existir.
 	private boolean isroot;// Se selecionado o nó é raiz.
 
@@ -46,6 +47,14 @@ public class GrupoSubgrupo {
 
 	public void setIsroot(boolean isroot) {
 		this.isroot = isroot;
+	}
+
+	public int getNoRaiz() {
+		return noRaiz;
+	}
+
+	public void setNoRaiz(int noRaiz) {
+		this.noRaiz = noRaiz;
 	}
 
 }
