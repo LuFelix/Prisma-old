@@ -187,7 +187,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 				FrameInicial.getContTipS().iniciar();
 			}
 			if (node.isLeaf() && node.isNodeAncestor(nodGrupos)) {
-				FrameInicial.getContGrupo().iniciar();
+				FrameInicial.getContGrupo().iniciar(nomeNo);
 			}
 		} else {
 

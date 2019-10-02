@@ -19,13 +19,12 @@ public class Produto {
 	private int estoqueAtual;
 	// TODO Dados do produto para a nota
 	// <prod>
-	// <cProd>861</cProd> cÃ³digo do produto no sistema
-	// <cEAN></cEAN> cÃ³digo de barras
+	// <cProd>861</cProd> código do produto no sistema
+	// <cEAN></cEAN> código de barras
 	// <xProd>ARROZ AMIGAO PARB.LF T-AP 6/5KG (1)</xProd> desc prod nota fiscal
 	// <NCM>10063011</NCM> ncm do cadastro do produto
 	// <CFOP>5102</CFOP> cfop de venda do produto conforme o caso, pessoa
-	// fÃ­sica
-	// ou jurÃ­dica mesma Uf ou fora
+	// ou jurídica mesma Uf ou fora
 	// <uCom>FD</uCom> unidade do produto
 	// <qCom>1.00</qCom> quantidade comercializada
 	// <vUnCom>29.00</vUnCom> valor unitÃ¡rio comercializado
@@ -37,7 +36,7 @@ public class Produto {
 	// <indTot>1</indTot>
 	// </prod>
 	private int cProd; // guardar o codigo sequencial.
-	private int cEAN;// código ean pode ser vazio.
+	private String cEAN;// código ean pode ser vazio.
 	private String xProd;
 	private int NCM;
 	private int CFOP;
@@ -63,11 +62,11 @@ public class Produto {
 		this.cProd = cProd;
 	}
 
-	public int getcEAN() {
+	public String getcEAN() {
 		return cEAN;
 	}
 
-	public void setcEAN(int cEAN) {
+	public void setcEAN(String cEAN) {
 		this.cEAN = cEAN;
 	}
 

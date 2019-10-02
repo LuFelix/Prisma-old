@@ -37,7 +37,7 @@ public class DAOGrupoSubgrupo {
 
 	public boolean cadastrar(GrupoSubgrupo grupo) {
 		System.out.println("DAOGruposSubgrupo.cadastrar");
-		String sql = "insert into grupos (codi_grupo, nome_grupo, codi_no_ancora, isroot, seq__tipo_sistema) values (?,?,?,?,?);";
+		String sql = "insert into grupos (codi_grupo, nome_grupo, codi_no_ancora, isroot, seq_tipo_sistema) values (?,?,?,?,?);";
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
@@ -100,10 +100,10 @@ public class DAOGrupoSubgrupo {
 			return null;
 		}
 	}
+
 	public int pesquisarSequenciaNome(String str) {
 		System.out.println("DAOGrupo.pesquisarString");
 		String sql = "select seq_grupo from grupos where nome_grupo = ? ;";
-
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql,
@@ -126,6 +126,32 @@ public class DAOGrupoSubgrupo {
 			return e.getErrorCode();
 		}
 	}
+	public int pesquisarSeqTipoSistemaNome(String str) {
+		System.out.println("DAOGrupo.pesquisarString");
+		String sql = "select seq_tipo_sistema from tipos_sistema where nome_tipo_sistema = ? ;";
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, str);
+			ResultSet res = prepStm.executeQuery();
+			if (res.next()) {
+				int seqGrupo = res.getInt("seq_tipo_sistema");
+				c.desconectar();
+				return seqGrupo;
+			} else {
+				c.desconectar();
+				return 0;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return e.getErrorCode();
+		}
+	}
+
 	public String pesquisarCodigoNome(String str) {
 		System.out.println("DAOGrupo.pesquisarString");
 		String sql = "select codi_grupo from grupos where nome_grupo = ? ;";
@@ -210,6 +236,12 @@ public class DAOGrupoSubgrupo {
 			return null;
 		}
 	}
+	/**
+	 * Listar por Grupo âncora
+	 * 
+	 * @param grupoAncora
+	 * @return List
+	 */
 	public List<GrupoSubgrupo> listPorGrupoAncora(int grupoAncora) {
 		System.out.println("DAOGrupo.pesquisarString");
 		String sql = "select * from grupos where codi_no_ancora = ? order by nome_grupo;";
@@ -220,6 +252,40 @@ public class DAOGrupoSubgrupo {
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE);
 			prepStm.setInt(1, grupoAncora);
+			ResultSet res = prepStm.executeQuery();
+			while (res.next()) {
+				grupo = new GrupoSubgrupo();
+				grupo.setSeqGrupo(res.getInt("seq_grupo"));
+				grupo.setCodiGrupo(res.getString("codi_grupo"));
+				grupo.setNomeGrupo(res.getString("nome_grupo"));
+				grupo.setNoAncora(res.getString("codi_no_ancora"));
+				grupo.setIsroot(res.getBoolean("isroot"));
+				listGrupo.add(grupo);
+			}
+			c.desconectar();
+			return listGrupo;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	/**
+	 * Listar por Tipo de Sistema âncora
+	 * 
+	 * @param grupoAncora
+	 * @return List
+	 */
+	public List<GrupoSubgrupo> listPorTipoSistema(int tipoS) {
+		System.out.println("DAOGrupo.pesquisarString");
+		String sql = "select * from grupos where seq_tipo_sistema = ? order by nome_grupo;";
+		listGrupo = new ArrayList<GrupoSubgrupo>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setInt(1, tipoS);
 			ResultSet res = prepStm.executeQuery();
 			while (res.next()) {
 				grupo = new GrupoSubgrupo();

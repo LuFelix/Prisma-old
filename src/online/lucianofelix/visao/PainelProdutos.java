@@ -1,11 +1,16 @@
 package online.lucianofelix.visao;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -13,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,7 +27,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -31,7 +40,6 @@ import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaListaProdutos;
 import online.lucianofelix.controle.ControlaProduto;
 import online.lucianofelix.controle.ControlaTabelaPreco;
-import online.lucianofelix.dao.DAOProdutoPrepSTM;
 import online.lucianofelix.dao.DAOTabelaPreco;
 
 public class PainelProdutos extends JPanel {
@@ -74,9 +82,8 @@ public class PainelProdutos extends JPanel {
 	private static JComboBox<String> cmbTabPreco;
 	private static JComboBox<String> cmbGrupo;
 	private static JComboBox<String> cmbSubGrupo;
+	private JList listGrupo;
 
-	private JButton btnProximo;
-	private JButton btnAnterior;
 	private static JButton btnEditarPreco;
 	private static JButton btnNovo;
 	private static JButton btnEditar;
@@ -88,12 +95,13 @@ public class PainelProdutos extends JPanel {
 	private static JTable tabelaPrecos;
 	private static JTable tabelaMovEstoque;
 	private static DefaultTableModel modeloTabela;
+	private JScrollPane scrDescricao;
 	private static JScrollPane scrPrecos;
 	private static JScrollPane scrEstoque;
 	private static JScrollPane scrImagem;
 	private static JScrollPane scrImagensProd;
 	private static JScrollPane scrDetalhes;
-	private static JTextArea txtADetalhes;
+	private static JTextArea txtADescricao;
 	// objetos de controle
 
 	private static ControlaListaProdutos controledaLista;
@@ -101,11 +109,10 @@ public class PainelProdutos extends JPanel {
 	private ControlaTabelaPreco contTabPreco;
 	private ControlaGrupoSubgrupo contGrupo;
 	private static Produto prod;
-	private DAOProdutoPrepSTM daoP;
-	private List<Produto> listProd;
 	int tam;
 	private DAOTabelaPreco daoTabPreco;
 	private JPanel pnlImagensProd;
+	private JPanel pnlDetalhes;
 
 	// TODO Construtor
 	public PainelProdutos(Produto p) {
@@ -121,9 +128,7 @@ public class PainelProdutos extends JPanel {
 		contGrupo = new ControlaGrupoSubgrupo();
 		contTabPreco = new ControlaTabelaPreco();
 		// Dados
-		daoP = new DAOProdutoPrepSTM();
 		daoTabPreco = new DAOTabelaPreco();
-		// telaProduto.setContentPane(painelPrincipal);
 
 		// TODO Configuração dos Labels e text fields
 
@@ -136,7 +141,7 @@ public class PainelProdutos extends JPanel {
 		lbl03 = new JLabel("Código Interno:");
 		txtF03 = new JTextField(0);
 		lbl04 = new JLabel("Código Fábrica/EAN:");
-		txtF04 = new JTextField(0);
+		txtF04 = new JTextField();
 		lbl05 = new JLabel("Produto:");
 		txtF05 = new JTextField();
 		lbl06 = new JLabel("Alíquota ICMS:");
@@ -145,10 +150,66 @@ public class PainelProdutos extends JPanel {
 		txtF08 = new JTextField();
 		lbl09 = new JLabel("Preço Atual:");
 		txtF09 = new JTextField();
-		lbl10 = new JLabel("Adicionar à categoria");
-		cmbSubGrupo = contGrupo.carregarSubGrupos();
+		lbl10 = new JLabel("Grupo/Categoria");
+
+		JButton btn = new JButton("Obter itens marcados");
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String itens = "";
+				// Loop faz a varredura para obter quais estao marcados
+				for (int i = 0; i < listGrupo.getModel().getSize(); i++) {
+					JCheckBox checkbox = (JCheckBox) listGrupo.getModel()
+							.getElementAt(i);
+					if (checkbox.isSelected())
+						itens += "Item com índice " + i + " está marcado\n";
+					else
+						itens += "Item com índice " + i + " está desmarcado\n";
+				}
+				JOptionPane.showMessageDialog(null, itens);
+			}
+		});
+		listGrupo = new JList();
+		listGrupo.setCellRenderer(new CheckBoxCellRenderer());
+		Object[] cbArray = new Object[4];
+		cbArray[0] = new JCheckBox("Categoria 1");
+		cbArray[1] = new JCheckBox("Categoria 2");
+		cbArray[2] = new JCheckBox("Categoria 3");
+		cbArray[3] = new JCheckBox("Categoria 4");
+		listGrupo.setListData(cbArray);
+		listGrupo.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					int index = listGrupo.getSelectedIndex();
+					if (index != -1) {
+						JCheckBox checkbox = (JCheckBox) listGrupo.getModel()
+								.getElementAt(index);
+						checkbox.setSelected(!checkbox.isSelected());
+						repaint();
+					}
+				}
+			}
+		});
+		listGrupo.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				int index = listGrupo.locationToIndex(e.getPoint());
+				if (index != -1) {
+					JCheckBox checkbox = (JCheckBox) listGrupo.getModel()
+							.getElementAt(index);
+					checkbox.setSelected(!checkbox.isSelected());
+					repaint();
+				}
+			}
+		});
+
+		cmbSubGrupo = contGrupo.carregarSubGruposProdutos();
 
 		btnEditarPreco = new JButton("Alterar Preço");
+		btnEditarPreco.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				contProd.alteraPreco(lerCampos());
+			}
+		});
 
 		cmbTabPreco = new JComboBox<String>();
 		cmbTabPreco.addItem("Tabela de Preços");
@@ -156,6 +217,7 @@ public class PainelProdutos extends JPanel {
 			cmbTabPreco.addItem(
 					daoTabPreco.pesquisaString("").get(i).getDescTabela());
 		}
+
 		chkBListaPrecos = new JCheckBox("Exibir");
 		chkBListaPrecos.addChangeListener(new ChangeListener() {
 			@Override
@@ -168,14 +230,11 @@ public class PainelProdutos extends JPanel {
 			}
 		});
 
-		// Tabela de Visualiza
-
 		tabelaPrecos = new JTable();
 		tabelaMovEstoque = new JTable();
 
 		scrPrecos = new JScrollPane();
 		scrPrecos.setViewportView(tabelaPrecos);
-		tabelaPrecos.getParent().setBackground(Color.WHITE);
 
 		lblImagem = new JLabel("Image not Found");
 
@@ -186,24 +245,22 @@ public class PainelProdutos extends JPanel {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		pnlImagensProd = new JPanel();
 		scrImagensProd = new JScrollPane(pnlImagensProd);
-		txtADetalhes = new JTextArea();
-		txtADetalhes.setLineWrap(true);
-		txtADetalhes.setWrapStyleWord(true);
-		scrDetalhes = new JScrollPane(txtADetalhes);
-		tabVisualiza = new JTabbedPane();
 
+		setPnlDetalhes(new JPanel(new BorderLayout()));
+		pnlDetalhes.add(listGrupo, BorderLayout.CENTER);
+		scrDetalhes = new JScrollPane(pnlDetalhes);
+
+		txtADescricao = new JTextArea();
+		txtADescricao.setLineWrap(true);
+		txtADescricao.setWrapStyleWord(true);
+		scrDescricao = new JScrollPane(txtADescricao);
+
+		tabVisualiza = new JTabbedPane();
 		tabVisualiza.addTab("Detalhes", scrDetalhes);
+		tabVisualiza.addTab("Descrição", scrDescricao);
 		tabVisualiza.addTab("Imagens", scrImagensProd);
 		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
 		tabVisualiza.add("Estoque", scrEstoque);
-
-		// Ações
-		btnEditarPreco.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				contProd.alteraPreco(lerCampos());
-			}
-		});
 
 		// TODO Painel principal
 		painelGrid = new JPanel();
@@ -251,9 +308,11 @@ public class PainelProdutos extends JPanel {
 		painelMovimento.setBackground(Color.WHITE);
 		painelMovimento.add(tabVisualiza);
 
+		limparCampos();
 		desHabilitaEdicao();
-
-		contProd.carregaDetalhes(prod);
+		if (prod != null) {
+			contProd.carregaDetalhes(prod);
+		}
 
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setDividerSize(3);
@@ -305,29 +364,29 @@ public class PainelProdutos extends JPanel {
 		} else {
 			prod.setCodi_prod_1(txtF03.getText());
 		}
+
+		if (!txtF04.getText().equals(null) & !txtF04.getText().equals("")) {
+			prod.setcEAN(txtF04.getText());
+		} else {
+			prod.setcEAN("Não Cadastrado");
+		}
+
 		if (!txtF05.getText().equals(null) & !txtF05.getText().equals("")) {
 			prod.setNome_prod(txtF05.getText());
 		} else {
-			JOptionPane.showMessageDialog(null,
-					"Problemas: Verifique as informações preenchidas",
-					"Erro ao Salvar. Campos com * são necessários",
-					JOptionPane.ERROR_MESSAGE);
+			erro();
 		}
 		if (!txtF06.getText().equals(null) & !txtF06.getText().equals("")) {
 			prod.setAliq_prod(txtF06.getText());
 		} else {
-			JOptionPane.showMessageDialog(null,
-					"Problemas: Verifique as informações preenchidas",
-					"Erro ao Salvar. Campos com * são necessários",
-					JOptionPane.ERROR_MESSAGE);
+			prod.setAliq_prod("17");
 		}
-		prod.setAliq_prod(txtF06.getText());
 		if (txtF09.getText().equals("")) {
 			prod.setPrec_prod_1(0);
 		} else {
 			prod.setPrec_prod_1(Float.parseFloat(txtF09.getText()));
 		}
-		prod.setDesc_prod(txtADetalhes.getText());
+		prod.setDesc_prod(txtADescricao.getText());
 		return prod;
 	}
 
@@ -343,13 +402,14 @@ public class PainelProdutos extends JPanel {
 			chkBListaPrecos.setSelected(false);
 			txtF02.setText(String.valueOf(prod.getSeq_produto()));
 			txtF03.setText(String.valueOf(prod.getCodi_prod_1()));
+			txtF04.setText(prod.getcEAN());
 			txtF05.setText(prod.getNome_prod());
 			txtF06.setText(prod.getAliq_prod());
 			txtF08.setText(String.valueOf(prod.getEstoqueAtual()));
 			txtF09.setText(String
 					.valueOf(prod.getListCotacaoProduto().get(0).getValor()));
 
-			txtADetalhes.setText(prod.getDesc_prod());
+			txtADescricao.setText(prod.getDesc_prod());
 			habilitaTabelaPrecos(prod);
 			carregarImagem(prod.getCodi_prod_1());
 
@@ -364,9 +424,8 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
 		txtF09.setEditable(false);
-		txtADetalhes.setEditable(true);
+		txtADescricao.setEditable(true);
 		cmbSubGrupo.setEnabled(true);
-
 		btnEditarPreco.setEnabled(true);
 		cmbTabPreco.setEnabled(true);
 	}
@@ -383,10 +442,10 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
 		txtF09.setEditable(true);
-		txtADetalhes.setEditable(true);
-		btnEditarPreco.setEnabled(false);
+		txtADescricao.setEditable(true);
 		cmbTabPreco.setEnabled(true);
 		cmbSubGrupo.setEnabled(true);
+		btnEditarPreco.setEnabled(false);
 	}
 
 	// TODO Desabilita edição
@@ -397,8 +456,7 @@ public class PainelProdutos extends JPanel {
 		txtF06.setEditable(false);
 		txtF08.setEditable(false);
 		txtF09.setEditable(false);
-		txtADetalhes.setEditable(false);
-
+		txtADescricao.setEditable(false);
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(false);
 		chkBListaPrecos.setSelected(false);
@@ -414,11 +472,18 @@ public class PainelProdutos extends JPanel {
 		txtF08.setText(null);
 		txtF06.setText(null);
 		txtF09.setText(null);
-		chkBListaPrecos.setSelected(false);
 		carregarImagem(null);
 		desabilitaTabelaPrecos();
-		txtADetalhes.setText(null);
+		txtADescricao.setText(null);
+		cmbSubGrupo.setSelectedItem(null);
 
+	}
+
+	static void erro() {
+		JOptionPane.showMessageDialog(null,
+				"Problemas: Verifique as informações preenchidas",
+				"Erro ao Salvar. Campos com * são necessários",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
 	public static JButton getBtnNovo() {
@@ -477,4 +542,33 @@ public class PainelProdutos extends JPanel {
 		this.scrPrecos = scrPrecos;
 	}
 
+	public JPanel getPnlDetalhes() {
+		return pnlDetalhes;
+	}
+
+	public void setPnlDetalhes(JPanel pnlDetalhes) {
+		this.pnlDetalhes = pnlDetalhes;
+	}
+
+}
+class CheckBoxCellRenderer implements ListCellRenderer {
+	Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	public Component getListCellRendererComponent(JList list, Object value,
+			int index, boolean isSelected, boolean cellHasFocus) {
+		JCheckBox checkbox = (JCheckBox) value;
+		checkbox.setBackground(isSelected
+				? list.getSelectionBackground()
+				: list.getBackground());
+		checkbox.setForeground(isSelected
+				? list.getSelectionForeground()
+				: list.getForeground());
+		checkbox.setEnabled(list.isEnabled());
+		checkbox.setFont(list.getFont());
+		checkbox.setFocusPainted(false);
+		checkbox.setBorderPainted(true);
+		checkbox.setBorder(isSelected
+				? UIManager.getBorder("List.focusCellHighlightBorder")
+				: noFocusBorder);
+		return checkbox;
+	}
 }

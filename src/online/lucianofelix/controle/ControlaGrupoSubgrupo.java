@@ -20,6 +20,7 @@ import online.lucianofelix.beans.TipoSistema;
 import online.lucianofelix.dao.DAOGrupoSubgrupo;
 import online.lucianofelix.dao.DAOTiposSistema;
 import online.lucianofelix.tableModels.commom.TableModelGrupoCategoria;
+import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 import online.lucianofelix.visao.PainelConta;
@@ -42,8 +43,6 @@ public class ControlaGrupoSubgrupo {
 		System.out.println("ControlaGrupoSubgrupo.construtor");
 		daoGrupo = new DAOGrupoSubgrupo();
 		daoTipoS = new DAOTiposSistema();
-		listGrupo = daoGrupo.pesquisarString("");
-		listRaizes = daoTipoS.pesquisaString("");
 	}
 
 	// TODO Função Salvar
@@ -57,9 +56,9 @@ public class ControlaGrupoSubgrupo {
 
 				if (!grupo.equals(null) & daoGrupo.cadastrar(grupo)) {
 					PainelSubGrupo.limparCampos();
-					FrameInicial.setTabela(tblGrupo(grupo.getCodiGrupo()));
-					FrameInicial.setPainelVisualiza(
-							new PainelSubGrupo(grupo.getCodiGrupo()));
+					FrameInicial.getTxtfPesquisa()
+							.setText(grupo.getNomeGrupo());
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito");
 					iniciar();
@@ -81,18 +80,6 @@ public class ControlaGrupoSubgrupo {
 				+ String.valueOf(c.get(Calendar.MONTH))
 				+ String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 		return codigo;
-	}
-
-	public GrupoSubgrupo nomeAproximado() {
-		int tam = daoGrupo.consultaUltimo();
-		if (tam == 0) {
-			FrameInicial.setPainelVisualiza(new PainelSubGrupo(""));
-			FrameInicial.getScrVisualiza()
-					.setViewportView(FrameInicial.getPainelVisualiza());
-			return null;
-		} else {
-			return daoGrupo.pesquisarString("").get(0);
-		}
 	}
 
 	public void funcaoCancelar() {
@@ -195,9 +182,14 @@ public class ControlaGrupoSubgrupo {
 		return tabela;
 	}
 
-	public JTable tblGrupo(String str) {
+	public JTable tblGrupoNomeTipoSistema(String nomeTipoSistema) {
 		tbl01 = new JTable();
-		mdlTblGrupo = new TableModelGrupoCategoria(daoGrupo.listRaizes());
+
+		System.out.println("tblGrupo(String str)  " + nomeTipoSistema);
+		int tipoS = daoGrupo.pesquisarSeqTipoSistemaNome(nomeTipoSistema);
+		System.out.println("Tipo de Sistema: " + tipoS);
+		mdlTblGrupo = new TableModelGrupoCategoria(
+				daoGrupo.listPorTipoSistema(tipoS));
 		tbl01.setModel(mdlTblGrupo);
 		tbl01.addKeyListener(new KeyListener() {
 			@Override
@@ -263,9 +255,10 @@ public class ControlaGrupoSubgrupo {
 		tbl01.setShowHorizontalLines(true);
 		return tbl01;
 	}
-	public JTable tblSubGrupo(String str) {
+	public JTable tblGrupo(int tipoS) {
 		tbl01 = new JTable();
-		mdlTblGrupo = new TableModelGrupoCategoria(daoGrupo.listRaizes());
+		mdlTblGrupo = new TableModelGrupoCategoria(
+				daoGrupo.listPorGrupoRaiz(tipoS));
 		tbl01.setModel(mdlTblGrupo);
 		tbl01.addKeyListener(new KeyListener() {
 			@Override
@@ -340,13 +333,14 @@ public class ControlaGrupoSubgrupo {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				grupo = PainelSubGrupo.lerCampos();
-				if (!grupo.equals(null) & daoGrupo.alterar(grupo)) {
-					FrameInicial.setTabela(tblGrupo(grupo.getCodiGrupo()));
-					FrameInicial.setPainelVisualiza(
-							new PainelSubGrupo(grupo.getCodiGrupo()));
+				if (grupo != null & daoGrupo.alterar(grupo)) {
+					FrameInicial.getTxtfPesquisa()
+							.setText(grupo.getNomeGrupo());
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar();
+					iniciar(AbaCadastros.getNomeNo());
+					FrameInicial.atualizaTela();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Favor verificar os campos informados. ",
@@ -437,8 +431,9 @@ public class ControlaGrupoSubgrupo {
 				} else {
 					// System.out.println(tecla.getExtendedKeyCode());
 					nome = FrameInicial.getTxtfPesquisa().getText();
-					setTabela(tblGrupo(nome));
-					FrameInicial.setPainelVisualiza(new PainelSubGrupo(nome));
+					// setTabela();
+					// FrameInicial.setPainelVisualiza(new
+					// PainelSubGrupo(nome));
 					FrameInicial.atualizaTela();
 				}
 			}
@@ -446,8 +441,8 @@ public class ControlaGrupoSubgrupo {
 			@Override
 			public void keyReleased(KeyEvent tecla) {
 				nome = FrameInicial.getTxtfPesquisa().getText();
-				setTabela(tblGrupo(nome));
-				FrameInicial.setPainelVisualiza(new PainelSubGrupo(nome));
+				// setTabela(tblGrupo(nome));
+				// FrameInicial.setPainelVisualiza(new PainelSubGrupo(nome));
 				FrameInicial.atualizaTela();
 			}
 
@@ -463,9 +458,15 @@ public class ControlaGrupoSubgrupo {
 		System.out.println("FrameInicial.pesquisaGrupo");
 		configuraBotoes();
 		configuraTxtPesquisa();
-		FrameInicial.setTabela(tblGrupo(""));
-		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
-		grupo = mdlTblGrupo.getGrupo(FrameInicial.getTabela().getSelectedRow());
+		FrameInicial
+				.setTabela(tblGrupoNomeTipoSistema(AbaCadastros.getNomeNo()));
+		if (FrameInicial.getTabela().getRowCount() <= 0) {
+			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+		} else {
+			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+			grupo = mdlTblGrupo
+					.getGrupo(FrameInicial.getTabela().getSelectedRow());
+		}
 		FrameInicial.setPainelVisualiza(new PainelSubGrupo(grupo));
 		FrameInicial.atualizaTela();
 	}
@@ -473,9 +474,16 @@ public class ControlaGrupoSubgrupo {
 		System.out.println("FrameInicial.pesquisaGrupo");
 		configuraBotoes();
 		configuraTxtPesquisa();
-		FrameInicial.setTabela(tblGrupo(tipoSistema));
-		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
-		grupo = mdlTblGrupo.getGrupo(FrameInicial.getTabela().getSelectedRow());
+
+		FrameInicial.setTabela(tblGrupoNomeTipoSistema(tipoSistema));
+
+		if (FrameInicial.getTabela().getRowCount() <= 0) {
+			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+		} else {
+			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+			grupo = mdlTblGrupo
+					.getGrupo(FrameInicial.getTabela().getSelectedRow());
+		}
 		FrameInicial.setPainelVisualiza(new PainelSubGrupo(grupo));
 		FrameInicial.atualizaTela();
 	}
@@ -495,8 +503,30 @@ public class ControlaGrupoSubgrupo {
 		return cmbRaizes;
 
 	}
-	public JComboBox<String> carregarSubGrupos() {
+	public JComboBox<String> carregarSubGrupos(String codiGrupo) {
 		cmbSubGrupo = new JComboBox<String>();
+		listGrupo = daoGrupo
+				.listPorGrupoAncora(daoTipoS.buscaSeqNome(codiGrupo));
+		for (int i = 0; i < listGrupo.size(); i++) {
+			cmbSubGrupo.addItem(listGrupo.get(i).getNomeGrupo());
+		}
+		return cmbSubGrupo;
+
+	}
+	public JComboBox<String> carregarSubGruposAncoras() {
+		cmbSubGrupo = new JComboBox<String>();
+		int seqTipoS = daoTipoS.buscaSeqNome(AbaCadastros.getNomeNo());
+		listGrupo = daoGrupo.listPorTipoSistema(seqTipoS);
+		for (int i = 0; i < listGrupo.size(); i++) {
+			cmbSubGrupo.addItem(listGrupo.get(i).getNomeGrupo());
+		}
+		return cmbSubGrupo;
+
+	}
+	public JComboBox<String> carregarSubGruposProdutos() {
+		cmbSubGrupo = new JComboBox<String>();
+		int seqTipoS = daoTipoS.buscaSeqNome("Categorias de Produtos");
+		listGrupo = daoGrupo.listPorTipoSistema(seqTipoS);
 		for (int i = 0; i < listGrupo.size(); i++) {
 			cmbSubGrupo.addItem(listGrupo.get(i).getNomeGrupo());
 		}

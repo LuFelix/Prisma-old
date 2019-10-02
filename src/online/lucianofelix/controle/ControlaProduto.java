@@ -32,7 +32,6 @@ import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 import online.lucianofelix.visao.PainelPedidos;
-import online.lucianofelix.visao.PainelPessoa;
 import online.lucianofelix.visao.PainelProdutos;
 
 public class ControlaProduto {
@@ -72,7 +71,14 @@ public class ControlaProduto {
 		configuraTxtPesquisa();
 		FrameInicial.setTabela(tabelaProdutosGrupo(categoria));
 		if (FrameInicial.getTabela().getRowCount() <= 0) {
+			FrameInicial.setTabela(null);
+			FrameInicial.setPainelVisualiza(new PainelProdutos(null));
+			FrameInicial.atualizaTela();
 			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+			ControlaBotoes.limpaTodosBotoes();
+			ControlaBotoes.habilitaSomenteNovoBotoes();
+			funcaoSalvar();
+
 		} else {
 			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 			prod = mdlTabela
@@ -108,7 +114,7 @@ public class ControlaProduto {
 			public void actionPerformed(ActionEvent e) {
 				FrameInicial.setTabela(new JTable());
 				ControlaBotoes.habilitaNovoBotoes();
-				PainelPessoa.habilitaNovo();
+				PainelProdutos.habilitaNovo();
 				FrameInicial.atualizaTela();
 				funcaoSalvar();
 			}
@@ -140,13 +146,13 @@ public class ControlaProduto {
 	// TODO Salvar
 	public void funcaoSalvar() {
 		System.out.println("ControlaProduto.funcaoSalvar");
-		funcaoCancelar();
+		funcaoCancelarNovo();
 		ControlaBotoes.limparBtnSalvar();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				prod = PainelProdutos.lerCampos();
-				if (!prod.equals(null) & daoProd.cadastrar(prod)) {
+				if (prod != null & daoProd.cadastrar(prod)) {
 					PainelProdutos.limparCampos();
 					FrameInicial.setTabela(tabelaProdutos(prod.getNome_prod()));
 					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
@@ -213,16 +219,19 @@ public class ControlaProduto {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				prod = PainelProdutos.lerCampos();
-				if (!prod.equals(null) & daoProd.alterar(prod)) {
-
+				System.out.println("codigo ean" + prod.getcEAN());
+				if (prod != null & daoProd.alterar(prod)) {
 					PainelProdutos.limparCampos();
 					FrameInicial
 							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
-					FrameInicial.getTabela().setColumnSelectionInterval(0, 0);
-					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar(AbaCadastros.getNomeNo());
+					if (AbaCadastros.getNomeNo().equals("Produtos")) {
+						iniciar();
+					} else {
+						iniciar(AbaCadastros.getNomeNo());
+					}
 
 				} else {
 					JOptionPane.showMessageDialog(null,
@@ -236,7 +245,7 @@ public class ControlaProduto {
 
 	// TODO Funcao excluir
 	public boolean funcaoExcluir(Produto prod) {
-		System.out.println("ControlaProduto.excluir");
+		System.out.println("ControlaProduto.excluir(Produto prod)");
 		if (daoProd.excluir(prod)) {
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
@@ -249,6 +258,7 @@ public class ControlaProduto {
 		}
 		return false;
 	}
+
 	public boolean funcaoExcluir() {
 		System.out.println("ControlaProduto.excluir");
 		prod = PainelProdutos.lerCampos();
@@ -441,6 +451,93 @@ public class ControlaProduto {
 		tbl01.setShowGrid(true);
 		return tbl01;
 	}
+	// TODO Tabela ligada ao painel de produtos; Tabela geral de produtos
+	public JTable tabelaProdutos(Produto produto) {
+		mdlTabela = new TableModelProdutos(
+				daoProd.pesquisaString(produto.getCodi_prod_1()));
+		tbl01 = new JTable(mdlTabela);
+		tbl01.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					carregaDetalhes(prod);
+					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				int posicao = tbl01.getSelectedRow();
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					PainelProdutos.carregarCampos(prod);
+					tbl01.grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 10) {
+					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+					carregaDetalhes(prod);
+					PainelProdutos.getBtnEditar().doClick();
+					FrameInicial.getTabela().changeSelection(--posicao, 0,
+							false, false);
+					PainelProdutos.getTxtFNomeProd().grabFocus();
+				}
+			}
+		});
+		tbl01.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				//
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				//
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				//
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				prod = mdlTabela.getProduto(tbl01.getSelectedRow());
+				carregaDetalhes(prod);
+				tbl01.grabFocus();
+
+			}
+		});
+
+		ajusta_tamanho_coluna();
+		tbl01.setShowGrid(true);
+		return tbl01;
+	}
+
 	public JTable tabelaProdutosGrupo(String grupo) {
 
 		String codiGrupo = daoGrupo.pesquisarCodigoNome(grupo);
@@ -616,6 +713,7 @@ public class ControlaProduto {
 		tbl01.setModel(modelotabela);
 		return tbl01;
 	}
+
 	void configuraTxtPesquisa() {
 		FrameInicial.limparTxtfPesquisa();
 		FrameInicial.getTxtfPesquisa().grabFocus();
@@ -690,6 +788,7 @@ public class ControlaProduto {
 		});
 
 	}
+
 	public void carregaDetalhes(Produto prod) {
 		carregarCotacoes(prod);
 		PainelProdutos.carregarCampos(prod);
@@ -698,9 +797,9 @@ public class ControlaProduto {
 
 	public Produto carregarCotacoes(Produto prod) {
 		System.out.println("codigo cotações" + prod.getCodi_prod_1());
-
 		prod.setListCotacaoProduto(daoProdCota.conCotProdOrdSeqDesc(prod));
 		return prod;
+
 	}
 
 	public List<Produto> pesqNomeArray(String nome) {

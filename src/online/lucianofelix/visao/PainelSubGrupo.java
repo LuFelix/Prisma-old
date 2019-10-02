@@ -18,6 +18,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import online.lucianofelix.beans.GrupoSubgrupo;
 import online.lucianofelix.controle.ControlaGrupoSubgrupo;
@@ -69,124 +71,6 @@ public class PainelSubGrupo extends JPanel {
 	private static ControlaGrupoSubgrupo contGrupo;
 	private static List<GrupoSubgrupo> listGrupo;
 
-	public PainelSubGrupo(String str) {
-		UIManager.put("TextField.font",
-				new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Label.font", new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Button.font",
-				new Font("Times New Roman", Font.BOLD, 12));
-		setLayout(null);
-		painelPrincipal = new JPanel();
-		painelPrincipal.setBorder(BorderFactory.createEtchedBorder());
-		painelPrincipal.setLayout(null);
-		painelPrincipal.setSize(525, 510);
-
-		contGrupo = new ControlaGrupoSubgrupo();
-
-		lbl01 = new JLabel("Grupos");
-		lbl01.setFont(new Font("Times New Roman", Font.BOLD, 28));
-
-		lbl02 = new JLabel("Seq. :");
-		txtF02 = new JTextField();
-
-		lbl03 = new JLabel("Código :");
-		txtF03 = new JTextField(0);
-
-		lbl04 = new JLabel("Nome: ");
-		txtF04 = new JTextField();
-
-		lbl05 = new JLabel("É Raiz?");
-		chkIsroot = new JCheckBox();
-
-		lbl06 = new JLabel("Categoria Mãe ");
-		cmbGrupoRaiz = contGrupo.carregarRaizes();
-
-		lbl07 = new JLabel("Subgrupo");
-		cmbSubGrupo = contGrupo.carregarSubGrupos();
-		cmbSubGrupo.setSelectedItem("Sem Categoria");
-
-		scrImagem = new JScrollPane(lblImagem);
-		scrImagem.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		sppImagem.add(lbl01);
-		sppImagem.add(scrImagem);
-		sppImagem.setDividerLocation(50);
-		sppImagem.setEnabled(false);
-		sppImagem.setBackground(Color.WHITE);
-		sppImagem.setForeground(Color.WHITE);
-		sppImagem.setDividerSize(3);
-
-		pnlGrid = new JPanel();
-		pnlGrid.setBorder(BorderFactory.createEtchedBorder());
-		pnlGrid.setLayout(new GridLayout(10, 2));
-		pnlGrid.setBackground(Color.WHITE);
-
-		pnlGrid.add(lbl02);
-		pnlGrid.add(txtF02);
-		pnlGrid.add(lbl03);
-		pnlGrid.add(txtF03);
-		pnlGrid.add(lbl06);
-		pnlGrid.add(cmbGrupoRaiz);
-		pnlGrid.add(lbl07);
-		pnlGrid.add(cmbSubGrupo);
-		pnlGrid.add(lbl04);
-		pnlGrid.add(txtF04);
-		pnlGrid.add(lbl05);
-		pnlGrid.add(chkIsroot);
-
-		sppSuperior = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		sppSuperior.setDividerLocation(200);
-		sppSuperior.setDividerSize(3);
-		sppSuperior.setEnabled(false);
-		sppSuperior.add(sppImagem);
-		sppSuperior.add(pnlGrid);
-
-		tbl01 = new JTable();
-		scrP01 = new JScrollPane();
-		scrP01.setViewportView(tbl01);
-
-		tbl02 = new JTable();
-		scrP02 = new JScrollPane();
-		scrP02.setViewportView(tbl02);
-
-		tabVisualiza = new JTabbedPane();
-		tabVisualiza.addTab("Tabela 1", scrP01);
-		tabVisualiza.add("Tabela 2", scrP02);
-
-		pnlInferior = new JPanel();
-		pnlInferior.setBorder(BorderFactory.createEtchedBorder());
-		pnlInferior.setLayout(new GridLayout());
-		pnlInferior.setBackground(Color.WHITE);
-		pnlInferior.add(tabVisualiza);
-
-		desHabilitaEdicao();
-		listGrupo = contGrupo.pesqNomeArray(str);
-		int tam = listGrupo.size();
-		tam--;
-		if (tam < 0) {
-			FrameInicial.setPainelVisualiza(null);
-			FrameInicial.getScrVisualiza()
-					.setViewportView(FrameInicial.getPainelVisualiza());
-		} else {
-			controledaLista = new ControlaListaGrupo(listGrupo);
-			grupo = controledaLista.first();
-			carregarCampos(grupo);
-		}
-		sppPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		sppPrincipal.setDividerSize(3);
-		sppPrincipal.setDividerLocation(250);
-		sppPrincipal.setEnabled(false);
-		sppPrincipal.setBackground(Color.WHITE);
-		sppPrincipal.add(sppSuperior);
-		sppPrincipal.add(pnlInferior);
-		setLayout(new GridLayout());
-		setBackground(Color.WHITE);
-		add(sppPrincipal);
-
-	}
 	public PainelSubGrupo(GrupoSubgrupo grupo) {
 		UIManager.put("TextField.font",
 				new Font("Times New Roman", Font.BOLD, 12));
@@ -213,13 +97,22 @@ public class PainelSubGrupo extends JPanel {
 		lbl04 = new JLabel("Nome: ");
 		txtF04 = new JTextField();
 
-		lbl05 = new JLabel("Categoria Mãe");
+		lbl05 = new JLabel("Categoria Mãe:");
 		lbl06 = new JLabel(AbaCadastros.getNomeNo());
 		lbl07 = new JLabel("É Raíz?");
 		chkIsroot = new JCheckBox();
+		chkIsroot.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				habilitaSubGrupos();
 
-		lbl08 = new JLabel("Mudar para o Grupo");
-		cmbGrupoRaiz = contGrupo.carregarRaizes();
+			}
+		});
+
+		lbl08 = new JLabel("Pertence ao subgrupo");
+
+		cmbSubGrupo = new JComboBox<String>();
+		cmbSubGrupo.addItem("Grupo Âncora");
 
 		scrImagem = new JScrollPane(lblImagem);
 		scrImagem.setVerticalScrollBarPolicy(
@@ -248,10 +141,10 @@ public class PainelSubGrupo extends JPanel {
 		pnlGrid.add(txtF04);
 		pnlGrid.add(lbl05);
 		pnlGrid.add(lbl06);
-		pnlGrid.add(chkIsroot);
 		pnlGrid.add(lbl07);
+		pnlGrid.add(chkIsroot);
 		pnlGrid.add(lbl08);
-		pnlGrid.add(cmbGrupoRaiz);
+		pnlGrid.add(cmbSubGrupo);
 
 		sppSuperior = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		sppSuperior.setDividerLocation(200);
@@ -293,6 +186,16 @@ public class PainelSubGrupo extends JPanel {
 
 	}
 
+	private void habilitaSubGrupos() {
+		// TODO Auto-generated method stub
+		if (chkIsroot.isSelected()) {
+			cmbSubGrupo.setEnabled(false);
+		} else {
+			cmbSubGrupo.setEnabled(true);
+			// cmbSubGrupo = contGrupo.carregarSubGrupos(grupo.getCodiGrupo());
+		}
+	}
+
 	public static GrupoSubgrupo lerCampos() {
 		System.out.println("PanelGrupoSubgrupo.lerCampos");
 		grupo = new GrupoSubgrupo();
@@ -306,6 +209,24 @@ public class PainelSubGrupo extends JPanel {
 		}
 		if (!txtF04.getText().equals(null) & !txtF04.getText().equals("")) {
 			grupo.setNomeGrupo(txtF04.getText());
+		}
+		if (!chkIsroot.equals(null)) {
+			if (chkIsroot.isSelected()) {
+				grupo.setIsroot(chkIsroot.isSelected());
+			} else {
+				grupo.setNoAncora(contGrupo.carregarCodigoGrupoNome(
+						cmbSubGrupo.getSelectedItem().toString()));
+			}
+
+		}
+		if (AbaCadastros.getNomeNo().equals("Categorias de Pessoas")) {
+			grupo.setNoRaiz(1);
+		} else if (AbaCadastros.getNomeNo().equals("Categorias de Produtos")) {
+			grupo.setNoRaiz(2);
+		} else if (AbaCadastros.getNomeNo().equals("Categorias de Serviços")) {
+			grupo.setNoRaiz(3);
+		} else if (AbaCadastros.getNomeNo().equals("Categorias de Pedidos")) {
+			grupo.setNoRaiz(4);
 		} else {
 			JOptionPane.showMessageDialog(null,
 					"Problemas: Verifique as informações preenchidas",
@@ -313,24 +234,21 @@ public class PainelSubGrupo extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 
-		if (!chkIsroot.equals(null)) {
-			grupo.setIsroot(chkIsroot.isSelected());
-		}
-		if (AbaCadastros.getNomeNo().equals("Categorias de Produtos")) {
-			grupo.setNoRaiz(2);
-		}
-
 		return grupo;
 	}
 
 	// TODO Carregar campos
 	public static void carregarCampos(GrupoSubgrupo grupo) {
-		if (!grupo.equals(null)) {
+		if (grupo != null) {
 			txtF02.setText(String.valueOf(grupo.getSeqGrupo()));
 			txtF03.setText(grupo.getCodiGrupo());
 			txtF04.setText(grupo.getNomeGrupo());
-			chkIsroot.setSelected(grupo.getIsroot());
 			carregarImagem(grupo.getCodiGrupo());
+			if (grupo.getIsroot()) {
+				chkIsroot.setSelected(grupo.getIsroot());
+				cmbSubGrupo.setSelectedItem(contGrupo
+						.carregarNomeGrupoCodigo(grupo.getCodiGrupo()));
+			}
 		} else {
 			limparCampos();
 		}
@@ -355,7 +273,6 @@ public class PainelSubGrupo extends JPanel {
 		txtF03.setEditable(false);
 		txtF04.setEditable(true);
 		chkIsroot.setEnabled(true);
-		cmbGrupoRaiz.setEnabled(true);
 
 	}
 
@@ -364,7 +281,7 @@ public class PainelSubGrupo extends JPanel {
 		txtF03.setEditable(false);
 		txtF04.setEditable(false);
 		chkIsroot.setEnabled(false);
-		cmbGrupoRaiz.setEnabled(false);
+		cmbSubGrupo.setEnabled(false);
 
 	}
 
@@ -378,6 +295,7 @@ public class PainelSubGrupo extends JPanel {
 		txtF04.setEditable(true);
 		txtF04.grabFocus();
 		chkIsroot.setEnabled(true);
+		cmbSubGrupo.setEnabled(true);
 
 	}
 
@@ -387,8 +305,7 @@ public class PainelSubGrupo extends JPanel {
 		txtF03.setText(null);
 		txtF04.setText(null);
 		chkIsroot.setSelected(false);
-		// cmbGrupoRaiz.setSelectedIndex(0);
-		// cmbSubGrupo.setSelectedIndex(0);
+		cmbSubGrupo.setSelectedIndex(0);
 
 	}
 

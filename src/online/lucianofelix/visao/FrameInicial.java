@@ -1295,6 +1295,13 @@ public class FrameInicial {
 			btnExcluir.setEnabled(false);
 
 		}
+		public static void habilitaSomenteNovoBotoes() {
+			btnNovo.setEnabled(true);
+			btnEditar.setEnabled(false);
+			btnSalvar.setEnabled(false);
+			btnExcluir.setEnabled(false);
+
+		}
 
 		public static void desHabilitaEdicaoBotoes() {
 			btnNovo.setEnabled(true);
