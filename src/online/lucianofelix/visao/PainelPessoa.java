@@ -312,7 +312,7 @@ public class PainelPessoa extends JPanel {
 	public static void carregarCampos(Pessoa p) {
 		if (!p.equals(null)) {
 			cmbTipoPessoa.setSelectedItem(p.getTipoPessoa());
-			if (!(p.getRelacao() == null)) {
+			if (p.getRelacao() != null) {
 				cmbRelPessoa.setSelectedItem(
 						contP.carregarNomeGrupoCodigo(p.getRelacao()));
 			} else {

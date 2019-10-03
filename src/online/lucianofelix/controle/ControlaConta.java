@@ -22,7 +22,6 @@ import online.lucianofelix.dao.DAOCentroCusto;
 import online.lucianofelix.dao.DAOConta;
 import online.lucianofelix.dao.DAOLancamento;
 import online.lucianofelix.tableModels.commom.TableModelContas;
-import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 import online.lucianofelix.visao.PainelConta;
@@ -468,8 +467,7 @@ public class ControlaConta {
 					funcaoCancelar();
 				} else {
 					nome = FrameInicial.getTxtfPesquisa().getText();
-					FrameInicial.setTabela(
-							tblContasCentroCusto(AbaCadastros.noSelecionado()));
+					iniciar(nome);
 					FrameInicial.atualizaTela();
 
 				}
@@ -486,8 +484,7 @@ public class ControlaConta {
 					funcaoCancelar();
 				} else {
 					nome = FrameInicial.getTxtfPesquisa().getText();
-					FrameInicial.setTabela(
-							tblContasCentroCusto(AbaCadastros.noSelecionado()));
+					iniciar(nome);
 					FrameInicial.atualizaTela();
 
 				}

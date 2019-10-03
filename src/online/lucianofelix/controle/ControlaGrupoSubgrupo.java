@@ -59,6 +59,7 @@ public class ControlaGrupoSubgrupo {
 					FrameInicial.getTxtfPesquisa()
 							.setText(grupo.getNomeGrupo());
 					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+					AbaCadastros.recarregaArvore();
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito");
 					iniciar();
@@ -223,7 +224,7 @@ public class ControlaGrupoSubgrupo {
 					funcaoSobrescrever();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
-					PainelConta.getTxtFNomeConta().grabFocus();
+					PainelSubGrupo.getTxtFNomeGrupo().grabFocus();
 				}
 			}
 		});
@@ -338,8 +339,8 @@ public class ControlaGrupoSubgrupo {
 							.setText(grupo.getNomeGrupo());
 					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					FrameInicial.atualizaTela();
+					AbaCadastros.recarregaArvore();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar(AbaCadastros.getNomeNo());
 					FrameInicial.atualizaTela();
 				} else {
 					JOptionPane.showMessageDialog(null,
@@ -471,7 +472,7 @@ public class ControlaGrupoSubgrupo {
 		FrameInicial.atualizaTela();
 	}
 	public void iniciar(String tipoSistema) {
-		System.out.println("FrameInicial.pesquisaGrupo");
+		System.out.println("ControlaGrupoSbgrupo.iniciar");
 		configuraBotoes();
 		configuraTxtPesquisa();
 

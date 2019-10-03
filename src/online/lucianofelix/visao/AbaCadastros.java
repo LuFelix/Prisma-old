@@ -196,13 +196,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		}
 
 	}
-	public static String noSelecionado() {
-		if (!arvore.isRowSelected(0)) {
-			return arvore.getLastSelectedPathComponent().toString();
-		} else {
-			return null;
-		}
-	}
+
 	// TODO Carregar centros de Custo
 	static void carregarNoCCusto() {
 		nodCentroCusto = new DefaultMutableTreeNode("Centros de Custo");
@@ -279,6 +273,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		root.add(nodGrupos);
 
 	}
+
 	void criaArvore() {
 		criaNos();
 		modArvore = new DefaultTreeModel(root);
@@ -296,9 +291,14 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		arvore.setRootVisible(false);
 		arvore.setRowHeight(50);
 	}
-	public static void recarregaNós() {
+	public static void recarregaArvore() {
 		modArvore.reload();
+		criaNos();
+		int pos = getArvoreNegocios().getLeadSelectionRow();
+		getArvoreNegocios().setSelectionRow(pos);
+		getArvoreNegocios().expandRow(pos);
 		scrArvNegocios.setViewportView(arvore);
+
 	}
 	public void criaArvContasCentCusto() {
 		DAOCentroCusto daocc = new DAOCentroCusto();
@@ -331,7 +331,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			arvoreContas.setCellRenderer(renderer);
 		}
 	}
-	public static void expandirrArvore(JTree tree) {
+	public static void expandirArvore(JTree tree) {
 		try {
 			for (int row = 0; row <= tree.getRowCount(); row++) {
 				tree.expandRow(row);

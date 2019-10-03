@@ -13,6 +13,7 @@ public class Produto {
 	private int seq_produto; // Sequencia de inserÃ§Ã£o no banco.
 	private int quantMovimento;// Campo para movimentação do produto
 	private List<ProdutoCotacao> listCotacaoProduto;
+	private List<GrupoSubgrupo> listGrupo;
 	private float prec_custo; // real, -- Preço de custo produto.
 	private float prec_prod_1; // real, -- Preço atual de venda do produto.
 	private float prec_prod_2; // real, -- Preço antecessor de venda do produto.
@@ -314,6 +315,14 @@ public class Produto {
 		} else if (!nome_prod.equals(other.nome_prod))
 			return false;
 		return true;
+	}
+
+	public List<GrupoSubgrupo> getListGrupo() {
+		return listGrupo;
+	}
+
+	public void setListGrupo(List<GrupoSubgrupo> listGrupo) {
+		this.listGrupo = listGrupo;
 	}
 
 }

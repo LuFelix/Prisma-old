@@ -7,6 +7,7 @@ import javax.swing.table.AbstractTableModel;
 
 import online.lucianofelix.beans.GrupoSubgrupo;
 import online.lucianofelix.dao.DAOGrupoSubgrupo;
+import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.PainelSubGrupo;
 
 public class TableModelGrupoCategoria extends AbstractTableModel {
@@ -74,6 +75,8 @@ public class TableModelGrupoCategoria extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 		daoGrupo.alterar(g);
 		PainelSubGrupo.carregarCampos(g);
+		AbaCadastros.recarregaArvore();
+
 	}
 
 	@Override

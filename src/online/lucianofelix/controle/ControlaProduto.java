@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import online.lucianofelix.beans.GrupoSubgrupo;
 import online.lucianofelix.beans.Produto;
 import online.lucianofelix.beans.ProdutoEstoque;
 import online.lucianofelix.dao.DAOGrupoSubgrupo;
@@ -156,9 +157,10 @@ public class ControlaProduto {
 					PainelProdutos.limparCampos();
 					FrameInicial.setTabela(tabelaProdutos(prod.getNome_prod()));
 					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+					AbaCadastros.recarregaArvore();
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar("");
+					iniciar(AbaCadastros.getNomeNo());
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Problemas: Erro de acesso ao banco",
@@ -225,6 +227,7 @@ public class ControlaProduto {
 					FrameInicial
 							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
 					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+					AbaCadastros.recarregaArvore();
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
 					if (AbaCadastros.getNomeNo().equals("Produtos")) {
@@ -249,7 +252,7 @@ public class ControlaProduto {
 		if (daoProd.excluir(prod)) {
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
-			FrameInicial.getContProd().iniciar(AbaCadastros.getNomeNo());
+			iniciar(AbaCadastros.getNomeNo());
 			return true;
 		} else {
 			JOptionPane.showMessageDialog(null,
@@ -265,7 +268,7 @@ public class ControlaProduto {
 		if (daoProd.excluir(prod)) {
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
-			FrameInicial.getContProd().iniciar(AbaCadastros.getNomeNo());
+			iniciar(AbaCadastros.getNomeNo());
 			return true;
 		} else {
 			JOptionPane.showMessageDialog(null,
@@ -788,9 +791,31 @@ public class ControlaProduto {
 		});
 
 	}
+	/**
+	 * Função para atualizar apenas a categoria do produto
+	 * 
+	 * @param prod
+	 */
+	public void editarCatProduto(Produto prod, List<GrupoSubgrupo> listGrupo) {
 
+	}
+	/**
+	 * Retorna uma lista de Grupos apenas com o código
+	 * 
+	 * @param prod
+	 * @return
+	 */
+	public Produto carregarCategorias(Produto prod) {
+		prod.setListGrupo(daoProd.carregarCategoriasProduto(prod));
+		if (prod.getListGrupo().size() > 0) {
+
+		}
+
+		return prod;
+	}
 	public void carregaDetalhes(Produto prod) {
 		carregarCotacoes(prod);
+		carregarCategorias(prod);
 		PainelProdutos.carregarCampos(prod);
 		FrameInicial.atualizaTela();
 	}
@@ -814,4 +839,11 @@ public class ControlaProduto {
 	public int consultaUltimo() {
 		return daoProd.consultaUltimo();
 	}
+
+	public void adicionarCategoria(Produto prod, String nomeCategoria) {
+		String codiCategoria = daoGrupo.pesquisarCodigoNome(nomeCategoria);
+		daoProd.cadastrarCategoria(prod.getCodi_prod_1(), codiCategoria);
+
+	}
+
 }

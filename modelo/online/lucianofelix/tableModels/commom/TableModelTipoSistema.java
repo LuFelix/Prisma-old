@@ -73,11 +73,9 @@ public class TableModelTipoSistema extends AbstractTableModel {
 		tp.setNomeTipoSistema((String) aValue);
 		fireTableCellUpdated(rowIndex, columnIndex);
 		daoTipoS.alterar(tp);
-		int pos = AbaCadastros.getArvoreNegocios().getLeadSelectionRow();
-		AbaCadastros.criaNos();
-		AbaCadastros.recarregaNós();
-		AbaCadastros.getArvoreNegocios().setSelectionRow(pos);
-		AbaCadastros.getArvoreNegocios().expandRow(pos);
+
+		AbaCadastros.recarregaArvore();
+
 		// PainelGrupoSubgrupo.carregarCampos(g);
 	}
 

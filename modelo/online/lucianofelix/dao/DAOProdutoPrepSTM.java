@@ -21,6 +21,7 @@ public class DAOProdutoPrepSTM {
 	private List<Produto> listProd;
 	private List<GrupoSubgrupo> listGrupo;
 	private DAOProdutosCotacao daoCotProd;
+	private DAOGrupoSubgrupo daoGrupo;
 
 	/**
 	 * @category Classe de acessoa a dados do produto.
@@ -40,6 +41,7 @@ public class DAOProdutoPrepSTM {
 	public DAOProdutoPrepSTM() {
 		System.out.println("DAOProduto.construtor");
 		daoCotProd = new DAOProdutosCotacao();
+		daoGrupo = new DAOGrupoSubgrupo();
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		c2 = new ConexaoSTM(ConfigS.getBdPg(), "siacecf");
 	}
@@ -458,6 +460,84 @@ public class DAOProdutoPrepSTM {
 			c2.disconect();
 			return null;
 		}
+	}
+
+	/**
+	 * Mátodo retorna uma String com o código nome da categoria
+	 * 
+	 * @param prod
+	 * @return String
+	 */
+	public List<GrupoSubgrupo> carregarCategoriasProduto(Produto prod) {
+
+		String sql = "SELECT produtos_grupos.codi_grupo "
+				+ "FROM produtos_grupos "
+				+ "WHERE produtos_grupos.codi_produto=?;";
+		List<GrupoSubgrupo> listGrupo = new ArrayList<GrupoSubgrupo>();
+		GrupoSubgrupo grupo;
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, prod.getCodi_prod_1());
+			result = prepStm.executeQuery();
+			while (result.next()) {
+				grupo = new GrupoSubgrupo();
+				grupo.setCodiGrupo(result.getString("codi_grupo"));
+				grupo.setNomeGrupo(
+						daoGrupo.pesquisarNomeCodigo(grupo.getCodiGrupo()));
+				listGrupo.add(grupo);
+			}
+			c.desconectar();
+			return listGrupo;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+
+	}
+	/**
+	 * Adiciona uma tag para o produto recebendo os códigos referentes
+	 * 
+	 * @param codi_prod_1
+	 * @param codiCategoria
+	 */
+	public void cadastrarCategoria(String codi_prod_1, String codiCategoria) {
+		String sql = "insert into produtos_grupos (codi_produto, codi_grupo) values (?,?)";
+
+		try {
+			c.conectar();
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, codi_prod_1);
+			prepStm.setString(2, codiCategoria);
+			prepStm.executeUpdate();
+			c.desconectar();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			c.desconectar();
+			e.printStackTrace();
+
+		}
+
+	}
+
+	public void removerCategoria(Produto prod, GrupoSubgrupo grupo) {
+		// TODO Auto-generated method stub
+		String sql = "delete from produtos_grupos where  codi_produto=? and codi_grupo=?;";
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, prod.getCodi_prod_1());
+			prepStm.setString(2, grupo.getCodiGrupo());
+			prepStm.executeUpdate();
+			c.desconectar();
+
+		} catch (Exception e) {
+			c.desconectar();
+			e.printStackTrace();
+
+		}
+
 	}
 
 }
