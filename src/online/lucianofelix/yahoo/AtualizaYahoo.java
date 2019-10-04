@@ -104,7 +104,9 @@ public class AtualizaYahoo {
 
 		urlString = "http://download.finance.yahoo.com/d/quotes.csv?s="
 				+ idYahoo + "&f=sl1d1t1c1ohgv&e=.csv";
+
 		URL urlCompleta = new URL(urlString);
+		System.out.println(urlCompleta);
 
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(urlCompleta.openStream()));

@@ -355,6 +355,10 @@ public class PainelProdutos extends JPanel {
 		setTabelaPrecos(null);
 		getScrPrecos().setViewportView(tabelaPrecos);
 	}
+	public static void desabilitaTabelaCategorias() {
+		setTabelaCategorias(null);
+		getScrPrecos().setViewportView(tabelaCategorias);
+	}
 
 	// TODO Habilitar histórico de preços
 	public static JTable habilitaTabelaPrecos(Produto prod) {
@@ -468,6 +472,7 @@ public class PainelProdutos extends JPanel {
 		btnEditarPreco.setEnabled(true);
 		btnAddCategoria.setEnabled(true);
 		cmbTabPreco.setEnabled(true);
+		tabelaCategorias.setEnabled(true);
 	}
 
 	// TODO Habilita novo
@@ -487,6 +492,7 @@ public class PainelProdutos extends JPanel {
 		cmbSubGrupo.setEnabled(true);
 		btnEditarPreco.setEnabled(false);
 		btnAddCategoria.setEnabled(true);
+		tabelaCategorias.setEnabled(true);
 	}
 
 	// TODO Desabilita edição
@@ -516,7 +522,11 @@ public class PainelProdutos extends JPanel {
 		txtF09.setText(null);
 		carregarImagem(null);
 		desabilitaTabelaPrecos();
+		desabilitaTabelaCategorias();
+		desabilitaTabelaCategorias();
 		txtADescricao.setText(null);
+		tabelaCategorias = null;
+		scrCategorias.setViewportView(tabelaCategorias);
 
 	}
 
@@ -573,6 +583,9 @@ public class PainelProdutos extends JPanel {
 
 	public static void setTabelaPrecos(JTable tabelaPrecos) {
 		PainelProdutos.tabelaPrecos = tabelaPrecos;
+	}
+	public static void setTabelaCategorias(JTable tabelaCategorias) {
+		PainelProdutos.tabelaCategorias = tabelaCategorias;
 	}
 
 	public static JScrollPane getScrPrecos() {

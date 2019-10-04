@@ -1,5 +1,6 @@
 package online.lucianofelix.dao;
 
+import java.awt.Image;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -520,6 +521,13 @@ public class DAOProdutoPrepSTM {
 		}
 
 	}
+	/**
+	 * Remove uma tag para o produto recebendo o produto e o grupo a ser
+	 * removido
+	 * 
+	 * @param Produto
+	 * @param Grupo
+	 */
 
 	public void removerCategoria(Produto prod, GrupoSubgrupo grupo) {
 		// TODO Auto-generated method stub
@@ -538,6 +546,16 @@ public class DAOProdutoPrepSTM {
 
 		}
 
+	}
+
+	public void salvarFoto(String minhaImagem) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Image carregarImagens() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
