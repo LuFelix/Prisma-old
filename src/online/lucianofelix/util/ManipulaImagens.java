@@ -16,40 +16,58 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import online.lucianofelix.beans.Produto;
 import online.lucianofelix.dao.ConfigS;
 import online.lucianofelix.dao.DAOProdutoPrepSTM;
+import online.lucianofelix.visao.PainelProdutos;
 
-public class ManipulaImagens extends JPanel {
+public class ManipulaImagens extends JFrame {
 	private Conexao c;
 	private JPanel pnlBotoes;
+	private JPanel pnlPrincipal;
 	PreparedStatement pstmt;
+	private Produto prod;
 	static private String newline = "\n";
 	private JTextArea log;
 	private JFileChooser fc;
 	static Image imagem;
 	private DAOProdutoPrepSTM daoProd;
+	private File file;
+	private List<File> listFiles;
 
 	public ManipulaImagens() {
-		super(new BorderLayout());
+		super();
+		initComponents();
+
+	}// Fim do Construtor
+	public ManipulaImagens(Produto produto) {
+		super();
+		initComponents();
+		this.prod = produto;
+	}// Fim do Construtor
+
+	void initComponents() {
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		daoProd = new DAOProdutoPrepSTM();
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
 		log.setEditable(false);
-
+		listFiles = new ArrayList<File>();
 		JScrollPane logScrollPane = new JScrollPane(log);
+
 		JButton btnAnexa = new JButton("Anexar...");
 		btnAnexa.addActionListener(new ActionListener() {
 
@@ -59,17 +77,43 @@ public class ManipulaImagens extends JPanel {
 
 			}
 		});
+
 		JButton btnSalva = new JButton("Salvar");
+		btnSalva.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				salvarImagensSelecionadas();
+
+			}
+		});
+
 		pnlBotoes = new JPanel(new GridLayout(1, 2));
 		pnlBotoes.add(btnAnexa);
 		pnlBotoes.add(btnSalva);
-		add(logScrollPane, BorderLayout.CENTER);
-		add(pnlBotoes, BorderLayout.PAGE_END);
+		pnlPrincipal = new JPanel(new BorderLayout());
+		pnlPrincipal.add(pnlBotoes, BorderLayout.PAGE_START);
+		pnlPrincipal.add(logScrollPane, BorderLayout.CENTER);
 
-	}// Fim do Construtor
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// Turn off metal's use of bold fonts
+				UIManager.put("swing.boldMetal", Boolean.FALSE);
+				JFrame frame = new JFrame("Manipula Imagens");
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frame.add(pnlPrincipal);
+				frame.pack();
+				frame.setLocationRelativeTo(null);
+				frame.setVisible(true);
 
-	public boolean salvarFuncionarioFotoCorpo(String imagem) {
-		String insertRow = "UPDATE cfuncionario SET fotocorpo=? WHERE id = ;";
+			}
+		});
+
+	}
+
+	public boolean salvarFoto(String imagem) {
+		String insertRow = "insert into produtos_imagens (codi_produto,imagem) values (?,?);";
+		c.conectar();
 		try {
 			pstmt = c.getCon().prepareStatement(insertRow);
 			File imagemFile = new File(imagem);
@@ -78,31 +122,17 @@ public class ManipulaImagens extends JPanel {
 					new FileInputStream(imagemFile));
 			imagemStream.readFully(imagemArray);
 			imagemStream.close();
-			pstmt.setBytes(1, imagemArray);
-			pstmt.executeUpdate();
+			pstmt.setString(1, prod.getCodi_prod_1());
+			pstmt.setBytes(2, imagemArray);
+			pstmt.execute();
+			c.desconectar();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			c.desconectar();
+			return false;
 		}
-		return true;
-	}
 
-	public Image capturaImagemRosto() {
-		byte[] imageByte = null;
-		Image image = null;
-		String sql = "SELECT fotorosto FROM cfuncionario WHERE id = ";
-		try {
-			Statement stm = c.getCon().createStatement();
-			ResultSet rset = stm.executeQuery(sql);
-
-			while (rset.next()) {
-				imageByte = rset.getBytes("fotorosto");
-				ImageIcon icon = new ImageIcon(imageByte);
-				return icon.getImage();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return image;
 	}
 
 	public void carregarImagem(String nome, int tipo) {
@@ -174,10 +204,11 @@ public class ManipulaImagens extends JPanel {
 		int res = fc.showDialog(null, "Abrir");
 
 		if (res == JFileChooser.APPROVE_OPTION) {
-			File arquivo = fc.getSelectedFile();
+			file = fc.getSelectedFile();
+
 			try {
-				BufferedReader in = new BufferedReader(new FileReader(arquivo));
-				String minhaImagem = arquivo.getAbsolutePath();
+				BufferedReader in = new BufferedReader(new FileReader(file));
+				String minhaImagem = file.getAbsolutePath();
 				in.close();
 				if (tipo == 1) {
 					// daoProd.salvarFoto(minhaImagem);
@@ -222,6 +253,27 @@ public class ManipulaImagens extends JPanel {
 		}
 		setSize(imagem.getWidth(null), imagem.getHeight(null));
 		setVisible(true);
+	}
+	void salvarImagensSelecionadas() {
+
+		try {
+			for (int j = 0; j < listFiles.size(); j++) {
+				File arquivo = listFiles.get(j);
+				BufferedReader in = new BufferedReader(new FileReader(arquivo));
+				String minhaImagem = arquivo.getAbsolutePath();
+				System.out.println("Salvando... " + minhaImagem);
+				salvarFoto(minhaImagem);
+				in.close();
+			}
+
+			// daoProd.salvarFoto(minhaImagem);
+			JOptionPane.showMessageDialog(null, "Feito!",
+					"SIMPRO - STIMAGAZINE", JOptionPane.INFORMATION_MESSAGE);
+			PainelProdutos.carregarImagens(prod);
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 	}
 
 	void abreSelecaoArquivo() {
@@ -308,9 +360,10 @@ public class ManipulaImagens extends JPanel {
 
 		// Process the results.
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
+			file = fc.getSelectedFile();
 			log.append(
 					"Adicionando arquivo: " + file.getName() + "." + newline);
+			listFiles.add(file);
 
 		} else {
 			log.append("Adição cancelada." + newline);

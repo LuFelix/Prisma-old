@@ -5,12 +5,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -29,12 +32,15 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import online.lucianofelix.beans.GrupoSubgrupo;
 import online.lucianofelix.beans.Produto;
@@ -42,8 +48,11 @@ import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaListaProdutos;
 import online.lucianofelix.controle.ControlaProduto;
 import online.lucianofelix.controle.ControlaTabelaPreco;
+import online.lucianofelix.dao.ConfigS;
 import online.lucianofelix.dao.DAOTabelaPreco;
 import online.lucianofelix.tableModels.commom.TableModelProdutoGrupo;
+import online.lucianofelix.util.Conexao;
+import online.lucianofelix.util.ManipulaImagens;
 
 public class PainelProdutos extends JPanel {
 
@@ -92,11 +101,13 @@ public class PainelProdutos extends JPanel {
 	private static JButton btnNovo;
 	private static JButton btnEditar;
 	private static JButton btnCancelar;
+	private static JButton btnAddImagem;
 
 	// Tabela de preços do produto
 
 	private JTabbedPane tabVisualiza;
 	private static JTable tabelaCategorias;
+	private static JTable tabelaImagens;
 	private static JTable tabelaPrecos;
 	private static JTable tabelaMovEstoque;
 	private static DefaultTableModel modeloTabela;
@@ -116,7 +127,6 @@ public class PainelProdutos extends JPanel {
 	private ControlaTabelaPreco contTabPreco;
 	private ControlaGrupoSubgrupo contGrupo;
 	private static Produto prod;
-	int tam;
 	private DAOTabelaPreco daoTabPreco;
 	private JPanel pnlImagensProd;
 	private JPanel pnlDetalhes;
@@ -131,7 +141,7 @@ public class PainelProdutos extends JPanel {
 		UIManager.put("Button.font",
 				new Font("Times New Roman", Font.BOLD, 12));
 		// Controle
-		prod = p;
+		this.prod = p;
 		contProd = new ControlaProduto();
 		contGrupo = new ControlaGrupoSubgrupo();
 		contTabPreco = new ControlaTabelaPreco();
@@ -171,6 +181,16 @@ public class PainelProdutos extends JPanel {
 
 			}
 		});
+		btnAddImagem = new JButton("Adicionar imagens");
+		btnAddImagem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ManipulaImagens(prod);
+
+			}
+		});
+
 		cmbSubGrupo = contGrupo.carregarSubGruposProdutos();
 		// lbl10 = new JLabel("Adicionar ao Grupo/Categoria");
 
@@ -253,6 +273,7 @@ public class PainelProdutos extends JPanel {
 		tabelaPrecos = new JTable();
 		tabelaMovEstoque = new JTable();
 		tabelaCategorias = new JTable();
+		tabelaImagens = new JTable();
 
 		scrPrecos = new JScrollPane();
 		scrPrecos.setViewportView(tabelaPrecos);
@@ -267,8 +288,11 @@ public class PainelProdutos extends JPanel {
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrImagem.setHorizontalScrollBarPolicy(
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		pnlImagensProd = new JPanel();
-		scrImagensProd = new JScrollPane(pnlImagensProd);
+
+		pnlImagensProd = new JPanel(new BorderLayout());
+		scrImagensProd = new JScrollPane(tabelaImagens);
+		pnlImagensProd.add(btnAddImagem, BorderLayout.PAGE_START);
+		pnlImagensProd.add(scrImagensProd, BorderLayout.CENTER);
 
 		setPnlDetalhes(new JPanel(new BorderLayout()));
 		pnlDetalhes.add(listGrupoView, BorderLayout.CENTER);
@@ -282,7 +306,7 @@ public class PainelProdutos extends JPanel {
 		tabVisualiza = new JTabbedPane();
 		tabVisualiza.addTab("Detalhes", scrCategorias);
 		tabVisualiza.addTab("Descrição", scrDescricao);
-		tabVisualiza.addTab("Imagens", scrImagensProd);
+		tabVisualiza.addTab("Imagens", pnlImagensProd);
 		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
 		tabVisualiza.add("Estoque", scrEstoque);
 
@@ -431,6 +455,74 @@ public class PainelProdutos extends JPanel {
 
 	}
 
+	public static void carregarImagens(Produto prod) {
+
+		tabelaImagens = new JTable();
+		modeloTabela = new DefaultTableModel();
+		modeloTabela = (DefaultTableModel) tabelaImagens.getModel();
+		Object colunas[] = {"Nome", "Imagem", "Data Inserção"};
+		modeloTabela.setColumnIdentifiers(colunas);
+		TableColumnModel ColumnModel = tabelaImagens.getColumnModel();
+		JTableRenderer renderer = new JTableRenderer();
+		ColumnModel.getColumn(1).setCellRenderer(renderer);
+		((DefaultTableCellRenderer) tabelaImagens.getTableHeader()
+				.getDefaultRenderer())
+						.setHorizontalAlignment(SwingConstants.CENTER);
+
+		byte[] imageByte = null;
+		Image image = null;
+		ImageIcon icon;
+		String sql = "SELECT imagem FROM produtos_imagens WHERE codi_produto ='"
+				+ prod.getCodi_prod_1() + "';";
+		Conexao c = new Conexao(ConfigS.getBdPg(), "siacecf");
+		c.conectar();
+		try {
+			Statement stm = c.getCon().createStatement();
+			ResultSet rs = stm.executeQuery(sql);
+			int i = 0;
+			while (rs.next()) {
+				imageByte = rs.getBytes("imagem");
+				icon = new ImageIcon(imageByte);
+				image = icon.getImage();
+				Object linha[] = {" Nome ", icon, " Data "};
+				modeloTabela.addRow(linha);
+				tabelaImagens.setValueAt(icon, i, 1);
+				i++;
+
+			}
+			c.desconectar();
+		} catch (Exception e) {
+			c.desconectar();
+			e.printStackTrace();
+
+		}
+		tabelaImagens.setShowGrid(true);
+		tabelaImagens.setModel(modeloTabela);
+		tabelaImagens.setRowHeight(40);
+		scrImagensProd.setViewportView(tabelaImagens);
+
+	}
+
+	public Image carregaImagemProd(Produto prod) {
+		byte[] imageByte = null;
+		Image image = null;
+		String sql = "SELECT imagem FROM produtos_imagens WHERE codi_produto = ?";
+		Conexao c = new Conexao(ConfigS.getBdPg(), "siacecf");
+		try {
+			Statement stm = c.getCon().createStatement();
+			ResultSet rset = stm.executeQuery(sql);
+
+			while (rset.next()) {
+				imageByte = rset.getBytes("codi_produto");
+				ImageIcon icon = new ImageIcon(imageByte);
+				return icon.getImage();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return image;
+	}
+
 	public static void carregarImagem(String codiProd) {
 		lblImagem = new JLabel(new ImageIcon(
 				"C:\\SIMPRO\\img\\listas\\prods\\" + codiProd + ".jpg "));
@@ -455,6 +547,7 @@ public class PainelProdutos extends JPanel {
 			habilitaTabelaPrecos(prod);
 			carregarImagem(prod.getCodi_prod_1());
 			carregarCategorias(prod);
+			carregarImagens(prod);
 
 		}
 
@@ -522,7 +615,6 @@ public class PainelProdutos extends JPanel {
 		txtF09.setText(null);
 		carregarImagem(null);
 		desabilitaTabelaPrecos();
-		desabilitaTabelaCategorias();
 		desabilitaTabelaCategorias();
 		txtADescricao.setText(null);
 		tabelaCategorias = null;
@@ -604,6 +696,26 @@ public class PainelProdutos extends JPanel {
 		this.pnlDetalhes = pnlDetalhes;
 	}
 
+}
+class JTableRenderer extends DefaultTableCellRenderer {
+	protected void setValue(Object value) {
+		if (value instanceof ImageIcon) {
+			if (value != null) {
+				// ImageIcon d = (ImageIcon) value;
+				ImageIcon pic = (ImageIcon) value;
+				Image scaled = pic.getImage().getScaledInstance(40, 40,
+						Image.SCALE_DEFAULT);
+				ImageIcon icon = new ImageIcon(scaled);
+				// setIcon(d);
+				setIcon(icon);
+			} else {
+				setText("");
+				setIcon(null);
+			}
+		} else {
+			super.setValue(value);
+		}
+	}
 }
 class CheckBoxCellRenderer implements ListCellRenderer {
 	Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);

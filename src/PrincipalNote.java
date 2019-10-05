@@ -1,8 +1,4 @@
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
-import online.lucianofelix.util.ManipulaImagens;
+import online.lucianofelix.visao.FrameInicial;
 
 /**
  * 
@@ -27,20 +23,8 @@ import online.lucianofelix.util.ManipulaImagens;
 public class PrincipalNote {
 
 	public static void main(String[] args) {
-		// new FrameInicial();
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				// Turn off metal's use of bold fonts
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-				JFrame frame = new JFrame("Manipula Imagens");
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.add(new ManipulaImagens());
-				frame.pack();
-				frame.setLocationRelativeTo(null);
-				frame.setVisible(true);
-
-			}
-		});
+		new FrameInicial();
+		// new ManipulaImagens();
 		// JFrame frm1 = new JFrame("Cotações");
 		// JPanel pnlCotacoes = new JPanel(new BorderLayout());
 		// exibeCotacoes();

@@ -1,6 +1,5 @@
 package online.lucianofelix.dao;
 
-import java.awt.Image;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -505,7 +504,6 @@ public class DAOProdutoPrepSTM {
 	 */
 	public void cadastrarCategoria(String codi_prod_1, String codiCategoria) {
 		String sql = "insert into produtos_grupos (codi_produto, codi_grupo) values (?,?)";
-
 		try {
 			c.conectar();
 			prepStm = c.getCon().prepareStatement(sql);
@@ -546,16 +544,6 @@ public class DAOProdutoPrepSTM {
 
 		}
 
-	}
-
-	public void salvarFoto(String minhaImagem) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public Image carregarImagens() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
