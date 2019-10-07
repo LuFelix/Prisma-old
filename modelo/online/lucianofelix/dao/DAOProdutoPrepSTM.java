@@ -20,7 +20,6 @@ public class DAOProdutoPrepSTM {
 	private ResultSet result;
 	private List<Produto> listProd;
 	private List<GrupoSubgrupo> listGrupo;
-	private DAOProdutosCotacao daoCotProd;
 	private DAOGrupoSubgrupo daoGrupo;
 
 	/**
@@ -40,7 +39,6 @@ public class DAOProdutoPrepSTM {
 
 	public DAOProdutoPrepSTM() {
 		System.out.println("DAOProduto.construtor");
-		daoCotProd = new DAOProdutosCotacao();
 		daoGrupo = new DAOGrupoSubgrupo();
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		c2 = new ConexaoSTM(ConfigS.getBdPg(), "siacecf");
@@ -468,7 +466,7 @@ public class DAOProdutoPrepSTM {
 	 * @param prod
 	 * @return String
 	 */
-	public List<GrupoSubgrupo> carregarCategoriasProduto(Produto prod) {
+	public List<GrupoSubgrupo> carregarCategoriasProduto(Produto produto) {
 
 		String sql = "SELECT produtos_grupos.codi_grupo "
 				+ "FROM produtos_grupos "
@@ -478,7 +476,7 @@ public class DAOProdutoPrepSTM {
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setString(1, prod.getCodi_prod_1());
+			prepStm.setString(1, produto.getCodi_prod_1());
 			result = prepStm.executeQuery();
 			while (result.next()) {
 				grupo = new GrupoSubgrupo();
@@ -527,13 +525,13 @@ public class DAOProdutoPrepSTM {
 	 * @param Grupo
 	 */
 
-	public void removerCategoria(Produto prod, GrupoSubgrupo grupo) {
+	public void removerCategoria(Produto produto, GrupoSubgrupo grupo) {
 		// TODO Auto-generated method stub
-		String sql = "delete from produtos_grupos where  codi_produto=? and codi_grupo=?;";
+		String sql = "delete from produtos_grupos where codi_produto=? and codi_grupo=?;";
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setString(1, prod.getCodi_prod_1());
+			prepStm.setString(1, produto.getCodi_prod_1());
 			prepStm.setString(2, grupo.getCodiGrupo());
 			prepStm.executeUpdate();
 			c.desconectar();
@@ -545,5 +543,4 @@ public class DAOProdutoPrepSTM {
 		}
 
 	}
-
 }

@@ -12,8 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -48,11 +46,10 @@ import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaListaProdutos;
 import online.lucianofelix.controle.ControlaProduto;
 import online.lucianofelix.controle.ControlaTabelaPreco;
-import online.lucianofelix.dao.ConfigS;
 import online.lucianofelix.dao.DAOTabelaPreco;
 import online.lucianofelix.tableModels.commom.TableModelProdutoGrupo;
-import online.lucianofelix.util.Conexao;
-import online.lucianofelix.util.ManipulaImagens;
+import online.lucianofelix.tableModels.commom.TableModelProdutoImagens;
+import online.lucianofelix.util.ManipulaImagensProduto;
 
 public class PainelProdutos extends JPanel {
 
@@ -63,6 +60,7 @@ public class PainelProdutos extends JPanel {
 	private JSplitPane sppImagem;
 	private JPanel painelGrid;
 	private JPanel painelMovimento;
+	private JPanel pnlBotoesImagensProds;
 	private JLabel lblTituloTela;
 	// Labels e text fields
 
@@ -101,8 +99,8 @@ public class PainelProdutos extends JPanel {
 	private static JButton btnNovo;
 	private static JButton btnEditar;
 	private static JButton btnCancelar;
-	private static JButton btnAddImagem;
-
+	private JButton btnAddImagem;
+	private JButton btnRemImagem;
 	// Tabela de preços do produto
 
 	private JTabbedPane tabVisualiza;
@@ -112,6 +110,7 @@ public class PainelProdutos extends JPanel {
 	private static JTable tabelaMovEstoque;
 	private static DefaultTableModel modeloTabela;
 	private static TableModelProdutoGrupo modeloTabelaGrupo;
+	private static TableModelProdutoImagens mdlTableProdImg;
 	private JScrollPane scrDescricao;
 	private static JScrollPane scrCategorias;
 	private static JScrollPane scrPrecos;
@@ -154,7 +153,7 @@ public class PainelProdutos extends JPanel {
 		lblTituloTela.setBounds(10, 0, 150, 40);
 		lblTituloTela.setFont(new Font("Times New Roman", Font.BOLD, 32));
 
-		lbl02 = new JLabel("Sequencia:");
+		lbl02 = new JLabel("Sequência:");
 		txtF02 = new JTextField();
 		lbl03 = new JLabel("Código Interno:");
 		txtF03 = new JTextField(0);
@@ -186,7 +185,17 @@ public class PainelProdutos extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new ManipulaImagens(prod);
+				prod = lerCampos();
+				new ManipulaImagensProduto(prod);
+
+			}
+		});
+		btnRemImagem = new JButton("Remover imagens");
+		btnRemImagem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				prod = lerCampos();
 
 			}
 		});
@@ -291,7 +300,10 @@ public class PainelProdutos extends JPanel {
 
 		pnlImagensProd = new JPanel(new BorderLayout());
 		scrImagensProd = new JScrollPane(tabelaImagens);
-		pnlImagensProd.add(btnAddImagem, BorderLayout.PAGE_START);
+		pnlBotoesImagensProds = new JPanel(new GridLayout(1, 1));
+		pnlBotoesImagensProds.add(btnAddImagem);
+		// pnlBotoesImagensProds.add(btnRemImagem);
+		pnlImagensProd.add(pnlBotoesImagensProds, BorderLayout.PAGE_START);
 		pnlImagensProd.add(scrImagensProd, BorderLayout.CENTER);
 
 		setPnlDetalhes(new JPanel(new BorderLayout()));
@@ -455,72 +467,21 @@ public class PainelProdutos extends JPanel {
 
 	}
 
-	public static void carregarImagens(Produto prod) {
+	public static void carregarImagensProd(Produto prod) {
 
-		tabelaImagens = new JTable();
-		modeloTabela = new DefaultTableModel();
-		modeloTabela = (DefaultTableModel) tabelaImagens.getModel();
-		Object colunas[] = {"Nome", "Imagem", "Data Inserção"};
-		modeloTabela.setColumnIdentifiers(colunas);
+		mdlTableProdImg = new TableModelProdutoImagens(prod);
+		tabelaImagens = new JTable(mdlTableProdImg);
+		// tabelaImagens.setModel(mdlTableProdImg);
 		TableColumnModel ColumnModel = tabelaImagens.getColumnModel();
 		JTableRenderer renderer = new JTableRenderer();
-		ColumnModel.getColumn(1).setCellRenderer(renderer);
+		ColumnModel.getColumn(2).setCellRenderer(renderer);
 		((DefaultTableCellRenderer) tabelaImagens.getTableHeader()
 				.getDefaultRenderer())
-						.setHorizontalAlignment(SwingConstants.CENTER);
-
-		byte[] imageByte = null;
-		Image image = null;
-		ImageIcon icon;
-		String sql = "SELECT imagem FROM produtos_imagens WHERE codi_produto ='"
-				+ prod.getCodi_prod_1() + "';";
-		Conexao c = new Conexao(ConfigS.getBdPg(), "siacecf");
-		c.conectar();
-		try {
-			Statement stm = c.getCon().createStatement();
-			ResultSet rs = stm.executeQuery(sql);
-			int i = 0;
-			while (rs.next()) {
-				imageByte = rs.getBytes("imagem");
-				icon = new ImageIcon(imageByte);
-				image = icon.getImage();
-				Object linha[] = {" Nome ", icon, " Data "};
-				modeloTabela.addRow(linha);
-				tabelaImagens.setValueAt(icon, i, 1);
-				i++;
-
-			}
-			c.desconectar();
-		} catch (Exception e) {
-			c.desconectar();
-			e.printStackTrace();
-
-		}
+						.setHorizontalAlignment(SwingConstants.LEFT);
 		tabelaImagens.setShowGrid(true);
-		tabelaImagens.setModel(modeloTabela);
-		tabelaImagens.setRowHeight(40);
+		tabelaImagens.setRowHeight(50);
 		scrImagensProd.setViewportView(tabelaImagens);
 
-	}
-
-	public Image carregaImagemProd(Produto prod) {
-		byte[] imageByte = null;
-		Image image = null;
-		String sql = "SELECT imagem FROM produtos_imagens WHERE codi_produto = ?";
-		Conexao c = new Conexao(ConfigS.getBdPg(), "siacecf");
-		try {
-			Statement stm = c.getCon().createStatement();
-			ResultSet rset = stm.executeQuery(sql);
-
-			while (rset.next()) {
-				imageByte = rset.getBytes("codi_produto");
-				ImageIcon icon = new ImageIcon(imageByte);
-				return icon.getImage();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return image;
 	}
 
 	public static void carregarImagem(String codiProd) {
@@ -547,7 +508,7 @@ public class PainelProdutos extends JPanel {
 			habilitaTabelaPrecos(prod);
 			carregarImagem(prod.getCodi_prod_1());
 			carregarCategorias(prod);
-			carregarImagens(prod);
+			carregarImagensProd(prod);
 
 		}
 

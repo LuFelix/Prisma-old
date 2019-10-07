@@ -15,7 +15,7 @@ import online.lucianofelix.util.ConexaoSTM;
 public class DAOProdutosCotacao {
 	private Conexao c;
 	private PreparedStatement prepStm;
-	private ResultSet result;
+	// private ResultSet result;
 	private ConexaoSTM c2;
 	private List<ProdutoCotacao> listCot;
 	private ProdutoCotacao cot;
@@ -28,7 +28,7 @@ public class DAOProdutosCotacao {
 
 	public void novoPrecoProduto(String codiTabela, Date dataHoraMarcaca,
 			String codiProduto, float valor) throws SQLException {
-		String sql = "insert into produtos_cotacoes ( codi_tabela, data_hora_marcacao, codi_produto, valor) "
+		String sql = "insert into produtos_cotacoes (codi_tabela, data_hora_marcacao, codi_produto, valor) "
 				+ "values (?,?,?,?);";
 		c.conectar();
 		prepStm = c.getCon().prepareStatement(sql);

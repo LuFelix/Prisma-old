@@ -81,13 +81,16 @@ public class TableModelProdutoGrupo extends AbstractTableModel {
 		switch (columnIndex) {
 
 			case RemoverCategoria :
-				g.setIsroot((boolean) aValue);
+				fireTableCellUpdated(rowIndex, columnIndex);
+				daoProd.removerCategoria(prod, g);
+				FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+				FrameInicial.atualizaTela();
 				break;
 		}
-		fireTableCellUpdated(rowIndex, columnIndex);
-		daoProd.removerCategoria(prod, g);
-		FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
-		FrameInicial.atualizaTela();
+		// fireTableCellUpdated(rowIndex, columnIndex);
+		// daoProd.removerCategoria(prod, g);
+		// FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+		// FrameInicial.atualizaTela();
 	}
 
 	@Override

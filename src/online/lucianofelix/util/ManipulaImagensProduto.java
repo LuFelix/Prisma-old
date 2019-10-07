@@ -9,12 +9,7 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +17,6 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -31,10 +25,11 @@ import javax.swing.UIManager;
 
 import online.lucianofelix.beans.Produto;
 import online.lucianofelix.dao.ConfigS;
-import online.lucianofelix.dao.DAOProdutoPrepSTM;
+import online.lucianofelix.dao.DAOProdutoImagem;
+import online.lucianofelix.visao.FrameImagens;
 import online.lucianofelix.visao.PainelProdutos;
 
-public class ManipulaImagens extends JFrame {
+public class ManipulaImagensProduto extends JFrame {
 	private Conexao c;
 	private JPanel pnlBotoes;
 	private JPanel pnlPrincipal;
@@ -44,16 +39,16 @@ public class ManipulaImagens extends JFrame {
 	private JTextArea log;
 	private JFileChooser fc;
 	static Image imagem;
-	private DAOProdutoPrepSTM daoProd;
+	private DAOProdutoImagem daoProdImg;
 	private File file;
 	private List<File> listFiles;
 
-	public ManipulaImagens() {
+	public ManipulaImagensProduto() {
 		super();
 		initComponents();
 
 	}// Fim do Construtor
-	public ManipulaImagens(Produto produto) {
+	public ManipulaImagensProduto(Produto produto) {
 		super();
 		initComponents();
 		this.prod = produto;
@@ -61,14 +56,14 @@ public class ManipulaImagens extends JFrame {
 
 	void initComponents() {
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
-		daoProd = new DAOProdutoPrepSTM();
+		daoProdImg = new DAOProdutoImagem();
 		log = new JTextArea(5, 20);
 		log.setMargin(new Insets(5, 5, 5, 5));
 		log.setEditable(false);
 		listFiles = new ArrayList<File>();
 		JScrollPane logScrollPane = new JScrollPane(log);
 
-		JButton btnAnexa = new JButton("Anexar...");
+		JButton btnAnexa = new JButton("Anexar");
 		btnAnexa.addActionListener(new ActionListener() {
 
 			@Override
@@ -87,10 +82,29 @@ public class ManipulaImagens extends JFrame {
 
 			}
 		});
+		JButton btnExibe = new JButton("Exibir");
+		btnExibe.addActionListener(new ActionListener() {
 
-		pnlBotoes = new JPanel(new GridLayout(1, 2));
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new FrameImagens(listFiles.get(listFiles.size() - 1));
+
+			}
+		});
+		JButton btnRemove = new JButton("Remover");
+		btnRemove.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+
+		pnlBotoes = new JPanel(new GridLayout(1, 4));
 		pnlBotoes.add(btnAnexa);
 		pnlBotoes.add(btnSalva);
+		pnlBotoes.add(btnExibe);
+		pnlBotoes.add(btnRemove);
 		pnlPrincipal = new JPanel(new BorderLayout());
 		pnlPrincipal.add(pnlBotoes, BorderLayout.PAGE_START);
 		pnlPrincipal.add(logScrollPane, BorderLayout.CENTER);
@@ -110,130 +124,7 @@ public class ManipulaImagens extends JFrame {
 		});
 
 	}
-
-	public boolean salvarFoto(String imagem) {
-		String insertRow = "insert into produtos_imagens (codi_produto,imagem) values (?,?);";
-		c.conectar();
-		try {
-			pstmt = c.getCon().prepareStatement(insertRow);
-			File imagemFile = new File(imagem);
-			byte[] imagemArray = new byte[(int) imagemFile.length()];
-			DataInputStream imagemStream = new DataInputStream(
-					new FileInputStream(imagemFile));
-			imagemStream.readFully(imagemArray);
-			imagemStream.close();
-			pstmt.setString(1, prod.getCodi_prod_1());
-			pstmt.setBytes(2, imagemArray);
-			pstmt.execute();
-			c.desconectar();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			c.desconectar();
-			return false;
-		}
-
-	}
-
-	public void carregarImagem(String nome, int tipo) {
-
-		UIManager.put("FileChooser.lookInLabelMnemonic", "E");
-		UIManager.put("FileChooser.lookInLabelText", "Examinar em");
-
-		UIManager.put("FileChooser.saveInLabelMnemonic", "S");
-		UIManager.put("FileChooser.saveInLabelText", "Salvar em");
-
-		UIManager.put("FileChooser.upFolderToolTipText", "Um nível acima");
-		UIManager.put("FileChooser.upFolderAccessibleName", "Um nível acima");
-
-		UIManager.put("FileChooser.homeFolderToolTipText", "Desktop");
-		UIManager.put("FileChooser.homeFolderAccessibleName", "Desktop");
-
-		UIManager.put("FileChooser.newFolderToolTipText", "Criar nova pasta");
-		UIManager.put("FileChooser.newFolderAccessibleName",
-				"Criar nova pasta");
-
-		UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
-		UIManager.put("FileChooser.listViewButtonAccessibleName", "Lista");
-
-		UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalhes");
-		UIManager.put("FileChooser.detailsViewButtonAccessibleName",
-				"Detalhes");
-
-		UIManager.put("FileChooser.fileNameLabelMnemonic", "N");
-		UIManager.put("FileChooser.fileNameLabelText", "Nome do arquivo");
-
-		UIManager.put("FileChooser.filesOfTypeLabelMnemonic", "A");
-		UIManager.put("FileChooser.filesOfTypeLabelText", "Arquivos do tipo");
-
-		UIManager.put("FileChooser.fileNameHeaderText", "Nome");
-		UIManager.put("FileChooser.fileSizeHeaderText", "Tamanho");
-		UIManager.put("FileChooser.fileTypeHeaderText", "Tipo");
-		UIManager.put("FileChooser.fileDateHeaderText", "Data");
-		UIManager.put("FileChooser.fileAttrHeaderText", "Atributos");
-
-		UIManager.put("FileChooser.cancelButtonText", "Cancelar");
-		UIManager.put("FileChooser.cancelButtonMnemonic", "C");
-		UIManager.put("FileChooser.cancelButtonToolTipText", "Cancelar");
-
-		UIManager.put("FileChooser.openButtonText", "Abrir / Salvar");
-		UIManager.put("FileChooser.openButtonMnemonic", "A");
-		UIManager.put("FileChooser.openButtonToolTipText", "Abrir");
-
-		UIManager.put("FileChooser.saveButtonText", "Salvar =]");
-		UIManager.put("FileChooser.saveButtonToolTipText", "S");
-		UIManager.put("FileChooser.saveButtonToolTipText", "Salvar");
-
-		UIManager.put("FileChooser.updateButtonText", "Alterar");
-		UIManager.put("FileChooser.updateButtonToolTipText", "A");
-		UIManager.put("FileChooser.updateButtonToolTipText", "Alterar");
-
-		UIManager.put("FileChooser.helpButtonText", "Ajuda");
-		UIManager.put("FileChooser.helpButtonToolTipText", "A");
-		UIManager.put("FileChooser.helpButtonToolTipText", "Ajuda");
-
-		UIManager.put("FileChooser.acceptAllFileFilterText",
-				"Todos os arquivos");
-
-		fc = new JFileChooser("c:\\");
-		fc.addChoosableFileFilter(new ImageFilter());
-		fc.setAcceptAllFileFilterUsed(false);
-		fc.setFileView(new ImageFileView());
-		fc.setAccessory(new ImagePreview(fc));
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		int res = fc.showDialog(null, "Abrir");
-
-		if (res == JFileChooser.APPROVE_OPTION) {
-			file = fc.getSelectedFile();
-
-			try {
-				BufferedReader in = new BufferedReader(new FileReader(file));
-				String minhaImagem = file.getAbsolutePath();
-				in.close();
-				if (tipo == 1) {
-					// daoProd.salvarFoto(minhaImagem);
-					System.out.println(minhaImagem);
-
-					ExibirImagem(minhaImagem);
-
-					JOptionPane.showMessageDialog(null,
-							"Foto do Perfil Salva com Sucesso!.",
-							"SIMPRO - STIMAGAZINE",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					// daoProd.salvarFoto(minhaImagem);
-					JOptionPane.showMessageDialog(null,
-							"Foto Adicionada com Sucesso!.",
-							"SIMPRO - STIMAGAZINE",
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-		}
-
-	}
+	@Override
 	public void paint(Graphics graphics) {
 		graphics.drawImage(imagem, 0, 0, null);
 	}
@@ -254,26 +145,32 @@ public class ManipulaImagens extends JFrame {
 		setSize(imagem.getWidth(null), imagem.getHeight(null));
 		setVisible(true);
 	}
-	void salvarImagensSelecionadas() {
+	public void ExibirImagem(File arquivo) {
+		JFrame frameImagem = new JFrame(arquivo.getName());
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		imagem = toolkit.getImage(arquivo.getAbsolutePath());
+		MediaTracker mediaTracker = new MediaTracker(frameImagem);
+		mediaTracker.addImage(imagem, 0);
 
 		try {
-			for (int j = 0; j < listFiles.size(); j++) {
-				File arquivo = listFiles.get(j);
-				BufferedReader in = new BufferedReader(new FileReader(arquivo));
-				String minhaImagem = arquivo.getAbsolutePath();
-				System.out.println("Salvando... " + minhaImagem);
-				salvarFoto(minhaImagem);
-				in.close();
-			}
+			mediaTracker.waitForID(0);
 
-			// daoProd.salvarFoto(minhaImagem);
-			JOptionPane.showMessageDialog(null, "Feito!",
-					"SIMPRO - STIMAGAZINE", JOptionPane.INFORMATION_MESSAGE);
-			PainelProdutos.carregarImagens(prod);
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+		} catch (InterruptedException ie) {
+			System.err.println(ie);
+			System.exit(1);
 		}
+
+		frameImagem.setSize(imagem.getWidth(null), imagem.getHeight(null));
+		frameImagem.repaint();
+		frameImagem.setVisible(true);
+
+	}
+
+	void salvarImagensSelecionadas() {
+		for (int j = 0; j < listFiles.size(); j++) {
+			daoProdImg.cadastrarImagem(prod, listFiles.get(j));
+		}
+		PainelProdutos.carregarImagensProd(prod);
 	}
 
 	void abreSelecaoArquivo() {
@@ -356,14 +253,14 @@ public class ManipulaImagens extends JFrame {
 		}
 
 		// Show it.
-		int returnVal = fc.showDialog(ManipulaImagens.this, "Adicionar");
+		int returnVal = fc.showDialog(ManipulaImagensProduto.this, "Adicionar");
 
 		// Process the results.
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			file = fc.getSelectedFile();
-			log.append(
-					"Adicionando arquivo: " + file.getName() + "." + newline);
-			listFiles.add(file);
+
+			listFiles.add(fc.getSelectedFile());
+			log.append("Adicionando arquivo: " + fc.getSelectedFile().getName()
+					+ "." + newline);
 
 		} else {
 			log.append("Adição cancelada." + newline);
