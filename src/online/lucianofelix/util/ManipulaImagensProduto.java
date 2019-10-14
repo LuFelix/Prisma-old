@@ -99,12 +99,21 @@ public class ManipulaImagensProduto extends JFrame {
 
 			}
 		});
+		JButton btnCaptura = new JButton("WebCam");
+		btnRemove.addActionListener(new ActionListener() {
 
-		pnlBotoes = new JPanel(new GridLayout(1, 4));
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+
+		pnlBotoes = new JPanel(new GridLayout(1, 5));
 		pnlBotoes.add(btnAnexa);
 		pnlBotoes.add(btnSalva);
 		pnlBotoes.add(btnExibe);
 		pnlBotoes.add(btnRemove);
+		pnlBotoes.add(btnCaptura);
 		pnlPrincipal = new JPanel(new BorderLayout());
 		pnlPrincipal.add(pnlBotoes, BorderLayout.PAGE_START);
 		pnlPrincipal.add(logScrollPane, BorderLayout.CENTER);

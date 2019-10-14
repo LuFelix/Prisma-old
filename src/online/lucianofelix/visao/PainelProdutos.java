@@ -546,7 +546,7 @@ public class PainelProdutos extends JPanel {
 		cmbSubGrupo.setEnabled(true);
 		btnEditarPreco.setEnabled(false);
 		btnAddCategoria.setEnabled(true);
-		tabelaCategorias.setEnabled(true);
+
 	}
 
 	// TODO Desabilita edição

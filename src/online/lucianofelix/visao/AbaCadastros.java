@@ -26,7 +26,6 @@ import online.lucianofelix.beans.TipoSistema;
 import online.lucianofelix.controle.ControlaCentroCusto;
 import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaTipoSistema;
-import online.lucianofelix.dao.DAOCentroCusto;
 import online.lucianofelix.treeModels.TreeModelCentroCusto;
 import online.lucianofelix.util.ModeloListenerArvore;
 
@@ -292,44 +291,14 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		arvore.setRowHeight(50);
 	}
 	public static void recarregaArvore() {
+		int pos = getArvoreNegocios().getMaxSelectionRow();
+		System.out.println("posição da arvore   " + pos);
 		modArvore.reload();
-		criaNos();
-		int pos = getArvoreNegocios().getLeadSelectionRow();
+		// criaNos();
 		getArvoreNegocios().setSelectionRow(pos);
-		getArvoreNegocios().expandRow(pos);
+		// getArvoreNegocios().expandRow(pos);
 		scrArvNegocios.setViewportView(arvore);
 
-	}
-	public void criaArvContasCentCusto() {
-		DAOCentroCusto daocc = new DAOCentroCusto();
-		modArvCCusto = new TreeModelCentroCusto(daocc.pesquisarString(""));
-
-		arvoreContas = new JTree(modArvCCusto);
-
-		// Where the tree is initialized:
-		arvoreContas.getSelectionModel()
-				.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		// Listen for when the selection changes.
-		arvoreContas.addTreeSelectionListener(this);
-		arvoreContas.setShowsRootHandles(true);
-		arvoreContas.setRootVisible(true);
-		arvoreContas.setRowHeight(40);
-
-		ImageIcon openCloseIcon = new ImageIcon(
-				"C:\\SIMPRO\\img\\order\\flowblock32x32.png");
-		ImageIcon leafIcon = new ImageIcon(
-				"C:\\SIMPRO\\img\\order\\billing16x16.png");
-		if (leafIcon != null) {
-
-			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-
-			renderer.setLeafIcon(leafIcon);
-			renderer.setClosedIcon(openCloseIcon);
-			renderer.setOpenIcon(openCloseIcon);
-
-			arvoreContas.setCellRenderer(renderer);
-		}
 	}
 	public static void expandirArvore(JTree tree) {
 		try {
@@ -411,6 +380,38 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	//
 	// }
 	// });
+
+	// public void criaArvContasCentCusto() {
+	// DAOCentroCusto daocc = new DAOCentroCusto();
+	// modArvCCusto = new TreeModelCentroCusto(daocc.pesquisarString(""));
+	//
+	// arvoreContas = new JTree(modArvCCusto);
+	//
+	// // Where the tree is initialized:
+	// arvoreContas.getSelectionModel()
+	// .setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+	//
+	// // Listen for when the selection changes.
+	// arvoreContas.addTreeSelectionListener(this);
+	// arvoreContas.setShowsRootHandles(true);
+	// arvoreContas.setRootVisible(true);
+	// arvoreContas.setRowHeight(40);
+	//
+	// ImageIcon openCloseIcon = new ImageIcon(
+	// "C:\\SIMPRO\\img\\order\\flowblock32x32.png");
+	// ImageIcon leafIcon = new ImageIcon(
+	// "C:\\SIMPRO\\img\\order\\billing16x16.png");
+	// if (leafIcon != null) {
+	//
+	// DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+	//
+	// renderer.setLeafIcon(leafIcon);
+	// renderer.setClosedIcon(openCloseIcon);
+	// renderer.setOpenIcon(openCloseIcon);
+	//
+	// arvoreContas.setCellRenderer(renderer);
+	// }
+	// }
 
 	public static String getNomeNo() {
 		return nomeNo;
