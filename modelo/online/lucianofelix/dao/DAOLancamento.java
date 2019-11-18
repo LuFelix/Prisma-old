@@ -136,11 +136,12 @@ public class DAOLancamento {
 	}
 	public void novoLancRec(String codiConta, String codiCondPag,
 			String codiPedido, String codiPessoa, Date dataHoraMovimento,
-			float valor, String obsLanc, Date dataHoraReceb, String tipoLanc)
+			float valor, String obsLanc, Date dataHoraReceb, String tipoLanc,
+			String codiContaReceber, String tipoDocVinculado)
 			throws SQLException {
 		dataHoraMovimento = new Date(Calendar.getInstance().getTimeInMillis());
 		String sql = "insert into tbl_ctas_lanc_receber ( codi_conta, codi_cond_pag, codi_pedido, codi_pessoa, "
-				+ "data_hora_registro,valor, obs_lanc, data_hora_vencimento, tipo_lanc) values (?,?,?,?,?,?,?,?,?);";
+				+ "data_hora_registro,valor, obs_lanc, data_hora_vencimento, tipo_lanc, codi_cta_receber, tipo_doc_vinculado) values (?,?,?,?,?,?,?,?,?,?,?);";
 		c.conectar();
 		prepStm = c.getCon().prepareStatement(sql);
 		prepStm.setString(1, codiConta);
@@ -152,6 +153,9 @@ public class DAOLancamento {
 		prepStm.setString(7, obsLanc);
 		prepStm.setDate(8, dataHoraReceb);
 		prepStm.setString(9, tipoLanc);
+		prepStm.setString(10, codiContaReceber);
+		prepStm.setString(11, tipoDocVinculado);
+
 		prepStm.executeUpdate();
 		c.desconectar();
 	}

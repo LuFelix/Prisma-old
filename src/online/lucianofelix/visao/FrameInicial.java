@@ -148,6 +148,7 @@ public class FrameInicial {
 	private JMenu mnPrincipal;
 
 	private JMenu mnuExibir;
+	private JMenu mnuPDV;
 
 	private JMenu mnHelp;
 
@@ -260,6 +261,7 @@ public class FrameInicial {
 
 		// Subitens do menu exibir
 		mnuExibir = new JMenu("Exibir");
+		mnuPDV = new JMenu("PDV");
 		mnItmFuse = new JMenuItem("Fuse");
 		mnItmLists = new JMenuItem("Lists");
 		mnItmOrder = new JMenuItem("Order");
@@ -740,6 +742,7 @@ public class FrameInicial {
 		menuBar1 = new JMenuBar();
 		menuBar1.add(mnPrincipal);
 		menuBar1.add(mnuExibir);
+		menuBar1.add(mnuPDV);
 		menuBar1.add(mnHelp);
 
 		// JToolBar tbarFerramentas = new JToolBar();

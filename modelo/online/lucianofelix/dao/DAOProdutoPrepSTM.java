@@ -51,9 +51,9 @@ public class DAOProdutoPrepSTM {
 	 * @return boolean
 	 */
 	public boolean alterar(Produto prod) {
-		System.out.println("DaoProduto.alterar");
+		System.out.println(">>>>>>>>>>  DaoProduto.alterar");
 		String sql = "update produtos set nome_prod=?, desc_prod=?, aliq_prod=?, prec_custo=?,"
-				+ " prec_prod_1=?, prec_prod_2=?, codi_prod_2=?, codi_ean=?  where codi_prod_1=?;";
+				+ " prec_prod_1=?, prec_prod_2=?, codi_prod_2=?, codi_ean=?, detalhes_prod=?  where codi_prod_1=?;";
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
@@ -65,8 +65,9 @@ public class DAOProdutoPrepSTM {
 			prepStm.setFloat(6, prod.getPrec_prod_2());
 			prepStm.setString(7, prod.getCodi_prod_2());
 			prepStm.setString(8, prod.getcEAN());
-			prepStm.setString(9, prod.getCodi_prod_1());
-			prepStm.executeUpdate();
+			prepStm.setString(9, prod.getDetalhes_prod());
+			prepStm.setString(10, prod.getCodi_prod_1());
+			prepStm.execute();
 			c.desconectar();
 			return true;
 		} catch (Exception e) {
@@ -84,7 +85,7 @@ public class DAOProdutoPrepSTM {
 	 */
 	public boolean cadastrar(Produto prod) {
 		String sql = "insert into produtos (nome_prod, desc_prod, aliq_prod, prec_custo, prec_prod_1,"
-				+ " prec_prod_2, codi_prod_1, codi_prod_2, codi_ean) values (?,?,?,?,?,?,?,?,?)";
+				+ " prec_prod_2, codi_prod_1, codi_prod_2, codi_ean, detalhes_prod) values (?,?,?,?,?,?,?,?,?,?)";
 
 		try {
 			c.conectar();
@@ -98,7 +99,7 @@ public class DAOProdutoPrepSTM {
 			prepStm.setString(7, prod.getCodi_prod_1());
 			prepStm.setString(8, prod.getCodi_prod_2());
 			prepStm.setString(9, prod.getcEAN());
-
+			prepStm.setString(10, prod.getDetalhes_prod());
 			prepStm.executeUpdate();
 			c.desconectar();
 			return true;
@@ -161,7 +162,7 @@ public class DAOProdutoPrepSTM {
 	 * @return
 	 */
 	public List<Produto> pesquisaString(String str) {
-		String sql = "select seq_produto, codi_prod_1, nome_prod, desc_prod, aliq_prod, prec_custo, prec_prod_1, codi_ean "
+		String sql = "select seq_produto, codi_prod_1, nome_prod, desc_prod, aliq_prod, prec_custo, prec_prod_1, codi_ean,detalhes_prod "
 				+ "from produtos "
 				+ "where nome_prod ~* ?  or desc_prod ~* ? or codi_prod_1 ~* ? order by nome_prod;";
 		listProd = new ArrayList<Produto>();
@@ -180,6 +181,7 @@ public class DAOProdutoPrepSTM {
 				prod.setCodi_prod_1(result.getString("codi_prod_1"));
 				prod.setNome_prod(result.getString("nome_prod"));
 				prod.setDesc_prod(result.getString("desc_prod"));
+				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
 				prod.setPrec_custo(result.getFloat("prec_custo"));
 				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
@@ -235,7 +237,7 @@ public class DAOProdutoPrepSTM {
 	 */
 	public List<Produto> pesquisaProdutosCategoria(String codiGrupo) {
 
-		String sql = "SELECT produtos.seq_produto, produtos.codi_prod_1, produtos.nome_prod, produtos.desc_prod, produtos.aliq_prod, produtos.prec_custo,produtos.prec_prod_1, produtos.codi_ean, produtos_grupos.codi_produto "
+		String sql = "SELECT produtos.seq_produto, produtos.codi_prod_1, produtos.nome_prod, produtos.desc_prod, produtos.aliq_prod, produtos.prec_custo,produtos.prec_prod_1, produtos.codi_ean,produtos.detalhes_prod, produtos_grupos.codi_produto "
 				+ "FROM produtos, produtos_grupos "
 				+ "WHERE produtos_grupos.codi_grupo = ? and produtos.codi_prod_1 = produtos_grupos.codi_produto;";
 
@@ -253,6 +255,7 @@ public class DAOProdutoPrepSTM {
 				prod.setCodi_prod_1(result.getString("codi_prod_1"));
 				prod.setNome_prod(result.getString("nome_prod"));
 				prod.setDesc_prod(result.getString("desc_prod"));
+				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
 				prod.setPrec_custo(result.getFloat("prec_custo"));
 				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
@@ -285,6 +288,7 @@ public class DAOProdutoPrepSTM {
 			if (result.next()) {
 				prod.setNome_prod(result.getString("nome_prod"));
 				prod.setDesc_prod(result.getString("desc_prod"));
+				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
 				prod.setPrec_custo(result.getFloat("prec_custo"));
 				prod.setSeq_produto(result.getInt("seq_produto"));
@@ -322,7 +326,7 @@ public class DAOProdutoPrepSTM {
 		prod = new Produto();
 		c2.conectStm();
 		result = c2
-				.query("SELECT codiprod,nomeprod,descprod,aliqprod,quanprod,precprod FROM produtos WHERE codiprod='"
+				.query("SELECT codiprod,nomeprod,descprod,aliqprod,quanprod,precprod,detalhes_prod FROM produtos WHERE codiprod='"
 						+ codiProd + "';");
 		c2.disconect();
 		try {
@@ -330,6 +334,7 @@ public class DAOProdutoPrepSTM {
 			prod.setCodi_prod_1(result.getString("codi_prod"));
 			prod.setNome_prod(result.getString("nome_prod"));
 			prod.setDesc_prod(result.getString("desc_prod"));
+			prod.setDetalhes_prod(result.getString("detalhes_prod"));
 			prod.setAliq_prod(result.getString("aliq_prod"));
 			prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
 			prod.setSeq_produto(result.getInt("seq_produto"));
@@ -362,6 +367,7 @@ public class DAOProdutoPrepSTM {
 				prod.setCodi_prod_1(res.getString("codi_prod"));
 				prod.setNome_prod(res.getString("nome_prod"));
 				prod.setDesc_prod(res.getString("desc_prod"));
+				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(res.getString("aliq_prod"));
 				prod.setPrec_prod_1(res.getFloat("prec_prod_1"));
 				prod.setSeq_produto(res.getInt("seq_produto"));
@@ -394,6 +400,7 @@ public class DAOProdutoPrepSTM {
 				prod.setCodi_prod_1(result.getString("codi_prod_1"));
 				prod.setNome_prod(result.getString("nome_prod"));
 				prod.setDesc_prod(result.getString("desc_prod"));
+				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
 				// prod.setEstoque(result.getInt("quan_prod")); // resolver
 				// estoque
@@ -415,7 +422,7 @@ public class DAOProdutoPrepSTM {
 		prod = new Produto();
 		c2.conectStm();
 		result = c2
-				.query("SELECT codiprod, nomeprod,descprod,aliqprod,quanprod,precprod FROM produtos WHERE codiprod="
+				.query("SELECT codiprod, nomeprod,descprod,aliqprod,quanprod,precprod,detalhes_prod FROM produtos WHERE codiprod="
 						+ codiProd);
 		c2.disconect();
 		try {
@@ -426,6 +433,7 @@ public class DAOProdutoPrepSTM {
 			prod.setCodi_prod_1(result.getString("codi_prod"));
 			prod.setNome_prod(result.getString("nome_prod"));
 			prod.setDesc_prod(result.getString("desc_prod"));
+			prod.setDetalhes_prod(result.getString("detalhes_prod"));
 			prod.setSeq_produto(result.getInt("seq_produto"));
 			return prod;
 
@@ -447,6 +455,7 @@ public class DAOProdutoPrepSTM {
 			prod.setCodi_prod_2(result.getString("codi_prod_2"));
 			prod.setNome_prod(result.getString("nome_prod"));
 			prod.setDesc_prod(result.getString("desc_prod"));
+			prod.setDetalhes_prod(result.getString("detalhes_prod"));
 			prod.setAliq_prod(result.getString("aliq_prod"));
 			prod.setPrec_custo(result.getFloat("prec_custo real"));
 			prod.setPrec_prod_1(result.getFloat("prec_prod_1"));

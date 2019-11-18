@@ -141,12 +141,15 @@ public class ControlaProduto {
 				funcaoExcluir();
 			}
 		});
-
 	}
 
-	// TODO Salvar
+	/**
+	 * Função habilita a tela para preenchimento de um novo produto e excuta
+	 * Grava no banco
+	 */
 	public void funcaoSalvar() {
-		System.out.println("ControlaProduto.funcaoSalvar");
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>>>>>      ControlaProduto.funcaoSalvar");
 		funcaoCancelarNovo();
 		ControlaBotoes.limparBtnSalvar();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
@@ -155,16 +158,57 @@ public class ControlaProduto {
 				prod = PainelProdutos.lerCampos();
 				if (prod != null & daoProd.cadastrar(prod)) {
 					PainelProdutos.limparCampos();
-					FrameInicial.setTabela(tabelaProdutos(prod.getNome_prod()));
+					FrameInicial
+							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
-					AbaCadastros.recarregaArvore();
+					// AbaCadastros.recarregaArvore();
 					FrameInicial.atualizaTela();
+					if (AbaCadastros.getNomeNo().equals("Produtos")) {
+						iniciar();
+					} else {
+						iniciar(AbaCadastros.getNomeNo());
+					}
 					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar(AbaCadastros.getNomeNo());
+					FrameInicial.getBtnNovo().grabFocus();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Problemas: Erro de acesso ao banco",
 							"Erro ao Salvar", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+	}
+	// TODO Função sobrescrever
+	public void funcaoSobrescrever() {
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>>>           ControlaProduto.funcaoSobrescrever");
+		ControlaBotoes.limparBtnSalvar();
+		PainelProdutos.habilitaEdicao();
+		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				prod = PainelProdutos.lerCampos();
+				System.out.println("codigo ean" + prod.getcEAN());
+				if (prod != null & daoProd.alterar(prod)) {
+					PainelProdutos.limparCampos();
+					FrameInicial
+							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
+					FrameInicial.atualizaTela();
+					// AbaCadastros.recarregaArvore();
+					JOptionPane.showMessageDialog(null, "Feito!");
+					if (AbaCadastros.getNomeNo().equals("Produtos")) {
+						iniciar();
+					} else {
+						iniciar(AbaCadastros.getNomeNo());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel alterar o produto!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -212,43 +256,10 @@ public class ControlaProduto {
 		}
 	}
 
-	// TODO Função sobrescrever
-	public void funcaoSobrescrever() {
-		System.out.println("ControlaProduto.funcaoSobrescrever");
-		ControlaBotoes.limparBtnSalvar();
-		PainelProdutos.habilitaEdicao();
-		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				prod = PainelProdutos.lerCampos();
-				System.out.println("codigo ean" + prod.getcEAN());
-				if (prod != null & daoProd.alterar(prod)) {
-					PainelProdutos.limparCampos();
-					FrameInicial
-							.setTabela(tabelaProdutos(prod.getCodi_prod_1()));
-					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
-					AbaCadastros.recarregaArvore();
-					FrameInicial.atualizaTela();
-					JOptionPane.showMessageDialog(null, "Feito!");
-					if (AbaCadastros.getNomeNo().equals("Produtos")) {
-						iniciar();
-					} else {
-						iniciar(AbaCadastros.getNomeNo());
-					}
-
-				} else {
-					JOptionPane.showMessageDialog(null,
-							"Favor verificar os campos informados. ",
-							"Não foi possivel alterar o produto!",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-	}
-
 	// TODO Funcao excluir
 	public boolean funcaoExcluir(Produto prod) {
-		System.out.println("ControlaProduto.excluir(Produto prod)");
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>   ControlaProduto.excluir(Produto prod)");
 		if (daoProd.excluir(prod)) {
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
@@ -279,12 +290,16 @@ public class ControlaProduto {
 	}
 
 	public void funcaoCancelar() {
-		System.out.println("ControlaProduto.cancelar");
+		System.out.println(">>>>>>>>>>>>>>>>     ControlaProduto.cancelar");
 		ControlaBotoes.limparBtnCancelar();
 		FrameInicial.getBtnCancelar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				iniciar(AbaCadastros.getNomeNo());
+				if (AbaCadastros.getNomeNo().equals("Produtos")) {
+					iniciar();
+				} else {
+					iniciar(AbaCadastros.getNomeNo());
+				}
 			}
 		});
 	}
@@ -334,7 +349,11 @@ public class ControlaProduto {
 	public List<Produto> procurarTodos() {
 		return daoProd.procurarTodos();
 	}
-
+	/**
+	 * Altera o preço do produto recebendo o produto como parâmetro
+	 * 
+	 * @param prod
+	 */
 	public void alteraPreco(Produto prod) {
 		String data = String.valueOf(new Timestamp(System.currentTimeMillis()))
 				.substring(0, 10);
@@ -357,7 +376,9 @@ public class ControlaProduto {
 
 	}
 
-	// TODO Ajustar tamanho das colunas
+	/**
+	 * Ajustar tamanho das colunas
+	 */
 	private void ajusta_tamanho_coluna() {
 		// tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		tbl01.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -369,7 +390,12 @@ public class ControlaProduto {
 		// tabela.getColumnModel().getColumn(6).setPreferredWidth(80);
 	}
 
-	// TODO Tabela ligada ao painel de produtos; Tabela geral de produtos
+	/**
+	 * Tabela ligada ao painel de produtos; Tabela geral de produtos
+	 * 
+	 * @param str
+	 * @return
+	 */
 	public JTable tabelaProdutos(String str) {
 		mdlTabela = new TableModelProdutos(daoProd.pesquisaString(str));
 		tbl01 = new JTable(mdlTabela);
@@ -403,7 +429,7 @@ public class ControlaProduto {
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
 					carregaDetalhes(prod);
-					PainelProdutos.getBtnEditar().doClick();
+					FrameInicial.getBtnEditar().doClick();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
 					PainelProdutos.getTxtFNomeProd().grabFocus();
@@ -489,7 +515,7 @@ public class ControlaProduto {
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
 					carregaDetalhes(prod);
-					PainelProdutos.getBtnEditar().doClick();
+					FrameInicial.getBtnEditar().doClick();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
 					PainelProdutos.getTxtFNomeProd().grabFocus();
@@ -581,10 +607,10 @@ public class ControlaProduto {
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					prod = mdlTabela.getProduto(tbl01.getSelectedRow());
 					carregaDetalhes(prod);
-					PainelProdutos.getBtnEditar().doClick();
+					FrameInicial.getBtnEditar().doClick();
 					FrameInicial.getTabela().changeSelection(--posicao, 0,
 							false, false);
-					PainelProdutos.getTxtFNomeProd().grabFocus();
+					// PainelProdutos.getTxtFNomeProd().grabFocus();
 				}
 			}
 		});
@@ -650,20 +676,20 @@ public class ControlaProduto {
 
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
-					int posicao = tbl01.getSelectedRow();
+					int linha = tbl01.getSelectedRow();
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent tecla) {
-				int posicao = tbl01.getSelectedRow();
+				int linha = tbl01.getSelectedRow();
 				System.out.println(tecla.getExtendedKeyCode());
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
-					PainelPedidos.adicionaItem(listProd.get(posicao));
+					PainelPedidos.adicionaItem(mdlTabela.getProduto(linha));
 				} else if (tecla.getExtendedKeyCode() == 9) {
 					PainelPedidos.getTxtfCliente().grabFocus();
 				}
@@ -697,23 +723,23 @@ public class ControlaProduto {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// TODO Ao Clicar
-				int posicao = tbl01.getSelectedRow();
-				PainelPedidos.adicionaItem(listProd.get(posicao));
+				int linha = tbl01.getSelectedRow();
+				PainelPedidos.adicionaItem(mdlTabela.getProduto(linha));
 			}
 		});
 		colunas.add("Código");
 		colunas.add("Nome");
 		colunas.add("Preço");
-
-		modelotabela.setColumnIdentifiers(colunas.toArray());
-		for (int i = 0; i < listProd.size(); i++) {
-			prod = listProd.get(i);
-			Object linha[] = {prod.getCodi_prod_1(), prod.getNome_prod(),
-					prod.getPrec_prod_1()};
-			modelotabela.addRow(linha);
-		}
+		mdlTabela = new TableModelProdutos(daoProd.pesquisaString(nome));
+		// modelotabela.setColumnIdentifiers(colunas.toArray());
+		// for (int i = 0; i < listProd.size(); i++) {
+		// prod = listProd.get(i);
+		// Object linha[] = {prod.getCodi_prod_1(), prod.getNome_prod(),
+		// prod.getPrec_prod_1()};
+		// modelotabela.addRow(linha);
+		// }
 		tbl01.setShowGrid(true);
-		tbl01.setModel(modelotabela);
+		tbl01.setModel(mdlTabela);
 		return tbl01;
 	}
 

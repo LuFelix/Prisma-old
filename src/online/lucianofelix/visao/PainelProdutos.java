@@ -8,8 +8,11 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -75,6 +78,8 @@ public class PainelProdutos extends JPanel {
 	private JLabel lbl08;
 	private JLabel lbl09;
 	private JLabel lbl10;
+	private JLabel lbl11;
+	private static JLabel lblPrecoAtual;
 
 	private static JTextField txtF01;
 	private static JTextField txtF02;
@@ -86,6 +91,7 @@ public class PainelProdutos extends JPanel {
 	private static JTextField txtF08;
 	private static JTextField txtF09;
 	private static JTextField txtF10;
+	private static JTextField txtF11;
 
 	private static JCheckBox chkBListaPrecos;
 
@@ -111,14 +117,13 @@ public class PainelProdutos extends JPanel {
 	private static DefaultTableModel modeloTabela;
 	private static TableModelProdutoGrupo modeloTabelaGrupo;
 	private static TableModelProdutoImagens mdlTableProdImg;
-	private JScrollPane scrDescricao;
 	private static JScrollPane scrCategorias;
 	private static JScrollPane scrPrecos;
 	private static JScrollPane scrEstoque;
 	private static JScrollPane scrImagem;
 	private static JScrollPane scrImagensProd;
 	private static JScrollPane scrDetalhes;
-	private static JTextArea txtADescricao;
+	private static JTextArea txtADeTalhes;
 	// objetos de controle
 
 	private static ControlaListaProdutos controledaLista;
@@ -166,20 +171,58 @@ public class PainelProdutos extends JPanel {
 		lbl08 = new JLabel("Estoque:");
 		txtF08 = new JTextField();
 		lbl09 = new JLabel("Preço Atual:");
-		txtF09 = new JTextField();
-
-		btnAddCategoria = new JButton("Adicionar Categoria");
-		btnAddCategoria.addActionListener(new ActionListener() {
+		lblPrecoAtual = new JLabel();
+		lblPrecoAtual.setForeground(Color.RED);
+		lblPrecoAtual.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		// txtF09 = new JTextField();
+		lbl10 = new JLabel("Grupo/Categoria:");
+		cmbSubGrupo = contGrupo.carregarSubGruposProdutos();
+		cmbSubGrupo.addKeyListener(new KeyListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				String nomeCategoria = cmbSubGrupo.getSelectedItem().toString();
-				prod = lerCampos();
-				contProd.adicionarCategoria(prod, nomeCategoria);
-				carregarCategorias(prod);
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == 10) {
+					String nomeCategoria = cmbSubGrupo.getSelectedItem()
+							.toString();
+					prod = lerCampos();
+					contProd.adicionarCategoria(prod, nomeCategoria);
+					carregarCategorias(prod);
+				}
+				if (e.getKeyCode() == 9) {
+
+					FrameInicial.getBtnSalvar().grabFocus();
+				}
 
 			}
 		});
+		lbl11 = new JLabel("Descrição:");
+		txtF11 = new JTextField();
+
+		// btnAddCategoria = new JButton("Adicionar Categoria");
+		// btnAddCategoria.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// String nomeCategoria = cmbSubGrupo.getSelectedItem().toString();
+		// prod = lerCampos();
+		// contProd.adicionarCategoria(prod, nomeCategoria);
+		// carregarCategorias(prod);
+		//
+		// }
+		// });
+
 		btnAddImagem = new JButton("Adicionar imagens");
 		btnAddImagem.addActionListener(new ActionListener() {
 
@@ -199,9 +242,6 @@ public class PainelProdutos extends JPanel {
 
 			}
 		});
-
-		cmbSubGrupo = contGrupo.carregarSubGruposProdutos();
-		// lbl10 = new JLabel("Adicionar ao Grupo/Categoria");
 
 		JButton btn = new JButton("Obter itens marcados");
 		btn.addActionListener(new ActionListener() {
@@ -252,6 +292,12 @@ public class PainelProdutos extends JPanel {
 			}
 		});
 
+		cmbTabPreco = new JComboBox<String>();
+		cmbTabPreco.addItem("Tabela de Preços");
+		for (int i = 0; i < daoTabPreco.pesquisaString("").size(); i++) {
+			cmbTabPreco.addItem(
+					daoTabPreco.pesquisaString("").get(i).getDescTabela());
+		}
 		btnEditarPreco = new JButton("Alterar Preço");
 		btnEditarPreco.addActionListener(new ActionListener() {
 			@Override
@@ -259,13 +305,20 @@ public class PainelProdutos extends JPanel {
 				contProd.alteraPreco(lerCampos());
 			}
 		});
+		btnEditarPreco.addFocusListener(new FocusListener() {
 
-		cmbTabPreco = new JComboBox<String>();
-		cmbTabPreco.addItem("Tabela de Preços");
-		for (int i = 0; i < daoTabPreco.pesquisaString("").size(); i++) {
-			cmbTabPreco.addItem(
-					daoTabPreco.pesquisaString("").get(i).getDescTabela());
-		}
+			@Override
+			public void focusLost(FocusEvent e) {
+				FrameInicial.getBtnSalvar().grabFocus();
+
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		chkBListaPrecos = new JCheckBox("Exibir");
 		chkBListaPrecos.addChangeListener(new ChangeListener() {
@@ -279,27 +332,29 @@ public class PainelProdutos extends JPanel {
 			}
 		});
 
-		tabelaPrecos = new JTable();
-		tabelaMovEstoque = new JTable();
-		tabelaCategorias = new JTable();
-		tabelaImagens = new JTable();
-
-		scrPrecos = new JScrollPane();
-		scrPrecos.setViewportView(tabelaPrecos);
-
-		scrCategorias = new JScrollPane();
-		scrCategorias.setViewportView(tabelaCategorias);
-
 		lblImagem = new JLabel("Image not Found");
-
 		scrImagem = new JScrollPane(lblImagem);
 		scrImagem.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrImagem.setHorizontalScrollBarPolicy(
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		pnlImagensProd = new JPanel(new BorderLayout());
+		tabelaPrecos = new JTable();
+		tabelaMovEstoque = new JTable();
+		tabelaCategorias = new JTable();
+		tabelaImagens = new JTable();
+
+		tabelaCategorias.setCellSelectionEnabled(false);
+		tabelaImagens.setCellSelectionEnabled(false);
+		tabelaMovEstoque.setCellSelectionEnabled(false);
+		tabelaPrecos.setCellSelectionEnabled(false);
+
+		scrPrecos = new JScrollPane(tabelaPrecos);
+		scrCategorias = new JScrollPane(tabelaCategorias);
 		scrImagensProd = new JScrollPane(tabelaImagens);
+		scrEstoque = new JScrollPane(tabelaMovEstoque);
+
+		pnlImagensProd = new JPanel(new BorderLayout());
 		pnlBotoesImagensProds = new JPanel(new GridLayout(1, 1));
 		pnlBotoesImagensProds.add(btnAddImagem);
 		// pnlBotoesImagensProds.add(btnRemImagem);
@@ -307,17 +362,18 @@ public class PainelProdutos extends JPanel {
 		pnlImagensProd.add(scrImagensProd, BorderLayout.CENTER);
 
 		setPnlDetalhes(new JPanel(new BorderLayout()));
-		pnlDetalhes.add(listGrupoView, BorderLayout.CENTER);
-		scrDetalhes = new JScrollPane(pnlDetalhes);
 
-		txtADescricao = new JTextArea();
-		txtADescricao.setLineWrap(true);
-		txtADescricao.setWrapStyleWord(true);
-		scrDescricao = new JScrollPane(txtADescricao);
+		pnlDetalhes.add(listGrupoView, BorderLayout.CENTER);
+
+		scrDetalhes = new JScrollPane(pnlDetalhes);
+		txtADeTalhes = new JTextArea();
+		txtADeTalhes.setLineWrap(true);
+		txtADeTalhes.setWrapStyleWord(true);
+		scrDetalhes = new JScrollPane(txtADeTalhes);
 
 		tabVisualiza = new JTabbedPane();
-		tabVisualiza.addTab("Detalhes", scrCategorias);
-		tabVisualiza.addTab("Descrição", scrDescricao);
+		tabVisualiza.addTab("Categorias", scrCategorias);
+		tabVisualiza.addTab("Detalhes", scrDetalhes);
 		tabVisualiza.addTab("Imagens", pnlImagensProd);
 		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
 		tabVisualiza.add("Estoque", scrEstoque);
@@ -325,7 +381,7 @@ public class PainelProdutos extends JPanel {
 		// TODO Painel principal
 		painelGrid = new JPanel();
 		painelGrid.setBorder(BorderFactory.createEtchedBorder());
-		painelGrid.setLayout(new GridLayout(9, 2));
+		painelGrid.setLayout(new GridLayout(10, 2));
 		painelGrid.setBackground(Color.WHITE);
 		painelGrid.add(lbl02);
 		painelGrid.add(txtF02);
@@ -340,11 +396,17 @@ public class PainelProdutos extends JPanel {
 		painelGrid.add(lbl08);
 		painelGrid.add(txtF08);
 		painelGrid.add(lbl09);
-		painelGrid.add(txtF09);
-		painelGrid.add(btnEditarPreco);
-		painelGrid.add(cmbTabPreco);
-		painelGrid.add(btnAddCategoria);
+		painelGrid.add(lblPrecoAtual);
+		// painelGrid.add(txtF09);
+		painelGrid.add(lbl10);
 		painelGrid.add(cmbSubGrupo);
+		painelGrid.add(lbl11);
+		painelGrid.add(txtF11);
+		painelGrid.add(cmbTabPreco);
+		painelGrid.add(btnEditarPreco);
+
+		// painelGrid.add(btnAddCategoria);
+
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppImagem.add(lblTituloTela);
 		sppImagem.add(scrImagem);
@@ -375,7 +437,7 @@ public class PainelProdutos extends JPanel {
 
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setDividerSize(3);
-		jspPrincipal.setDividerLocation(250);
+		jspPrincipal.setDividerLocation(350);
 		jspPrincipal.setEnabled(false);
 		jspPrincipal.setBackground(Color.WHITE);
 		jspPrincipal.add(sppSuperior);
@@ -405,7 +467,7 @@ public class PainelProdutos extends JPanel {
 		Object colunas[] = {"Nome", "Preço Unitário", "Data"};
 		modeloTabela.setColumnIdentifiers(colunas);
 		tabelaPrecos.setShowGrid(true);
-
+		tabelaPrecos.setCellSelectionEnabled(false);
 		tabelaPrecos.setModel(modeloTabela);
 		for (int i = 0; i < prod.getListCotacaoProduto().size(); i++) {
 			Object linha[] = {prod.getNome_prod(),
@@ -444,12 +506,13 @@ public class PainelProdutos extends JPanel {
 		} else {
 			prod.setAliq_prod("17");
 		}
-		if (txtF09.getText().equals("")) {
-			prod.setPrec_prod_1(0);
-		} else {
-			prod.setPrec_prod_1(Float.parseFloat(txtF09.getText()));
-		}
-		prod.setDesc_prod(txtADescricao.getText());
+		// if (txtF09.getText().equals("")) {
+		// prod.setPrec_prod_1(0);
+		// } else {
+		// prod.setPrec_prod_1(Float.parseFloat(txtF09.getText()));
+		// }
+		prod.setDesc_prod(txtF11.getText());
+		prod.setDetalhes_prod(txtADeTalhes.getText());
 
 		return prod;
 	}
@@ -463,6 +526,7 @@ public class PainelProdutos extends JPanel {
 		modeloTabelaGrupo = new TableModelProdutoGrupo(prod);
 		tabelaCategorias.setShowGrid(true);
 		tabelaCategorias.setModel(modeloTabelaGrupo);
+		tabelaCategorias.setCellSelectionEnabled(false);
 		scrCategorias.setViewportView(tabelaCategorias);
 
 	}
@@ -471,7 +535,6 @@ public class PainelProdutos extends JPanel {
 
 		mdlTableProdImg = new TableModelProdutoImagens(prod);
 		tabelaImagens = new JTable(mdlTableProdImg);
-		// tabelaImagens.setModel(mdlTableProdImg);
 		TableColumnModel ColumnModel = tabelaImagens.getColumnModel();
 		JTableRenderer renderer = new JTableRenderer();
 		ColumnModel.getColumn(2).setCellRenderer(renderer);
@@ -480,6 +543,7 @@ public class PainelProdutos extends JPanel {
 						.setHorizontalAlignment(SwingConstants.LEFT);
 		tabelaImagens.setShowGrid(true);
 		tabelaImagens.setRowHeight(50);
+		tabelaImagens.setCellSelectionEnabled(false);
 		scrImagensProd.setViewportView(tabelaImagens);
 
 	}
@@ -500,33 +564,33 @@ public class PainelProdutos extends JPanel {
 			txtF05.setText(prod.getNome_prod());
 			txtF06.setText(prod.getAliq_prod());
 			txtF08.setText(String.valueOf(prod.getEstoqueAtual()));
-			txtF09.setText(String
+			lblPrecoAtual.setText("R$  " + String
 					.valueOf(prod.getListCotacaoProduto().get(0).getValor()));
-
-			txtADescricao.setText(prod.getDesc_prod());
-
+			txtF11.setText(prod.getDesc_prod());
+			txtADeTalhes.setText(prod.getDetalhes_prod());
 			habilitaTabelaPrecos(prod);
 			carregarImagem(prod.getCodi_prod_1());
 			carregarCategorias(prod);
 			carregarImagensProd(prod);
-
 		}
-
 	}
 
 	// TODO Habilitar Edição
 	public static void habilitaEdicao() {
 		txtF03.setEditable(false);
+		txtF04.grabFocus();
 		txtF05.setEditable(true);
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
-		txtF09.setEditable(false);
-		txtADescricao.setEditable(true);
+		// txtF09.setEditable(false);
+		txtF11.setEditable(true);
+		txtADeTalhes.setEditable(true);
 		cmbSubGrupo.setEnabled(true);
 		btnEditarPreco.setEnabled(true);
-		btnAddCategoria.setEnabled(true);
 		cmbTabPreco.setEnabled(true);
-		tabelaCategorias.setEnabled(true);
+		tabelaCategorias.setCellSelectionEnabled(true);
+		tabelaImagens.setCellSelectionEnabled(true);
+		// btnAddCategoria.setEnabled(true);
 	}
 
 	// TODO Habilita novo
@@ -540,12 +604,15 @@ public class PainelProdutos extends JPanel {
 		txtF05.setEditable(true);
 		txtF06.setEditable(true);
 		txtF08.setEditable(true);
-		txtF09.setEditable(true);
-		txtADescricao.setEditable(true);
+		// txtF09.setEditable(true);
+		txtF11.setEditable(true);
+		txtADeTalhes.setEditable(true);
 		cmbTabPreco.setEnabled(true);
 		cmbSubGrupo.setEnabled(true);
-		btnEditarPreco.setEnabled(false);
-		btnAddCategoria.setEnabled(true);
+		cmbTabPreco.setEnabled(true);
+		btnEditarPreco.setEnabled(true);
+		tabelaCategorias.setCellSelectionEnabled(false);
+		tabelaImagens.setCellSelectionEnabled(false);
 
 	}
 
@@ -556,13 +623,14 @@ public class PainelProdutos extends JPanel {
 		txtF05.setEditable(false);
 		txtF06.setEditable(false);
 		txtF08.setEditable(false);
-		txtF09.setEditable(false);
-		txtADescricao.setEditable(false);
+		// txtF09.setEditable(false);
+		txtF11.setEditable(false);
+		txtADeTalhes.setEditable(false);
 		btnEditarPreco.setEnabled(false);
 		cmbTabPreco.setEnabled(false);
 		cmbSubGrupo.setEnabled(false);
 		chkBListaPrecos.setSelected(false);
-		btnAddCategoria.setEnabled(false);
+		// btnAddCategoria.setEnabled(false);
 
 	}
 
@@ -573,14 +641,22 @@ public class PainelProdutos extends JPanel {
 		txtF05.setText(null);
 		txtF08.setText(null);
 		txtF06.setText(null);
-		txtF09.setText(null);
+		// txtF09.setText(null);
+		lblPrecoAtual.setText(null);
+		txtF11.setText(null);
+		txtADeTalhes.setText(null);
 		carregarImagem(null);
 		desabilitaTabelaPrecos();
 		desabilitaTabelaCategorias();
-		txtADescricao.setText(null);
+		txtADeTalhes.setText(null);
 		tabelaCategorias = null;
+		tabelaImagens = null;
+		tabelaMovEstoque = null;
+		tabelaPrecos = null;
 		scrCategorias.setViewportView(tabelaCategorias);
-
+		scrImagensProd.setViewportView(tabelaImagens);
+		scrPrecos.setViewportView(tabelaPrecos);
+		scrPrecos.setViewportView(tabelaPrecos);
 	}
 
 	static void erro() {
@@ -590,21 +666,21 @@ public class PainelProdutos extends JPanel {
 				JOptionPane.ERROR_MESSAGE);
 	}
 
-	public static JButton getBtnNovo() {
-		return btnNovo;
-	}
-
-	public static void setBtnNovo(JButton btnNovo) {
-		PainelProdutos.btnNovo = btnNovo;
-	}
-
-	public static JButton getBtnEditar() {
-		return btnEditar;
-	}
-
-	public static void setBtnEditar(JButton btnEditar) {
-		PainelProdutos.btnEditar = btnEditar;
-	}
+	// public static JButton getBtnNovo() {
+	// return btnNovo;
+	// }
+	//
+	// public static void setBtnNovo(JButton btnNovo) {
+	// PainelProdutos.btnNovo = btnNovo;
+	// }
+	//
+	// public static JButton getBtnEditar() {
+	// return btnEditar;
+	// }
+	//
+	// public static void setBtnEditar(JButton btnEditar) {
+	// PainelProdutos.btnEditar = btnEditar;
+	// }
 
 	public static JTextField getTxtFNomeProd() {
 		return txtF05;
@@ -658,6 +734,7 @@ public class PainelProdutos extends JPanel {
 	}
 
 }
+
 class JTableRenderer extends DefaultTableCellRenderer {
 	protected void setValue(Object value) {
 		if (value instanceof ImageIcon) {

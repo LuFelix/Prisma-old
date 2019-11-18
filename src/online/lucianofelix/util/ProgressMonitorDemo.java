@@ -1,4 +1,4 @@
-package online.lucianofelix.zebra;
+package online.lucianofelix.util;
 /* From http://java.sun.com/docs/books/tutorial/index.html */
 
 /*

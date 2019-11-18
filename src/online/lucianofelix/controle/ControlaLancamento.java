@@ -6,7 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -42,7 +44,8 @@ public class ControlaLancamento {
 			daoLancamento.novoLancRec(lanc.getCodiConta(),
 					lanc.getCodiCondPag(), pedi.getCodiPedi(),
 					pedi.getCodiPessoaCliente(), null, lanc.getValor(), "Obs",
-					null, lanc.getTipoLancamento());
+					null, lanc.getTipoLancamento(), "codiContaReceber",
+					"tipoDocVinculado");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -51,9 +54,16 @@ public class ControlaLancamento {
 
 	public void adicionaLancamento(Lancamento lanc) {
 		try {
+			// conta para lançamento dos pedidos: "10201662"
+			// daoLancamento.novoLancRec("10201662", lanc.getCodiCondPag(),
+			// "codigoDocumento", "codigoPagador", "", lanc.getValor(),
+			// "Obs", null, lanc.getTipoLancamento(), "", "");
+			Date dataHoraMovimento = new Date(
+					Calendar.getInstance().getTimeInMillis());
 			daoLancamento.novoLancRec("10201662", lanc.getCodiCondPag(),
-					"codigoDocumento", "codigoPagador", null, lanc.getValor(),
-					"Obs", null, lanc.getTipoLancamento());
+					"codigoDocumento", "codigoPagador", dataHoraMovimento,
+					lanc.getValor(), "obsLanc", dataHoraMovimento, "tipoLanc",
+					"codiContaReceber", "tipoDocVinculado");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

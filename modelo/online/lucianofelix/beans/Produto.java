@@ -6,10 +6,11 @@ import java.util.List;
 public class Produto {
 	// TODO variaveis de contole
 	private String nome_prod; // Nome do produto.
-	private String desc_prod; // DescriÃ§Ã£o do Ã­tem.
+	private String desc_prod; // Descrição do ítem.
+	private String detalhes_prod;// Detalhes e observações sobre o produto
 	private String aliq_prod; // Aliquota de ICMS do produto.
 	private String codi_prod_1; // O principal cÃ³digo do produto.
-	private String codi_prod_2; // CÃ³digo extra 2 para o produto.
+	private String codi_prod_2; // Código extra 2 para o produto.
 	private int seq_produto; // Sequencia de inserÃ§Ã£o no banco.
 	private int quantMovimento;// Campo para movimentação do produto
 	private List<ProdutoCotacao> listCotacaoProduto;
@@ -323,6 +324,14 @@ public class Produto {
 
 	public void setListGrupo(List<GrupoSubgrupo> listGrupo) {
 		this.listGrupo = listGrupo;
+	}
+
+	public String getDetalhes_prod() {
+		return detalhes_prod;
+	}
+
+	public void setDetalhes_prod(String detalhes_prod) {
+		this.detalhes_prod = detalhes_prod;
 	}
 
 }

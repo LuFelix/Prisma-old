@@ -24,6 +24,7 @@ public class PrincipalNote {
 
 	public static void main(String[] args) {
 		new FrameInicial();
+		// new FrameECF();
 		// new ManipulaImagens();
 		// JFrame frm1 = new JFrame("Cotações");
 		// JPanel pnlCotacoes = new JPanel(new BorderLayout());
