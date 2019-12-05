@@ -23,6 +23,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.6</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/br.com.uol.pagseguro/pagseguro-api -->
+		<dependency>
+		    <groupId>br.com.uol.pagseguro</groupId>
+		    <artifactId>pagseguro-api</artifactId>
+		    <version>4.3.2</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.zxing/core  Biblioteca Postgres-->
 		<dependency>
 			<groupId>org.postgresql</groupId>

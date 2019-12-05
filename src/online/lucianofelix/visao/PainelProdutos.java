@@ -343,12 +343,7 @@ public class PainelProdutos extends JPanel {
 		tabelaMovEstoque = new JTable();
 		tabelaCategorias = new JTable();
 		tabelaImagens = new JTable();
-
-		tabelaCategorias.setCellSelectionEnabled(false);
-		tabelaImagens.setCellSelectionEnabled(false);
-		tabelaMovEstoque.setCellSelectionEnabled(false);
-		tabelaPrecos.setCellSelectionEnabled(false);
-
+		tabelaCategorias.setEnabled(false);
 		scrPrecos = new JScrollPane(tabelaPrecos);
 		scrCategorias = new JScrollPane(tabelaCategorias);
 		scrImagensProd = new JScrollPane(tabelaImagens);
@@ -459,7 +454,7 @@ public class PainelProdutos extends JPanel {
 	}
 
 	// TODO Habilitar histórico de preços
-	public static JTable habilitaTabelaPrecos(Produto prod) {
+	public static void habilitaTabelaPrecos(Produto prod) {
 		tabelaPrecos = new JTable();
 		modeloTabela = new DefaultTableModel();
 		modeloTabela = (DefaultTableModel) tabelaPrecos.getModel();
@@ -467,7 +462,6 @@ public class PainelProdutos extends JPanel {
 		Object colunas[] = {"Nome", "Preço Unitário", "Data"};
 		modeloTabela.setColumnIdentifiers(colunas);
 		tabelaPrecos.setShowGrid(true);
-		tabelaPrecos.setCellSelectionEnabled(false);
 		tabelaPrecos.setModel(modeloTabela);
 		for (int i = 0; i < prod.getListCotacaoProduto().size(); i++) {
 			Object linha[] = {prod.getNome_prod(),
@@ -475,9 +469,9 @@ public class PainelProdutos extends JPanel {
 					prod.getListCotacaoProduto().get(i).getDataHoraMarcacao()};
 			modeloTabela.addRow(linha);
 		}
-
+		tabelaPrecos.setEnabled(false);
 		scrPrecos.setViewportView(tabelaPrecos);
-		return tabelaPrecos;
+
 	}
 
 	// TODO Ler Campos.
@@ -527,6 +521,7 @@ public class PainelProdutos extends JPanel {
 		tabelaCategorias.setShowGrid(true);
 		tabelaCategorias.setModel(modeloTabelaGrupo);
 		tabelaCategorias.setCellSelectionEnabled(false);
+		tabelaCategorias.setEnabled(false);
 		scrCategorias.setViewportView(tabelaCategorias);
 
 	}
@@ -543,7 +538,7 @@ public class PainelProdutos extends JPanel {
 						.setHorizontalAlignment(SwingConstants.LEFT);
 		tabelaImagens.setShowGrid(true);
 		tabelaImagens.setRowHeight(50);
-		tabelaImagens.setCellSelectionEnabled(false);
+		tabelaImagens.setEnabled(false);
 		scrImagensProd.setViewportView(tabelaImagens);
 
 	}
@@ -588,8 +583,8 @@ public class PainelProdutos extends JPanel {
 		cmbSubGrupo.setEnabled(true);
 		btnEditarPreco.setEnabled(true);
 		cmbTabPreco.setEnabled(true);
-		tabelaCategorias.setCellSelectionEnabled(true);
-		tabelaImagens.setCellSelectionEnabled(true);
+		tabelaCategorias.setEnabled(true);
+		tabelaImagens.setEnabled(true);
 		// btnAddCategoria.setEnabled(true);
 	}
 

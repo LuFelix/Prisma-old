@@ -1,0 +1,54 @@
+Conteúdo da requisição e resposta
+
+{
+  "id": "MoCzDm4BpjCQHaR5B15X",
+  "request": {
+    "method": "POST",
+    "entity": {
+      "headers": {
+        "content-length": "[0]",
+        "referer": "[https://ws.sandbox.pagseguro.uol.com.br/v2/sessions?email=correiodolulu@gmail.com&token=7B6A4879E9644A0AB503FB0E54B73502]",
+        "x-forwarded-proto": "[https]",
+        "x-forwarded-port": "[443]",
+        "x-forwarded-for": "[31.220.104.218]",
+        "accept": "[*/*]",
+        "x-real-ip": "[31.220.104.218]",
+        "x-forwarded-server": "[tb-b3-nolan2]",
+        "x-forwarded-host": "[ws.sandbox.pagseguro.uol.com.br]",
+        "host": "[ws.sandbox.pagseguro.uol.com.br]",
+        "content-type": "[application/x-www-form-urlencoded; ]",
+        "accept-encoding": "[deflate, gzip]",
+        "user-agent": "[WordPress/5.0.7; http://stimagazine.com.br/loja]"
+      },
+      "body": "email=correiodolulu%40gmail.com&token=7B6A4879E9644A0AB503FB0E54B73502"
+    },
+    "auth-type": {},
+    "context-path": "",
+    "path-info": {},
+    "path-translated": {},
+    "query-string": "email=correiodolulu@gmail.com&token=7B6A4879E9644A0AB503FB0E54B73502",
+    "remote-user": {},
+    "requested-session-id": {},
+    "request-uri": "/v2/sessions",
+    "request-url": "http://ws.sandbox.pagseguro.uol.com.br/v2/sessions",
+    "servlet-path": "/v2/sessions",
+    "requested-session-id-valid": "false",
+    "requested-session-id-from-cookie": "false",
+    "requested-session-id-from-url": "false"
+  },
+  "response": {
+    "headers": {
+      "Transfer-Encoding": "[chunked]",
+      "Server": "[Apache-Coyote/1.1]",
+      "Cache-Control": "[max-age=180]",
+      "Connection": "[close]",
+      "Vary": "[User-Agent]",
+      "Expires": "[Sun, 27 Oct 2019 19:33:43 GMT]",
+      "Date": "[Sun, 27 Oct 2019 19:30:44 GMT]",
+      "Content-Type": "[application/xml;charset=ISO-8859-1]"
+    },
+    "body": "<?xml version='1.0' encoding='ISO-8859-1' standalone='yes'?><session><id>37a9cd46c7ab4a66919e5247d8e5fc3a</id></session>",
+    "status-code": "200"
+  },
+  "created": "2019-10-27T16:30:44"
+}

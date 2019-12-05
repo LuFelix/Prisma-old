@@ -1,0 +1,28 @@
+04/12/2019 21:22:06 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Iniciando registro de autorizacao
+04/12/2019 21:22:06 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Convertendo valores
+04/12/2019 21:22:06 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Valores convertidos
+04/12/2019 21:22:06 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[FINE]: Parametros: RequestMap{map={reference=REF_001, notificationURL=www.lojatesteste.com.br/notification, redirectURL=www.lojatesteste.com.br, permissions=CREATE_CHECKOUTS}}
+04/12/2019 21:22:08 PagSeguro.br.com.uol.pagseguro.api.http.AuthenticatedHttpClient[INFO]: Correlation Id: 9f05cb73-d665-438a-9048-f5f08b3f5f18
+04/12/2019 21:22:08 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Executando [POST] em [https://ws.sandbox.pagseguro.uol.com.br/v2/authorizations/request?appId=app8602065762&appKey=1DE4E454EAEA9AF0041E2FB2AE54FF49&correlationId=9f05cb73-d665-438a-9048-f5f08b3f5f18]
+04/12/2019 21:22:08 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Abrindo conexao
+04/12/2019 21:22:09 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Escrevendo body
+04/12/2019 21:22:14 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Lendo resposta
+04/12/2019 21:22:14 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Fechando conexao
+04/12/2019 21:22:14 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[FINE]: Resposta: HttpResponse{responseAsString='<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?><authorizationRequest><code>F2AC65668A094FAD86CC5D1ACE03058E</code><date>2019-12-04T21:22:14.000-03:00</date></authorizationRequest>', status=200}
+04/12/2019 21:22:14 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Parseando XML de resposta
+04/12/2019 21:22:15 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Parseamento finalizado
+04/12/2019 21:22:15 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Registro de autorizacao finalizado
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Iniciando registro de autorizacao
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Convertendo valores
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Valores convertidos
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[FINE]: Parametros: RequestMap{map={reference=REF_001, notificationURL=www.lojatesteste.com.br/notification, redirectURL=www.lojatesteste.com.br, permissions=CREATE_CHECKOUTS}}
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.http.AuthenticatedHttpClient[INFO]: Correlation Id: ea3550c2-957c-431f-af80-5ac37ed23048
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Executando [POST] em [https://ws.sandbox.pagseguro.uol.com.br/v2/authorizations/request?appId=app8602065762&appKey=1DE4E454EAEA9AF0041E2FB2AE54FF49&correlationId=ea3550c2-957c-431f-af80-5ac37ed23048]
+04/12/2019 21:33:05 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Abrindo conexao
+04/12/2019 21:33:06 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Escrevendo body
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Lendo resposta
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.http.JSEHttpClient[INFO]: Fechando conexao
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[FINE]: Resposta: HttpResponse{responseAsString='<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?><authorizationRequest><code>94F61D4AA7814894B4AF8C9DA84B21AF</code><date>2019-12-04T21:33:07.000-03:00</date></authorizationRequest>', status=200}
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Parseando XML de resposta
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Parseamento finalizado
+04/12/2019 21:33:07 PagSeguro.br.com.uol.pagseguro.api.application.authorization.AuthorizationsResource[INFO]: Registro de autorizacao finalizado
