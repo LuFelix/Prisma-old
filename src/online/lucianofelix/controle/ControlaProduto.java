@@ -366,7 +366,32 @@ public class ControlaProduto {
 			// txtF09.setText(String.valueOf(valor));
 			PainelProdutos.habilitaTabelaPrecos(prod);
 			funcaoSobrescrever();
-			FrameInicial.getBtnSalvar().doClick();
+			// FrameInicial.getBtnSalvar().doClick();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Problemas: ",
+					" Erro ao Cadastrar: " + e1.getMessage(),
+					JOptionPane.ERROR_MESSAGE);
+		}
+
+	}
+	/**
+	 * Altera o preço do produto lentdo o painel de produtos
+	 */
+	public void alteraPreco() {
+		String data = String.valueOf(new Timestamp(System.currentTimeMillis()))
+				.substring(0, 10);
+		float valor = Float.parseFloat(
+				JOptionPane.showInputDialog("Informe o novo valor:"));
+		prod = PainelProdutos.lerCampos();
+		try {
+			novoPreco(PainelProdutos.getCmbTabPreco().getItemAt(0),
+					Date.valueOf(data), prod.getCodi_prod_1(), valor);
+			carregaDetalhes(prod);
+			// txtF09.setText(String.valueOf(valor));
+			PainelProdutos.habilitaTabelaPrecos(prod);
+			funcaoSobrescrever();
+			// FrameInicial.getBtnSalvar().doClick();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Problemas: ",

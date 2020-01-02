@@ -594,6 +594,7 @@ public class PainelProdutos extends JPanel {
 		txtF02.setEditable(false);
 		txtF03.setEditable(false);
 		txtF03.setText(contProd.criaCodiProd());
+		contProd.reservaCodigo(txtF03.getText());
 		txtF04.setEditable(true);
 		txtF04.grabFocus();
 		txtF05.setEditable(true);
@@ -633,6 +634,7 @@ public class PainelProdutos extends JPanel {
 	public static void limparCampos() {
 		txtF02.setText(null);
 		txtF03.setText(null);
+		txtF04.setText(null);
 		txtF05.setText(null);
 		txtF08.setText(null);
 		txtF06.setText(null);
@@ -644,10 +646,10 @@ public class PainelProdutos extends JPanel {
 		desabilitaTabelaPrecos();
 		desabilitaTabelaCategorias();
 		txtADeTalhes.setText(null);
-		tabelaCategorias = null;
-		tabelaImagens = null;
-		tabelaMovEstoque = null;
-		tabelaPrecos = null;
+		tabelaCategorias = new JTable();
+		tabelaImagens = new JTable(mdlTableProdImg);
+		tabelaMovEstoque = new JTable();
+		tabelaPrecos = new JTable();
 		scrCategorias.setViewportView(tabelaCategorias);
 		scrImagensProd.setViewportView(tabelaImagens);
 		scrPrecos.setViewportView(tabelaPrecos);

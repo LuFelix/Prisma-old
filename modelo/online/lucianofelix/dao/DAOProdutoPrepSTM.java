@@ -164,7 +164,7 @@ public class DAOProdutoPrepSTM {
 	public List<Produto> pesquisaString(String str) {
 		String sql = "select seq_produto, codi_prod_1, nome_prod, desc_prod, aliq_prod, prec_custo, prec_prod_1, codi_ean,detalhes_prod "
 				+ "from produtos "
-				+ "where nome_prod ~* ?  or desc_prod ~* ? or codi_prod_1 ~* ? order by nome_prod;";
+				+ "where nome_prod ~* ?  or desc_prod ~* ? or codi_prod_1 ~* ? or codi_ean ~* ? order by nome_prod;";
 		listProd = new ArrayList<Produto>();
 		c.conectar();
 		try {
@@ -174,6 +174,7 @@ public class DAOProdutoPrepSTM {
 			prepStm.setString(1, str);
 			prepStm.setString(2, str);
 			prepStm.setString(3, str);
+			prepStm.setString(4, str);
 			result = prepStm.executeQuery();
 			while (result.next()) {
 				prod = new Produto();
@@ -239,7 +240,7 @@ public class DAOProdutoPrepSTM {
 
 		String sql = "SELECT produtos.seq_produto, produtos.codi_prod_1, produtos.nome_prod, produtos.desc_prod, produtos.aliq_prod, produtos.prec_custo,produtos.prec_prod_1, produtos.codi_ean,produtos.detalhes_prod, produtos_grupos.codi_produto "
 				+ "FROM produtos, produtos_grupos "
-				+ "WHERE produtos_grupos.codi_grupo = ? and produtos.codi_prod_1 = produtos_grupos.codi_produto;";
+				+ "WHERE produtos_grupos.codi_grupo = ? and produtos.codi_prod_1 = produtos_grupos.codi_produto order by produtos.nome_prod;";
 
 		listProd = new ArrayList<Produto>();
 		c.conectar();
