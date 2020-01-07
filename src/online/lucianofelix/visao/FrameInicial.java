@@ -1301,6 +1301,7 @@ public class FrameInicial {
 		public static void habilitaSomenteNovoBotoes() {
 			btnNovo.setEnabled(true);
 			btnEditar.setEnabled(false);
+			btnCancelar.setEnabled(false);
 			btnSalvar.setEnabled(false);
 			btnExcluir.setEnabled(false);
 

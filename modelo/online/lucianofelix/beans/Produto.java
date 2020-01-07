@@ -12,7 +12,7 @@ public class Produto {
 	private String codi_prod_1; // O principal cÃ³digo do produto.
 	private String codi_prod_2; // Código extra 2 para o produto.
 	private int seq_produto; // Sequencia de inserÃ§Ã£o no banco.
-	private int quantMovimento;// Campo para movimentação do produto
+	private float quantMovimento;// Campo para movimentação do produto
 	private List<ProdutoCotacao> listCotacaoProduto;
 	private List<GrupoSubgrupo> listGrupo;
 	private float prec_custo; // real, -- Preço de custo produto.
@@ -243,7 +243,8 @@ public class Produto {
 	/**
 	 * @return the quantMovimento
 	 */
-	public int getQuantMovimento() {
+	public float getQuantMovimento() {
+
 		return quantMovimento;
 	}
 
@@ -251,7 +252,7 @@ public class Produto {
 	 * @param quantMovimento
 	 *            the quantMovimento to set
 	 */
-	public void setQuantMovimento(int quantMovimento) {
+	public void setQuantMovimento(float quantMovimento) {
 		this.quantMovimento = quantMovimento;
 	}
 

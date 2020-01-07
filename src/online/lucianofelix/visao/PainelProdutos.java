@@ -209,6 +209,7 @@ public class PainelProdutos extends JPanel {
 		});
 		lbl11 = new JLabel("Descrição:");
 		txtF11 = new JTextField();
+		txtF11.setHorizontalAlignment(JTextField.LEFT);
 
 		// btnAddCategoria = new JButton("Adicionar Categoria");
 		// btnAddCategoria.addActionListener(new ActionListener() {
@@ -303,6 +304,7 @@ public class PainelProdutos extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				contProd.alteraPreco(lerCampos());
+				btnEditarPreco.grabFocus();
 			}
 		});
 		btnEditarPreco.addFocusListener(new FocusListener() {

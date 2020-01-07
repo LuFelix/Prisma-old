@@ -19,9 +19,8 @@ import online.lucianofelix.beans.TabelaPreco;
 import online.lucianofelix.dao.DAOTabelaPreco;
 import online.lucianofelix.util.ManipulaData;
 import online.lucianofelix.visao.FrameInicial;
-import online.lucianofelix.visao.PainelOperacao;
-import online.lucianofelix.visao.PainelTabelaPreco;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
+import online.lucianofelix.visao.PainelTabelaPreco;
 
 public class ControlaTabelaPreco {
 
@@ -68,8 +67,9 @@ public class ControlaTabelaPreco {
 		dados = daoTabPreco.pesquisaString("");
 		modelotabela.setColumnIdentifiers(colunas.toArray());
 		for (int i = 0; i < dados.size(); i++) {
-			Object linha[] = { listTabPreco.get(i).getNomeTabela(), String.valueOf(listTabPreco.get(i).getTipoTabela()),
-					listTabPreco.get(i).getCodiLoja() };
+			Object linha[] = {listTabPreco.get(i).getNomeTabela(),
+					String.valueOf(listTabPreco.get(i).getTipoTabela()),
+					listTabPreco.get(i).getCodiLoja()};
 			modelotabela.addRow(linha);
 		}
 		tabela.setShowGrid(true);
@@ -93,25 +93,27 @@ public class ControlaTabelaPreco {
 
 			@Override
 			public void keyReleased(KeyEvent tecla) {
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 					int posicao = tabela.getSelectedRow();
-					PainelOperacao.irParaPoicao(posicao);
+					PainelTabelaPreco.irParaPoicao(posicao);
 				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent tecla) {
 				int posicao = tabela.getSelectedRow();
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 
-					PainelOperacao.irParaPoicao(posicao);
+					PainelTabelaPreco.irParaPoicao(posicao);
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
-					PainelOperacao.irParaPoicao(posicao);
-					PainelOperacao.getBtnEditar().doClick();
-					FrameInicial.getTabela().changeSelection(--posicao, 0, false, false);
-					PainelOperacao.getTxtFNomeProd().grabFocus();
+					PainelTabelaPreco.irParaPoicao(posicao);
+					FrameInicial.getTabela().changeSelection(--posicao, 0,
+							false, false);
+
 				}
 			}
 		});
@@ -154,8 +156,9 @@ public class ControlaTabelaPreco {
 		listTabPreco = daoTabPreco.pesquisaString(nome);
 		modelotabela.setColumnIdentifiers(colunas.toArray());
 		for (int i = 0; i < listTabPreco.size(); i++) {
-			Object linha[] = { listTabPreco.get(i).getNomeTabela(), listTabPreco.get(i).getTipoTabela(),
-					listTabPreco.get(i).getClasseTabela() };
+			Object linha[] = {listTabPreco.get(i).getNomeTabela(),
+					listTabPreco.get(i).getTipoTabela(),
+					listTabPreco.get(i).getClasseTabela()};
 			modelotabela.addRow(linha);
 		}
 		tabela.setShowGrid(true);
@@ -170,13 +173,16 @@ public class ControlaTabelaPreco {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!PainelTabelaPreco.getDataInicio().equals("") & !PainelTabelaPreco.getDataFim().equals("")) {
+				if (!PainelTabelaPreco.getDataInicio().equals("")
+						& !PainelTabelaPreco.getDataFim().equals("")) {
 					try {
 						tabPreco = PainelTabelaPreco.lerCampos();
 						daoTabPreco.cadastrar(tabPreco);
 						PainelTabelaPreco.limparCampos();
-						FrameInicial.setTabela(pesqNomeTabela(tabPreco.getCodiTabela()));
-						FrameInicial.setPainelVisualiza(new PainelTabelaPreco(tabPreco.getCodiTabela()));
+						FrameInicial.setTabela(
+								pesqNomeTabela(tabPreco.getCodiTabela()));
+						FrameInicial.setPainelVisualiza(new PainelTabelaPreco(
+								tabPreco.getCodiTabela()));
 						FrameInicial.atualizaTela();
 						PainelTabelaPreco.desHabilitaEdicao();
 						JOptionPane.showMessageDialog(null, "Feito!");
@@ -185,13 +191,16 @@ public class ControlaTabelaPreco {
 						FrameInicial.getBtnNovo().grabFocus();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Problemas: Codigo Nulo ou Duplicado", "Erro ao Cadastrar",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"Problemas: Codigo Nulo ou Duplicado",
+								"Erro ao Cadastrar", JOptionPane.ERROR_MESSAGE);
 					}
 
 				} else {
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel concluir!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel concluir!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 
@@ -204,27 +213,33 @@ public class ControlaTabelaPreco {
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!PainelTabelaPreco.getTxtFCodiTabela().getText().equals("")) {
+				if (!PainelTabelaPreco.getTxtFCodiTabela().getText()
+						.equals("")) {
 					tabPreco = PainelTabelaPreco.lerCampos();
 					try {
 						daoTabPreco.alterar(tabPreco);
 						PainelTabelaPreco.limparCampos();
 						PainelTabelaPreco.desHabilitaEdicao();
-						FrameInicial.setTabela(pesqNomeTabela(tabPreco.getCodiTabela()));
-						FrameInicial.setPainelVisualiza(new PainelTabelaPreco(tabPreco.getCodiTabela()));
+						FrameInicial.setTabela(
+								pesqNomeTabela(tabPreco.getCodiTabela()));
+						FrameInicial.setPainelVisualiza(new PainelTabelaPreco(
+								tabPreco.getCodiTabela()));
 						FrameInicial.atualizaTela();
 						JOptionPane.showMessageDialog(null, "Feito!");
 						iniciar();
 					} catch (Exception e2) {
 						PainelTabelaPreco.desHabilitaEdicao();
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Erro ao gravar\n" + e2.getMessage(), "Erro",
+						JOptionPane.showMessageDialog(null,
+								"Erro ao gravar\n" + e2.getMessage(), "Erro",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
 					PainelTabelaPreco.desHabilitaEdicao();
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel alterar!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel alterar!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 
@@ -233,8 +248,10 @@ public class ControlaTabelaPreco {
 
 	public String criaCodigo() {
 		Calendar c = Calendar.getInstance();
-		String codiOperacao = String.valueOf(daoTabPreco.consultaUltimo()) + String.valueOf(c.get(Calendar.YEAR))
-				+ String.valueOf(c.get(Calendar.MONTH)) + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+		String codiOperacao = String.valueOf(daoTabPreco.consultaUltimo())
+				+ String.valueOf(c.get(Calendar.YEAR))
+				+ String.valueOf(c.get(Calendar.MONTH))
+				+ String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 		return codiOperacao;
 	}
 
@@ -244,7 +261,8 @@ public class ControlaTabelaPreco {
 			daoTabPreco.remover(tabPreco);
 			JOptionPane.showMessageDialog(null, "Feito!");
 		} catch (SQLException e1) {
-			JOptionPane.showMessageDialog(null, "Problemas: Erro de acesso ao banco", "Erro ao Excluir",
+			JOptionPane.showMessageDialog(null,
+					"Problemas: Erro de acesso ao banco", "Erro ao Excluir",
 					JOptionPane.ERROR_MESSAGE);
 			e1.printStackTrace();
 		}
@@ -301,15 +319,18 @@ public class ControlaTabelaPreco {
 					// pergunta se quer mesmo encerrar a adição
 				} else if (tecla.getExtendedKeyCode() == 10) {// enter
 					FrameInicial.getTabela().grabFocus();
-					FrameInicial.getTabela().changeSelection(0, 0, false, false);
+					FrameInicial.getTabela().changeSelection(0, 0, false,
+							false);
 				} else if (tecla.getExtendedKeyCode() == 40 // seta para baixo
 						| tecla.getExtendedKeyCode() == 38) { // seta cima
 					FrameInicial.getTabela().grabFocus();
-					FrameInicial.getTabela().changeSelection(0, 0, false, false);
+					FrameInicial.getTabela().changeSelection(0, 0, false,
+							false);
 				} else {
 					nome = FrameInicial.getTxtfPesquisa().getText();
 					FrameInicial.setTabela(pesqNomeTabela(nome));
-					FrameInicial.setPainelVisualiza(new PainelTabelaPreco(nome));
+					FrameInicial
+							.setPainelVisualiza(new PainelTabelaPreco(nome));
 					FrameInicial.atualizaTela();
 				}
 			}

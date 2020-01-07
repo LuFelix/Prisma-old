@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,36 @@ public class DAOProdutosCotacao {
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		c2 = new ConexaoSTM(ConfigS.getBdPg(), "siacecf");
 	}
+	public ProdutoCotacao consultaUltCotVend(Produto prod) {
+		c.conectar();
+		System.out.println("Valor do Produto >>>>>>>>>>>>>>>>>>>>>>>>>>      "
+				+ prod.getPrec_prod_1());
+		String sql = "SELECT * FROM produtos_cotacoes where codi_produto = ? and data_hora_marcacao = (Select max(data_hora_marcacao) from produtos_cotacoes where codi_produto = ?);";
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, prod.getCodi_prod_1());
+			prepStm.setString(2, prod.getCodi_prod_1());
+			ResultSet rs = prepStm.executeQuery();
+			c.desconectar();
+			if (rs.first()) {
+
+				cot = new ProdutoCotacao();
+				cot.setDataHoraMarcacao(rs.getTimestamp("data_hora_marcacao"));
+				cot.setValor(rs.getFloat("valor"));
+
+				System.out.println(
+						"Valor da última cotação de venda >>>>>>>>>>      "
+								+ cot.getValor());
+
+			}
+			return cot;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public void novoPrecoProduto(String codiTabela, Date dataHoraMarcaca,
 			String codiProduto, float valor) throws SQLException {
@@ -34,6 +65,32 @@ public class DAOProdutosCotacao {
 		prepStm = c.getCon().prepareStatement(sql);
 		prepStm.setString(1, codiTabela);
 		prepStm.setDate(2, dataHoraMarcaca);
+		prepStm.setString(3, codiProduto);
+		prepStm.setFloat(4, valor);
+		prepStm.executeUpdate();
+		c.desconectar();
+	}
+	public void novoPrecoProduto(String codiTabela, String dataHoraMarcaca,
+			String codiProduto, float valor) throws SQLException {
+		String sql = "insert into produtos_cotacoes (codi_tabela, data_hora_marcacao, codi_produto, valor) "
+				+ "values (?,?,?,?);";
+		c.conectar();
+		prepStm = c.getCon().prepareStatement(sql);
+		prepStm.setString(1, codiTabela);
+		prepStm.setString(2, dataHoraMarcaca);
+		prepStm.setString(3, codiProduto);
+		prepStm.setFloat(4, valor);
+		prepStm.executeUpdate();
+		c.desconectar();
+	}
+	public void novoPrecoProduto(String codiTabela, Timestamp dataHoraMarcaca,
+			String codiProduto, float valor) throws SQLException {
+		String sql = "insert into produtos_cotacoes (codi_tabela, data_hora_marcacao, codi_produto, valor) "
+				+ "values (?,?,?,?);";
+		c.conectar();
+		prepStm = c.getCon().prepareStatement(sql);
+		prepStm.setString(1, codiTabela);
+		prepStm.setTimestamp(2, dataHoraMarcaca);
 		prepStm.setString(3, codiProduto);
 		prepStm.setFloat(4, valor);
 		prepStm.executeUpdate();
@@ -58,7 +115,8 @@ public class DAOProdutosCotacao {
 					cot.setSeqCotacaoProduto(
 							res.getInt("seq_produtos_cotacoes"));
 					cot.setCodiTabela(res.getString("codi_tabela"));
-					cot.setDataHoraMarcacao(res.getDate("data_hora_marcacao"));
+					cot.setDataHoraMarcacao(
+							res.getTimestamp("data_hora_marcacao"));
 					cot.setValor(res.getFloat("valor"));
 					listCot.add(cot);
 				} while (res.next());
@@ -97,7 +155,8 @@ public class DAOProdutosCotacao {
 					cot.setSeqCotacaoProduto(
 							res.getInt("seq_produtos_cotacoes"));
 					cot.setCodiTabela(res.getString("codi_tabela"));
-					cot.setDataHoraMarcacao(res.getDate("data_hora_marcacao"));
+					cot.setDataHoraMarcacao(
+							res.getTimestamp("data_hora_marcacao"));
 					cot.setValor(res.getFloat("valor"));
 					listCot.add(cot);
 				} while (res.next());
@@ -136,7 +195,8 @@ public class DAOProdutosCotacao {
 					cot.setCodiProduto(res.getString("codi_produto"));
 					cot.setSeqCotacaoProduto(res.getInt("seq_cotacao_produto"));
 					cot.setCodiTabela(res.getString("codi_tabela"));
-					cot.setDataHoraMarcacao(res.getDate("data_hora_marcacao"));
+					cot.setDataHoraMarcacao(
+							res.getTimestamp("data_hora_marcacao"));
 					cot.setValor(res.getFloat("valor"));
 					listCot.add(cot);
 				} while (res.next());
@@ -176,7 +236,8 @@ public class DAOProdutosCotacao {
 					cot.setSeqCotacaoProduto(
 							res.getInt("seq_produtos_cotacoes"));
 					cot.setCodiTabela(res.getString("codi_tabela"));
-					cot.setDataHoraMarcacao(res.getDate("data_hora_marcacao"));
+					cot.setDataHoraMarcacao(
+							res.getTimestamp("data_hora_marcacao"));
 					cot.setValor(res.getFloat("valor"));
 					listCot.add(cot);
 				} while (res.next());

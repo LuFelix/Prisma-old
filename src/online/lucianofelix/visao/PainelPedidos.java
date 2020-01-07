@@ -100,7 +100,7 @@ public class PainelPedidos extends JPanel {
 
 	private static ControlaListaPedidos controledaLista;
 	private static ControlaPedido contPedi;
-	private ControlaProduto contProd;
+	private static ControlaProduto contProd;
 	private static Pedido pedi;
 	private static DAOPedidoPrepSTM daoPedi;
 	private static DAOTabelaPreco daoTabPreco;
@@ -111,8 +111,9 @@ public class PainelPedidos extends JPanel {
 
 	private JLabel lblPrecoPedido;
 	private JButton btnCapturaQRCupom;
+
 	private static float totalPedido;
-	private static int quantProdutos;
+	private static float quantProdutos;
 	private static int numTab;
 
 	// Painel de Visualiza do pedido;
@@ -133,6 +134,7 @@ public class PainelPedidos extends JPanel {
 				new Font("Times New Roman", Font.BOLD, 12));
 		// Controle
 		contPedi = new ControlaPedido();
+		contProd = new ControlaProduto();
 		controledaLista = new ControlaListaPedidos(listPedi);
 		daoTabPreco = new DAOTabelaPreco();
 		daoCondPagamento = new DAOCondPagamento();
@@ -341,19 +343,27 @@ public class PainelPedidos extends JPanel {
 	// TODO Editar lista de ítens do pedido
 	public static void adicionaItem(Produto prod) {
 		// Tratar se o usuário cancelar ou digitar letras ou 0
-		System.out.println("PainelPedido.adicionarItem");
-		prod.setQuantMovimento(Integer
-				.parseInt(JOptionPane.showInputDialog(null, "QUANTIDADE")));
-		System.out.println("Trabalhando no pedido: " + pedi.getCodiPedi());
-		for (Produto produto : pedi.getItensProduto()) {
-			System.out.println("Produto na lista: " + produto.getNome_prod()
-					+ " :::: " + produto.getQuantMovimento());
-			if (produto.equals(prod)) {
-				System.out.println("Produto igual a " + produto.getNome_prod());
-			}
-			System.out.println(
-					"Produto não encontrado ::::: " + prod.getNome_prod());
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>>>>>  PainelPedido.adicionarItem");
+		if (contProd.consultaUltimoPreco(prod)) {
+			prod.setQuantMovimento(Float.parseFloat(
+					JOptionPane.showInputDialog(null, "QUANTIDADE")));
+			System.out.println(">>>>>>>>>>>>>>>>>>>>      quantidade inserida"
+					+ prod.getQuantMovimento());
+			for (Produto produto : pedi.getItensProduto()) {
+				System.out.println("Produto na lista: " + produto.getNome_prod()
+						+ " :::: " + produto.getQuantMovimento());
+				if (produto.equals(prod)) {
+					System.out.println(
+							"Produto igual a " + produto.getNome_prod());
+				}
+				System.out.println(
+						"Produto não encontrado ::::: " + prod.getNome_prod());
 
+			}
+
+		} else {
+			// contProd.alteraPreco();
 		}
 		if (!pedi.getItensProduto().contains(prod)) {
 			pedi.getItensProduto().add(prod);
@@ -422,9 +432,11 @@ public class PainelPedidos extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int posicao = tbl01.getSelectedRow();
-				adicionaItem(pedi.getItensProduto().get(posicao));
-				carregarCampos(pedi);
+				if (tbl01.isEnabled()) {
+					int posicao = tbl01.getSelectedRow();
+					adicionaItem(pedi.getItensProduto().get(posicao));
+					carregarCampos(pedi);
+				}
 
 			}
 		});
@@ -519,16 +531,19 @@ public class PainelPedidos extends JPanel {
 				& !txtFNomeCliente.equals(null)) {
 			pedi.setxNome(txtFNomeCliente.getText());
 		}
-		if (!txtFQuantItens.getText().equals(null)
-				& !txtFQuantItens.getText().equals("")) {
-			pedi.setQuantItens(Integer.parseInt(txtFQuantItens.getText()));
-		}
+		// if (!txtFQuantItens.getText().equals(null)
+		// & !txtFQuantItens.getText().equals("")) {
+		// pedi.setQuantItens(Float.parseFloat(txtFQuantItens.getText()));
+		// }
 		if (!txtFPrecopedi.getText().equals(null)
 				& !txtFPrecopedi.getText().equals("")) {
 			pedi.setTotalPedi(Float.parseFloat(txtFPrecopedi.getText()));
 		}
-		pedi.setCodiTabPreco(daoTabPreco
-				.pesquisaCodigoNome(cmbTabPreco.getSelectedItem().toString()));
+		if (cmbTabPreco.getSelectedItem().toString() != null) {
+			pedi.setCodiTabPreco(daoTabPreco.pesquisaCodigoNome(
+					cmbTabPreco.getSelectedItem().toString()));
+
+		}
 		pedi.setObsPedi1(txtAreaObsPedido.getText());
 		return pedi;
 	}

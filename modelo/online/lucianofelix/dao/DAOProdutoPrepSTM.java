@@ -306,6 +306,31 @@ public class DAOProdutoPrepSTM {
 			return null;
 		}
 	}
+	/**
+	 * Pesquisa se o produto existe
+	 * 
+	 * @param codiProduto
+	 * @return Boolean
+	 */
+	public Boolean existe(String codiProduto) {
+		prod = new Produto();
+		c2.conectStm();
+		result = c2.query("SELECT * FROM produtos WHERE codi_prod_1 ='"
+				+ codiProduto + "';");
+		c2.disconect();
+		try {
+			if (result.next()) {
+
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			c2.disconect();
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	/**
 	 * Reserva um código para inserir o produto

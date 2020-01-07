@@ -42,6 +42,7 @@ public class ManipulaData {
 	 * @return
 	 */
 	public java.sql.Date sqlDate(java.util.Date data) {
+		System.out.println(data.getTime());
 		java.sql.Date dataSql = new java.sql.Date(data.getTime());
 		return dataSql;
 	}
@@ -54,26 +55,26 @@ public class ManipulaData {
 
 		switch (numDiaSemana) {
 
-		case 1:
-			diaSemana = "Domingo";
-			break;
-		case 2:
-			diaSemana = "Segunda-Feira";
-			break;
-		case 3:
-			diaSemana = "Terça-Feira";
-			break;
-		case 4:
-			diaSemana = "Quarta-Feira";
-			break;
-		case 5:
-			diaSemana = "Quinta-Feira";
-			break;
-		case 6:
-			diaSemana = "Sexta-Feira";
-			break;
-		case 7:
-			diaSemana = "Sábado";
+			case 1 :
+				diaSemana = "Domingo";
+				break;
+			case 2 :
+				diaSemana = "Segunda-Feira";
+				break;
+			case 3 :
+				diaSemana = "Terça-Feira";
+				break;
+			case 4 :
+				diaSemana = "Quarta-Feira";
+				break;
+			case 5 :
+				diaSemana = "Quinta-Feira";
+				break;
+			case 6 :
+				diaSemana = "Sexta-Feira";
+				break;
+			case 7 :
+				diaSemana = "Sábado";
 
 		}
 		return diaSemana;
@@ -373,7 +374,8 @@ public class ManipulaData {
 	public Timestamp converteDataTimestamp(String entraData) throws Exception {
 		System.out.println("Data para converter para timestamp: " + entraData);
 		manData = new ManipulaData();
-		Timestamp dataTimestamp = Timestamp.valueOf(manData.inverteData7(entraData) + " 00:00:00");
+		Timestamp dataTimestamp = Timestamp
+				.valueOf(manData.inverteData7(entraData) + " 00:00:00");
 		return dataTimestamp;
 	}
 

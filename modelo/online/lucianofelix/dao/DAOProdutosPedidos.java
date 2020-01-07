@@ -37,7 +37,7 @@ public class DAOProdutosPedidos {
 			prepStm.setString(1, codiPedi);
 			prepStm.setString(2, itensProduto[i].getCodi_prod_1());
 			prepStm.setFloat(3, itensProduto[i].getPrec_prod_1());
-			prepStm.setInt(4, itensProduto[i].getQuantMovimento());
+			prepStm.setFloat(4, itensProduto[i].getQuantMovimento());
 			prepStm.executeUpdate();
 		}
 		c.desconectar();
@@ -51,7 +51,7 @@ public class DAOProdutosPedidos {
 		prepStm.setString(1, pedi.getCodiPedi());
 		prepStm.setString(2, prod.getCodi_prod_1());
 		prepStm.setFloat(3, prod.getPrec_prod_1());
-		prepStm.setInt(4, prod.getQuantMovimento());
+		prepStm.setFloat(4, prod.getQuantMovimento());
 		prepStm.setString(5, prod.getNome_prod());
 		prepStm.executeUpdate();
 		c.desconectar();
@@ -72,7 +72,7 @@ public class DAOProdutosPedidos {
 			prepStm.setString(4, itensProduto[i].getDesc_prod());
 			prepStm.setFloat(5, itensProduto[i].getPrec_prod_1());
 			prepStm.setString(6, itensProduto[i].getAliq_prod());
-			prepStm.setInt(7, itensProduto[i].getQuantMovimento());
+			prepStm.setFloat(7, itensProduto[i].getQuantMovimento());
 			prepStm.executeUpdate();
 		}
 		c.desconectar();
@@ -134,10 +134,10 @@ public class DAOProdutosPedidos {
 	// Alterar a quantidade do ítem
 	public void alterarQuantItem(Pedido pedi, Produto prod) {
 		c.conectar();
-		String sql = "update produtos_pedidos  set quant_itens =? where codi_pedido=? and codi_prod_1=?;";
+		String sql = "update produtos_pedidos set quant_itens =? where codi_pedido=? and codi_prod_1=?;";
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setInt(1, prod.getQuantMovimento());
+			prepStm.setFloat(1, prod.getQuantMovimento());
 			prepStm.setString(2, pedi.getCodiPedi());
 			prepStm.setString(3, prod.getCodi_prod_1());
 			prepStm.executeUpdate();

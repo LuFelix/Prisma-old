@@ -1,12 +1,12 @@
 package online.lucianofelix.beans;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class ProdutoCotacao {
 	private int seqCotacaoProduto; // Sequencia de gravação dos preços.
 	private float valor; // O valor do produto nesta data;
 	private String codiTabela;// Referência à tabela qual o preço compõe.
-	private Date dataHoraMarcacao; // Data e hora em que esse preço foi gravado.
+	private Timestamp dataHoraMarcacao; // Data e hora da marcação
 	private String codiServico;// Referência para a tabela de serviços.
 	private String codiProduto; // Referência para a tabela de produtos.
 	private String descPreco;// Descrição para o preço.
@@ -35,11 +35,11 @@ public class ProdutoCotacao {
 		this.codiTabela = codiTabela;
 	}
 
-	public Date getDataHoraMarcacao() {
+	public Timestamp getDataHoraMarcacao() {
 		return dataHoraMarcacao;
 	}
 
-	public void setDataHoraMarcacao(Date dataHoraMarcacao) {
+	public void setDataHoraMarcacao(Timestamp dataHoraMarcacao) {
 		this.dataHoraMarcacao = dataHoraMarcacao;
 	}
 
