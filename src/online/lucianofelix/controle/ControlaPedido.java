@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import online.lucianofelix.dao.DAOLancamento;
 import online.lucianofelix.dao.DAOPedidoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosEstoque;
 import online.lucianofelix.dao.DAOProdutosPedidos;
+import online.lucianofelix.tableModels.commom.TableModelProdutosPedidos;
 import online.lucianofelix.util.CapturaQR;
 import online.lucianofelix.visao.AbaNegocios;
 import online.lucianofelix.visao.FrameInicial;
@@ -34,6 +36,9 @@ public class ControlaPedido {
 	DAOPedidoPrepSTM daoPedi;
 	ControlaListaPedidos clistPedi;
 	private JTable tabela;
+	private JTable tabelaPag;
+	private JTable tabelaProdutosPedido;
+	private TableModelProdutosPedidos tblMDItensPedido;
 	List<Pedido> listPedi;
 	private DAOProdutosPedidos daoProdPedi;
 	private DAOProdutosEstoque daoProdEstoque;
@@ -114,6 +119,10 @@ public class ControlaPedido {
 			}
 		});
 
+	}
+	public boolean gravarTabPreco(Pedido p) {
+		daoPedi.alterar(p);
+		return true;
 	}
 
 	public boolean funcaoExcluir(Pedido pedi) {
@@ -212,7 +221,7 @@ public class ControlaPedido {
 		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelPedidos.habilitaNovo();
 				FrameInicial.pesquisaProdutoAdicaoItem();
 				funcaoSalvar();
@@ -236,13 +245,26 @@ public class ControlaPedido {
 	// TODO Ajustar largura colunas
 	private void ajusta_tamanho_coluna() {
 		// tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tabela.getColumnModel().getColumn(0).setPreferredWidth(60);
-		tabela.getColumnModel().getColumn(1).setPreferredWidth(220);
-		tabela.getColumnModel().getColumn(2).setPreferredWidth(70);
+		tabela.getColumnModel().getColumn(0).setPreferredWidth(40);
+		tabela.getColumnModel().getColumn(1).setPreferredWidth(180);
+		tabela.getColumnModel().getColumn(2).setPreferredWidth(50);
 		tabela.getColumnModel().getColumn(3).setPreferredWidth(100);
 		// tabela.getColumnModel().getColumn(4).setPreferredWidth(300);
 		// tabela.getColumnModel().getColumn(5).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(6).setPreferredWidth(80);
+	}
+
+	/**
+	 * 
+	 * @param pedido
+	 * @return tabelaItensPedido
+	 * 
+	 */
+	public JTable atualizaTabelaItensPedido(Pedido pedido) {
+		tblMDItensPedido = new TableModelProdutosPedidos(pedido);
+		tabelaProdutosPedido = new JTable(tblMDItensPedido);
+		return tabelaProdutosPedido;
+
 	}
 
 	// TODO Tabela de pesquisa por nome filtra tipo
@@ -389,7 +411,8 @@ public class ControlaPedido {
 
 	// TODO Alterar a quantidade do ítem.
 	public void alterarQuantProd(Pedido pedi, Produto prod) {
-		if (prod.getQuantMovimento() <= 0) {
+
+		if (prod.getQuantMovimento().compareTo(new BigDecimal(0)) == 0) {
 			daoProdPedi.removerItem(pedi, prod);
 		} else {
 			daoProdPedi.alterarQuantItem(pedi, prod);

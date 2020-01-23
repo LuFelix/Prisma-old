@@ -6,14 +6,12 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -33,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -47,14 +46,15 @@ import online.lucianofelix.controle.ControlaLancamento;
 import online.lucianofelix.controle.ControlaListaPedidos;
 import online.lucianofelix.controle.ControlaPedido;
 import online.lucianofelix.controle.ControlaProduto;
+import online.lucianofelix.controle.ControlaTabelaPreco;
 import online.lucianofelix.dao.DAOCondPagamento;
 import online.lucianofelix.dao.DAOPedidoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosEstoque;
 import online.lucianofelix.dao.DAOTabelaPreco;
+import online.lucianofelix.util.JTextFieldMaiusculas;
 
 public class PainelPedidos extends JPanel {
 
-	private JLabel lblImagem;
 	private JLabel lblTituloTela;
 	private JLabel lblLogoEmpresa;
 	private JLabel lblCodigopedi;
@@ -71,13 +71,12 @@ public class PainelPedidos extends JPanel {
 	private static JTextField txtFNomeCliente;
 	private static JTextField txtfUsuario;
 	private static JTextField txtFQuantItens;
-	private static JTextField txtFPrecopedi;
+	private static JLabel txtFPrecopedi;
 
 	private static JScrollPane scrObsPedido;
 	private static JComboBox<String> cmbTipoPedido;
-	private static JComboBox<String> cmbTabPreco;
+	private static JLabel lblTabPreco;
 
-	private static JScrollPane scrImagem;
 	private static JScrollPane scrP01;
 	private static JScrollPane scrP02;
 	private static JScrollPane scrP03;
@@ -101,6 +100,7 @@ public class PainelPedidos extends JPanel {
 	private static ControlaListaPedidos controledaLista;
 	private static ControlaPedido contPedi;
 	private static ControlaProduto contProd;
+	private static ControlaTabelaPreco contTPreco;
 	private static Pedido pedi;
 	private static DAOPedidoPrepSTM daoPedi;
 	private static DAOTabelaPreco daoTabPreco;
@@ -110,10 +110,11 @@ public class PainelPedidos extends JPanel {
 	int tam;
 
 	private JLabel lblPrecoPedido;
-	private JButton btnCapturaQRCupom;
+	private static JButton btnCapturaQRCupom;
 
-	private static float totalPedido;
-	private static float quantProdutos;
+	private static BigDecimal totalPedido;
+	private static BigDecimal quant;
+	private static int nItens;
 	private static int numTab;
 
 	// Painel de Visualiza do pedido;
@@ -137,9 +138,8 @@ public class PainelPedidos extends JPanel {
 		contProd = new ControlaProduto();
 		controledaLista = new ControlaListaPedidos(listPedi);
 		daoTabPreco = new DAOTabelaPreco();
+		contTPreco = new ControlaTabelaPreco();
 		daoCondPagamento = new DAOCondPagamento();
-		listTabPreco = new ArrayList<TabelaPreco>(
-				daoTabPreco.pesquisaString(""));
 		contLanc = new ControlaLancamento();
 		daoProdEstoque = new DAOProdutosEstoque();
 
@@ -157,24 +157,22 @@ public class PainelPedidos extends JPanel {
 						+ " - " + String.valueOf(
 								Calendar.getInstance().get(Calendar.YEAR)))));
 		lblData.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+		lblTabPreco = new JLabel("Tabela de Preços:");
+		lblTabPreco.setFont(new Font("Times New Roman", Font.BOLD, 16));
+		lblTabPreco.setForeground(Color.RED);
 		lblCodigopedi = new JLabel("Código do Pedido:");
 		txtFCodigoPedi = new JTextField();
 		lblCodiCliente = new JLabel("Código Cliente: ");
 		txtFCodiCliente = new JTextField();
-		txtFCodiCliente.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				// TODO txtfCliente ao perder foco
-			}
+		txtFCodiCliente.addFocusListener(new FocusAdapter() {
 
-			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO txtfCliente ao receber foco
 				FrameInicial.pesquisaUsuarioAdicionarAOPedido();
 			}
 		});
 		lblCliente = new JLabel("Nome Cliente: ");
-		txtFNomeCliente = new JTextField();
+		txtFNomeCliente = new JTextFieldMaiusculas();
 		lblQuantItens = new JLabel("Quantidade de ítens: ");
 		txtFQuantItens = new JTextField();
 		txtFQuantItens.setHorizontalAlignment(JTextField.RIGHT);
@@ -182,41 +180,23 @@ public class PainelPedidos extends JPanel {
 		txtFQuantItens.setEditable(false);
 		lblPrecoPedido = new JLabel("TOTAL: ");
 		lblPrecoPedido.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		txtFPrecopedi = new JTextField();
+		txtFPrecopedi = new JLabel();
 		txtFPrecopedi.setFont(new Font("Times New Roman", Font.BOLD, 28));
 		txtFPrecopedi.setForeground(Color.RED);
 		txtFPrecopedi.setHorizontalAlignment(JTextField.RIGHT);
-		txtFPrecopedi.setEditable(false);
+		txtFPrecopedi.setPreferredSize(getMinimumSize());
 
-		cmbTabPreco = new JComboBox<String>();
-		cmbTabPreco.addItem("Tabela de Preços");
-		for (int i = 0; i < listTabPreco.size(); i++) {
-			cmbTabPreco.addItem(listTabPreco.get(i).getNomeTabela());
-		}
-		cmbTabPreco.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				// JOptionPane.showMessageDialog(null, "Alterando para " +
-				// cmbTabPreco.getSelectedItem());
-			}
-		});
 		btnCapturaQRCupom = new JButton("Captura QR");
 
 		// TODO Configuração do Painel Superior
 		lblLogoEmpresa = new JLabel(
 				new ImageIcon("C:\\SIMPRO\\img\\logo\\perfilsti180X180.jpg"));
-
-		lblLogoEmpresa.setSize(new Dimension(200, 200));
-		scrImagem = new JScrollPane(lblLogoEmpresa);
-		scrImagem.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+		lblLogoEmpresa.setSize(new Dimension(400, 400));
+		lblLogoEmpresa.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppImagem.add(lblTituloTela);
 
-		sppImagem.add(scrImagem);
+		sppImagem.add(lblLogoEmpresa);
 		sppImagem.setDividerLocation(50);
 		sppImagem.setEnabled(false);
 		sppImagem.setBackground(Color.WHITE);
@@ -229,6 +209,8 @@ public class PainelPedidos extends JPanel {
 		pnlGrid.setBackground(Color.WHITE);
 		pnlGrid.add(lblTipoPedido);
 		pnlGrid.add(lblData);
+		pnlGrid.add(lblTabPreco);
+		pnlGrid.add(btnCapturaQRCupom);
 		pnlGrid.add(lblCodigopedi);
 		pnlGrid.add(txtFCodigoPedi);
 		pnlGrid.add(lblCodiCliente);
@@ -239,9 +221,6 @@ public class PainelPedidos extends JPanel {
 		pnlGrid.add(txtFQuantItens);
 		pnlGrid.add(lblPrecoPedido);
 		pnlGrid.add(txtFPrecopedi);
-
-		pnlGrid.add(cmbTabPreco);
-		pnlGrid.add(btnCapturaQRCupom);
 
 		sppSuperior = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		sppSuperior.setDividerLocation(200);
@@ -341,29 +320,85 @@ public class PainelPedidos extends JPanel {
 	}
 
 	// TODO Editar lista de ítens do pedido
-	public static void adicionaItem(Produto prod) {
+	// public static void adicionaItem(Produto prod) {
+	// // Tratar se o usuário cancelar ou digitar letras ou 0
+	// System.out.println(
+	// ">>>>>>>>>>>>>>>>>>>>>>>> PainelPedido.adicionarItem");
+	// if (contProd.consultaUltimoPreco(prod)) {
+	// prod.setQuantMovimento(new BigDecimal(
+	// JOptionPane.showInputDialog(null, "QUANTIDADE")));
+	// System.out.println(">>>>>>>>>>>>>>>>>>>> quantidade inserida"
+	// + prod.getQuantMovimento());
+	// for (Produto produto : pedi.getItensProduto()) {
+	// System.out.println("Produto na lista: " + produto.getNome_prod()
+	// + " :::: " + produto.getQuantMovimento());
+	// if (produto.equals(prod)) {
+	// System.out.println(
+	// "Produto igual a " + produto.getNome_prod());
+	// }
+	// System.out.println(
+	// "Produto não encontrado ::::: " + prod.getNome_prod());
+	//
+	// }
+	//
+	// } else {
+	// // contProd.alteraPreco();
+	// }
+	// if (!pedi.getItensProduto().contains(prod)) {
+	// pedi.getItensProduto().add(prod);
+	// contPedi.adicionaItemProduto(pedi, prod);
+	// daoProdEstoque.novoMovProdEstoque("Padrao", null,
+	// prod.getCodi_prod_1(), pedi.getQuantItens(),
+	// pedi.getCodiPedi(), "Sai");
+	// } else {
+	// contPedi.alterarQuantProd(pedi, prod);
+	// }
+	// atualizaTabelaItensPedido(pedi);
+	// }
+	public static void adicionaItem(Produto prod, String nomeTabela) {
 		// Tratar se o usuário cancelar ou digitar letras ou 0
 		System.out.println(
 				">>>>>>>>>>>>>>>>>>>>>>>>  PainelPedido.adicionarItem");
-		if (contProd.consultaUltimoPreco(prod)) {
-			prod.setQuantMovimento(Float.parseFloat(
-					JOptionPane.showInputDialog(null, "QUANTIDADE")));
-			System.out.println(">>>>>>>>>>>>>>>>>>>>      quantidade inserida"
-					+ prod.getQuantMovimento());
-			for (Produto produto : pedi.getItensProduto()) {
-				System.out.println("Produto na lista: " + produto.getNome_prod()
-						+ " :::: " + produto.getQuantMovimento());
-				if (produto.equals(prod)) {
-					System.out.println(
-							"Produto igual a " + produto.getNome_prod());
-				}
-				System.out.println(
-						"Produto não encontrado ::::: " + prod.getNome_prod());
 
+		if (nomeTabela.equals("Selecionar Tabela")) {
+			nomeTabela = contTPreco.selecionaNomeTabelaPreco();
+			lblTabPreco.setText(nomeTabela);
+			contPedi.gravarTabPreco(leCampos());
+		} else {
+			boolean resp = contProd.consultaUltimoPreco(prod, nomeTabela);
+			if ((resp != false)) {
+				BigDecimal quant = new BigDecimal(
+						JOptionPane.showInputDialog(null, "QUANTIDADE"));
+				if (quant.compareTo(new BigDecimal(0)) < 0 | quant.equals(null)
+						| quant.equals("")) {
+					JOptionPane.showMessageDialog(null,
+							"Verifique a quantidade inserida " + quant, "Erro",
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					prod.setQuantMovimento(quant);
+				}
+
+				System.out.println(
+						">>>>>>>>>>>>>>>>>>>>      quantidade inserida "
+								+ prod.getQuantMovimento());
+				for (Produto produto : pedi.getItensProduto()) {
+					System.out.println(
+							"Produto na lista: " + produto.getNome_prod()
+									+ " :::: " + produto.getQuantMovimento());
+					if (produto == prod) {
+						System.out.println(
+								"Produto igual a " + produto.getNome_prod());
+					} else {
+						System.out.println("Produto não encontrado ::::: "
+								+ prod.getNome_prod());
+					}
+
+				}
+
+			} else {
+				// contProd.alteraPreco();
 			}
 
-		} else {
-			// contProd.alteraPreco();
 		}
 		if (!pedi.getItensProduto().contains(prod)) {
 			pedi.getItensProduto().add(prod);
@@ -371,10 +406,12 @@ public class PainelPedidos extends JPanel {
 			daoProdEstoque.novoMovProdEstoque("Padrao", null,
 					prod.getCodi_prod_1(), pedi.getQuantItens(),
 					pedi.getCodiPedi(), "Sai");
+			atualizaTabelaItensPedido(pedi);
 		} else {
 			contPedi.alterarQuantProd(pedi, prod);
+			atualizaTabelaItensPedido(pedi);
 		}
-		atualizaTabelaProdutos(pedi);
+
 	}
 
 	public static void adicionaPagamento(CondPagamento condPag) {
@@ -392,10 +429,10 @@ public class PainelPedidos extends JPanel {
 	}
 
 	// TODO Atualizar a tabela de itens do pedido
-	public static JTable atualizaTabelaProdutos(final Pedido pedi) {
+	public static JTable atualizaTabelaItensPedido(final Pedido pedi) {
 		System.out.println("PainelPedidos.atualizaTabelaProdutos");
-		quantProdutos = 0;
-		totalPedido = 0;
+		quant = new BigDecimal(0);
+		totalPedido = new BigDecimal(0);
 		modeloTabela = new DefaultTableModel();
 		tbl01 = new JTable(modeloTabela);
 		Object colunas[] = {"Código", "Nome", "Quantidade", "Preço Unit.",
@@ -404,61 +441,51 @@ public class PainelPedidos extends JPanel {
 		getTabelaItensPedido().setRowSelectionAllowed(false);
 		getTabelaItensPedido().setCellSelectionEnabled(false);
 		getTabelaItensPedido().setColumnSelectionAllowed(false);
-		tbl01.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
+		tbl01.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (tbl01.isEnabled()) {
 					int posicao = tbl01.getSelectedRow();
-					adicionaItem(pedi.getItensProduto().get(posicao));
-					carregarCampos(pedi);
+					if (getLblTabPreco().getText() == "Selecionar Tabela"
+							| getLblTabPreco() == null) {
+						lblTabPreco
+								.setText(contTPreco.selecionaNomeTabelaPreco());
+					} else {
+						adicionaItem(pedi.getItensProduto().get(posicao),
+								PainelPedidos.getLblTabPreco().getText());
+					}
 				}
-
 			}
 		});
 		contPedi.carregarProdutosPedido(pedi);
+
 		for (int i = 0; i < pedi.getItensProduto().size(); i++) {
-			Object linha[] = {pedi.getItensProduto().get(i).getCodi_prod_1(),
-					pedi.getItensProduto().get(i).getNome_prod(),
-					pedi.getItensProduto().get(i).getQuantMovimento(),
-					pedi.getItensProduto().get(i).getPrec_prod_1(),
-					pedi.getItensProduto().get(i).getPrec_prod_1() * pedi
-							.getItensProduto().get(i).getQuantMovimento()};
-			modeloTabela.addRow(linha);
-			quantProdutos = quantProdutos
-					+ pedi.getItensProduto().get(i).getQuantMovimento();
-			totalPedido = totalPedido
-					+ (pedi.getItensProduto().get(i).getPrec_prod_1() * pedi
-							.getItensProduto().get(i).getQuantMovimento());
+			if (pedi.getItensProduto().get(i).getQuantMovimento() != null) {
+				Object linha[] = {
+						pedi.getItensProduto().get(i).getCodi_prod_1(),
+						pedi.getItensProduto().get(i).getNome_prod(),
+						pedi.getItensProduto().get(i).getQuantMovimento()
+								.setScale(3, BigDecimal.ROUND_HALF_UP),
+						pedi.getItensProduto().get(i).getPrec_prod_1(),
+						pedi.getItensProduto().get(i).getPrec_prod_1()
+								.multiply(pedi.getItensProduto().get(i)
+										.getQuantMovimento())
+								.setScale(2, BigDecimal.ROUND_DOWN)};
+				modeloTabela.addRow(linha);
+				quant = quant
+						.add(pedi.getItensProduto().get(i).getQuantMovimento());
+				totalPedido = totalPedido
+						.add(pedi.getItensProduto().get(i).getPrec_prod_1()
+								.multiply(pedi.getItensProduto().get(i)
+										.getQuantMovimento())
+								.setScale(2, BigDecimal.ROUND_DOWN));
+			}
 		}
+		nItens = quant.ROUND_UP;
 		tbl01.setShowGrid(true);
 		scrP01.setViewportView(tbl01);
-		txtFQuantItens.setText(String.valueOf(quantProdutos));
-		txtFPrecopedi.setText(String.valueOf(totalPedido));
+		txtFQuantItens.setText(String.valueOf(nItens));
+		txtFPrecopedi.setText(String.valueOf(totalPedido).replace(".", ","));
 		return tbl01;
 	}
 
@@ -473,27 +500,7 @@ public class PainelPedidos extends JPanel {
 		getTbl02().setRowSelectionAllowed(false);
 		getTbl02().setCellSelectionEnabled(false);
 		getTbl02().setColumnSelectionAllowed(false);
-		getTbl02().addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
+		getTbl02().addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -531,17 +538,19 @@ public class PainelPedidos extends JPanel {
 				& !txtFNomeCliente.equals(null)) {
 			pedi.setxNome(txtFNomeCliente.getText());
 		}
-		// if (!txtFQuantItens.getText().equals(null)
-		// & !txtFQuantItens.getText().equals("")) {
-		// pedi.setQuantItens(Float.parseFloat(txtFQuantItens.getText()));
-		// }
+		if (!txtFQuantItens.getText().equals(null)
+				& !txtFQuantItens.getText().equals("")) {
+			pedi.setQuantItens(
+					new BigDecimal(txtFQuantItens.getText()).intValue());
+		}
 		if (!txtFPrecopedi.getText().equals(null)
 				& !txtFPrecopedi.getText().equals("")) {
-			pedi.setTotalPedi(Float.parseFloat(txtFPrecopedi.getText()));
+			pedi.setTotalPedi(
+					new BigDecimal(txtFPrecopedi.getText().replace(",", ".")));
 		}
-		if (cmbTabPreco.getSelectedItem().toString() != null) {
-			pedi.setCodiTabPreco(daoTabPreco.pesquisaCodigoNome(
-					cmbTabPreco.getSelectedItem().toString()));
+		if (lblTabPreco.getText() != null & lblTabPreco.getText() != "") {
+			pedi.setCodiTabPreco(
+					daoTabPreco.pesquisaCodigoNome(lblTabPreco.getText()));
 
 		}
 		pedi.setObsPedi1(txtAreaObsPedido.getText());
@@ -552,11 +561,12 @@ public class PainelPedidos extends JPanel {
 	public static void habilitaNovo() {
 		pedi = new Pedido();
 		limparCampos();
-		atualizaTabelaProdutos(pedi);
+		atualizaTabelaItensPedido(pedi);
 		atualizaTabelaPagamentos(pedi);
 		pedi.setCodiPedi(criaCodiPedi());
 		pedi.setTipoPedido(AbaNegocios.getNomeNo());
 		lblTipoPedido.setText(pedi.getTipoPedido());
+		btnCapturaQRCupom.setEnabled(true);
 		try {
 			daoPedi.reservaCodigo(pedi.getCodiPedi());
 		} catch (SQLException e) {
@@ -565,7 +575,7 @@ public class PainelPedidos extends JPanel {
 					"Erro ao reservar código para o pedido/n" + e.getMessage());
 			e.printStackTrace();
 		}
-		cmbTabPreco.setEnabled(true);
+		lblTabPreco.setText(contTPreco.selecionaNomeTabelaPreco());
 		txtFCodigoPedi.setText(pedi.getCodiPedi());
 		txtFCodigoPedi.setEditable(false);
 		txtFCodiCliente.setFocusable(true);
@@ -589,14 +599,8 @@ public class PainelPedidos extends JPanel {
 				}
 			}
 		});
-		tabVisualiza.addFocusListener(new FocusListener() {
+		tabVisualiza.addFocusListener(new FocusAdapter() {
 
-			@Override
-			public void focusLost(FocusEvent e) {
-
-			}
-
-			@Override
 			public void focusGained(FocusEvent e) {
 				numTab = tabVisualiza.getSelectedIndex();
 				if (numTab == 0) {
@@ -612,15 +616,14 @@ public class PainelPedidos extends JPanel {
 
 	// TODO Habilita edição
 	public static void habilitaEdicao() {
-		cmbTabPreco.setEnabled(true);
 		txtFCodigoPedi.setEditable(false);
 		txtFCodiCliente.setFocusable(true);
 		txtFCodiCliente.setEditable(true);
-		txtFPrecopedi.setEditable(true);
 		txtAreaObsPedido.setEditable(true);
 		txtAreaObsPedido.setFocusable(true);
 		getTabelaItensPedido().setEnabled(true);
 		tabVisualiza.setFocusable(true);
+		btnCapturaQRCupom.setEnabled(true);
 		tabVisualiza.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -644,18 +647,17 @@ public class PainelPedidos extends JPanel {
 
 	// TODO desabilita edição
 	public static void desHabilitaEdicao() {
-		cmbTabPreco.setEnabled(false);
 		txtFCodigoPedi.setEditable(false);
 		txtFCodiCliente.setFocusable(false);
 		txtFNomeCliente.setEditable(false);
 		txtFQuantItens.setEditable(false);
 		txtFCodiCliente.setEditable(false);
 		txtFCodiCliente.setFocusable(false);
-		txtFPrecopedi.setEditable(false);
 		txtFPrecopedi.setText(null);
 		txtAreaObsPedido.setEditable(false);
 		txtAreaObsPedido.setFocusable(false);
 		tabVisualiza.setFocusable(false);
+		btnCapturaQRCupom.setEnabled(false);
 		for (ChangeListener cl : tabVisualiza.getChangeListeners()) {
 			tabVisualiza.removeChangeListener(cl);
 		}
@@ -664,7 +666,7 @@ public class PainelPedidos extends JPanel {
 	// TODO Limpa Campos
 	public static void limparCampos() {
 		pedi = new Pedido();
-		cmbTabPreco.setSelectedIndex(0);
+		lblTabPreco.setText(null);
 		txtFCodigoPedi.setText(null);
 		txtFNomeCliente.setText(null);
 		// txtfUsuario.setText(null);
@@ -673,8 +675,8 @@ public class PainelPedidos extends JPanel {
 		txtFPrecopedi.setText(null);
 		txtFQuantItens.setText(null);
 		txtAreaObsPedido.setText(null);
-		totalPedido = 0;
-		quantProdutos = 0;
+		totalPedido = new BigDecimal(0);
+		quant = new BigDecimal(0);
 		limparTabelas();
 	}
 
@@ -693,16 +695,18 @@ public class PainelPedidos extends JPanel {
 			txtFQuantItens.setText(String.valueOf(pedi.getQuantItens()));
 			txtFPrecopedi.setText(String.valueOf(pedi.getTotalPedi()));
 			lblTipoPedido.setText(pedi.getTipoPedido());
-			if (!(pedi.getCodiTabPreco() == null)) {
-				cmbTabPreco.setSelectedItem(
+			if (!pedi.getCodiTabPreco().equals(null)
+					& !pedi.getCodiTabPreco().equals("")) {
+				lblTabPreco.setText(
 						daoTabPreco.pesquisaNomeCodigo(pedi.getCodiTabPreco()));
 			} else {
-				cmbTabPreco.setSelectedIndex(0);
+				lblTabPreco.setText("Selecionar Tabela");
 			}
 			txtAreaObsPedido.setText(pedi.getObsPedi1());
-			System.out.println("Conteudo de pedido tabela de preço:  "
-					+ pedi.getCodiTabPreco());
-			atualizaTabelaProdutos(pedi);
+			System.out.println(
+					">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Conteudo de pedido tabela de preço:  "
+							+ pedi.getCodiTabPreco());
+			atualizaTabelaItensPedido(pedi);
 			atualizaTabelaPagamentos(pedi);
 		}
 	}
@@ -796,4 +800,20 @@ public class PainelPedidos extends JPanel {
 	public void setLblTipoPedido(JLabel lblTipoPedido) {
 		this.lblTipoPedido = lblTipoPedido;
 	}
+
+	/**
+	 * @return the lblTabPreco
+	 */
+	public static JLabel getLblTabPreco() {
+		return lblTabPreco;
+	}
+
+	/**
+	 * @param lblTabPreco
+	 *            the lblTabPreco to set
+	 */
+	public static void setLblTabPreco(JLabel lblTabPreco) {
+		PainelPedidos.lblTabPreco = lblTabPreco;
+	}
+
 }

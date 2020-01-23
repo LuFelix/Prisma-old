@@ -61,7 +61,7 @@ public class DAOPedidoPrepSTM {
 				pedi.setDataHoraPedi(result.getTimestamp("data_hora_pedido"));
 				pedi.setxNome(result.getString("xnome_cliente"));
 				pedi.setCodiCondPag(result.getString("codi_cond_pagamento"));
-				pedi.setTotalPedi(result.getFloat("total_pedido"));
+				pedi.setTotalPedi(result.getBigDecimal("total_pedido"));
 				pedi.setTipoPedido(result.getString("tipo_pedido"));
 				pedi.setCodiPessoaCliente(
 						result.getString("codi_pessoa_cliente"));
@@ -96,7 +96,7 @@ public class DAOPedidoPrepSTM {
 				pedi.setDataHoraPedi(result.getTimestamp("data_hora_pedido"));
 				pedi.setxNome(result.getString("xnome_cliente"));
 				pedi.setCodiCondPag(result.getString("codi_cond_pagamento"));
-				pedi.setTotalPedi(result.getFloat("total_pedido"));
+				pedi.setTotalPedi(result.getBigDecimal("total_pedido"));
 				pedi.setTipoPedido(result.getString("tipo_pedido"));
 				pedi.setCodiPessoaCliente(
 						result.getString("codi_pessoa_cliente"));
@@ -130,7 +130,7 @@ public class DAOPedidoPrepSTM {
 				pedi.setDataHoraPedi(result.getTimestamp("data_hora_pedido"));
 				pedi.setxNome(result.getString("xnome_cliente"));
 				pedi.setCodiCondPag(result.getString("codi_cond_pagamento"));
-				pedi.setTotalPedi(result.getFloat("total_pedido"));
+				pedi.setTotalPedi(result.getBigDecimal("total_pedido"));
 				pedi.setTipoPedido(result.getString("tipo_pedido"));
 				pedi.setCodiPessoaCliente(
 						result.getString("codi_pessoa_cliente"));
@@ -156,7 +156,7 @@ public class DAOPedidoPrepSTM {
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
 			prepStm.setInt(1, pedi.getQuantItens());
-			prepStm.setFloat(2, pedi.getTotalPedi());
+			prepStm.setBigDecimal(2, pedi.getTotalPedi());
 			prepStm.setString(3, pedi.getObsPedi1());
 			prepStm.setString(4, pedi.getObsPedi2());
 			prepStm.setString(5, pedi.getCodiPessoaCliente());

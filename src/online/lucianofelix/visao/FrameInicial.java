@@ -758,7 +758,7 @@ public class FrameInicial {
 
 		// Configuração das abas
 
-		// painelTab1 = new AbaFuse();
+		painelTab1 = new AbaFuse();
 		painelTab2 = new AbaCadastros();
 		painelTab3 = new AbaNegocios();
 		painelTab4 = new AbaRelatorios();
@@ -919,7 +919,7 @@ public class FrameInicial {
 		getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelOperacao.habilitaNovo();
 				contOp.funcaoSalvar();
 			}
@@ -1291,13 +1291,23 @@ public class FrameInicial {
 			}
 		}
 
-		public static void habilitaNovoBotoes() {
+		public static void clicaNovoBotoes() {
 			btnNovo.setEnabled(false);
 			btnEditar.setEnabled(false);
 			btnSalvar.setEnabled(true);
 			btnExcluir.setEnabled(false);
+			btnCancelar.setEnabled(true);
 
 		}
+		public static void descansaBotoes() {
+			btnNovo.setEnabled(true);
+			btnEditar.setEnabled(true);
+			btnSalvar.setEnabled(false);
+			btnExcluir.setEnabled(false);
+			btnCancelar.setEnabled(true);
+
+		}
+
 		public static void habilitaSomenteNovoBotoes() {
 			btnNovo.setEnabled(true);
 			btnEditar.setEnabled(false);
@@ -1312,6 +1322,7 @@ public class FrameInicial {
 			btnEditar.setEnabled(true);
 			btnSalvar.setEnabled(false);
 			btnExcluir.setEnabled(false);
+			btnCancelar.setEnabled(true);
 
 		}
 
@@ -1320,6 +1331,7 @@ public class FrameInicial {
 			btnEditar.setEnabled(false);
 			btnSalvar.setEnabled(true);
 			btnExcluir.setEnabled(true);
+			btnCancelar.setEnabled(true);
 		}
 
 	}

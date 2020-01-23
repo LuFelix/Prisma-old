@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,7 +26,8 @@ import online.lucianofelix.util.ManipulaArquivoTxt;
 
 public class FrameECF extends JFrame {
 
-	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Cria��o das
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Cria��o
+	// das
 	// Variaveis ++++++++++++++++++++++++++++++++++++++++++
 	private JPanel painelPrincipal;
 	private JTextArea textArea;
@@ -88,14 +90,16 @@ public class FrameECF extends JFrame {
 
 		// TODO +++++ Configura��o das Posi��es dos bot�es
 
-		btnProdutos = new JButton("Produtos"); // Mesma posi��o do botao Abrir
+		btnProdutos = new JButton("Produtos"); // Mesma posi��o do botao
+												// Abrir
 		btnProdutos.setBounds(10, 10, 130, 25);
 
 		btnAbrir = new JButton("Abrir"); // Mesma posi��o com Botao Produtos
 		btnAbrir.setBounds(10, 10, 130, 25);
 
 		btnMostrar = new JButton("Mostrar");
-		btnMostrar.setBounds(10, 40, 130, 25);// Mesma posi��o do bot�o Abrir
+		btnMostrar.setBounds(10, 40, 130, 25);// Mesma posi��o do bot�o
+												// Abrir
 												// COO
 
 		btnAbreCupom = new JButton("Abrir COO");
@@ -115,10 +119,12 @@ public class FrameECF extends JFrame {
 		btnFechaCupom.setBounds(10, 100, 130, 25);
 
 		btnCancelaItem = new JButton("Cancela item");
-		btnCancelaItem.setBounds(10, 130, 130, 25);// Mesma posi��o Botao Gravar
+		btnCancelaItem.setBounds(10, 130, 130, 25);// Mesma posi��o Botao
+													// Gravar
 
 		btnGravar = new JButton("Gravar");
-		btnGravar.setBounds(10, 130, 130, 25); // Mesma posi��o do bot�o Cancela
+		btnGravar.setBounds(10, 130, 130, 25); // Mesma posi��o do bot�o
+												// Cancela
 												// Item
 
 		// TODO +++++ A��es dos bot�es
@@ -358,7 +364,7 @@ public class FrameECF extends JFrame {
 		if (txtFPreco.getText().equals("")) {
 			txtFPreco.setText("0.1");
 		}
-		prod.setPrec_prod_1(Float.parseFloat(txtFPreco.getText()));
+		prod.setPrec_prod_1(new BigDecimal(txtFPreco.getText()));
 	}
 
 	public static void carregarCampos(Produto prod) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -52,7 +53,28 @@ public class ControlaTabelaPreco {
 	public void posicionarTabela(int linha) {
 		System.out.println("Ir para a linha: " + linha);
 		FrameInicial.getTabela().changeSelection(linha, 0, false, false);
+	}
+	public JComboBox<TabelaPreco> comboTabelas() {
 
+		JComboBox<TabelaPreco> cmbTabPreco = new JComboBox<TabelaPreco>();
+		for (int i = 0; i < daoTabPreco.pesquisaString("").size(); i++) {
+			cmbTabPreco.addItem(daoTabPreco.pesquisaString("").get(i));
+		}
+		return cmbTabPreco;
+
+	}
+	public String selecionaNomeTabelaPreco() {
+		ArrayList<String> listNomes = new ArrayList<String>(
+				daoTabPreco.listaNomesTabelas());
+		JComboBox<String> jcb = new JComboBox<String>();
+		for (int i = 0; i < listNomes.size(); i++) {
+			jcb.addItem(listNomes.get(i));
+		}
+		JOptionPane.showMessageDialog(null, jcb, "Selecione a Tabela",
+				JOptionPane.QUESTION_MESSAGE);
+		jcb.grabFocus();
+		String nomeTabela = jcb.getSelectedItem().toString();
+		return nomeTabela;
 	}
 
 	public JTable tabela() {

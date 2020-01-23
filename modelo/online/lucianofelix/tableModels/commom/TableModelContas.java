@@ -51,7 +51,5 @@ public class TableModelContas extends AbstractTableModel {
 				throw new IndexOutOfBoundsException(
 						"columnIndex out of bounds");
 		}
-
 	}
-
 }

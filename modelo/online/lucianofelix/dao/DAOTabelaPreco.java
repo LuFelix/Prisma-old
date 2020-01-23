@@ -27,7 +27,8 @@ public class DAOTabelaPreco {
 
 	// TODO Cadastrar/ Inserir
 	public void cadastrar(TabelaPreco tabPreco) throws SQLException {
-		String sql = "insert into tabelas_precos ( nome_tabela, data_criacao, data_inicio, data_fim,  tipo_tabela, desc_tabela, codi_fornecedor, codi_loja, classe_tabela, codi_tabela) "
+		String sql = "insert into tabelas_precos (nome_tabela,data_criacao,data_inicio,data_fim,tipo_tabela,"
+				+ "desc_tabela,codi_fornecedor, codi_loja, classe_tabela, codi_tabela) "
 				+ "values (?,?,?,?,?,?,?,?,?,?);";
 		c.conectar();
 		prepStm = c.getCon().prepareStatement(sql);
@@ -64,7 +65,6 @@ public class DAOTabelaPreco {
 		prepStm.executeUpdate();
 		c.desconectar();
 	}
-
 	// TODO Pesquisa String generico pesquisa em varios campos
 	public List<TabelaPreco> pesquisaString(String str) {
 		String sql = "select * from tabelas_precos where codi_tabela ~* ?  or nome_tabela ~* ? order by nome_tabela;";
@@ -93,6 +93,29 @@ public class DAOTabelaPreco {
 			}
 			c.desconectar();
 			return listTabPreco;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	public List<String> listaNomesTabelas() {
+		String sql = "select * from tabelas_precos order by nome_tabela;";
+		List<String> nomesTabelas = new ArrayList<String>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = prepStm.executeQuery();
+			String nome;
+			while (result.next()) {
+
+				nome = result.getString("nome_tabela");
+				nomesTabelas.add(nome);
+			}
+			c.desconectar();
+			return nomesTabelas;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			c.desconectar();

@@ -216,11 +216,21 @@ public class ControlaPessoa {
 		return tbl01;
 	}
 
-	public void iniciar(String tipo) {
+	public void iniciar() {
 		System.out.println("FrameInicial.controlePessoasIniciar");
 		configuraBotoes();
 		configuraTxtPesquisa();
 		FrameInicial.setTabela(tblPessoas(""));
+		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		p = tblMdPessoa.getPessoa(FrameInicial.getTabela().getSelectedRow());
+		FrameInicial.setPainelVisualiza(new PainelPessoa(p));
+		carregaDetalhes(p);
+	}
+	public void iniciar(String grupo) {
+		System.out.println("FrameInicial.controlePessoasIniciar");
+		configuraBotoes();
+		configuraTxtPesquisa();
+		FrameInicial.setTabela(tblPessoas(grupo));
 		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 		p = tblMdPessoa.getPessoa(FrameInicial.getTabela().getSelectedRow());
 		FrameInicial.setPainelVisualiza(new PainelPessoa(p));
@@ -476,7 +486,7 @@ public class ControlaPessoa {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FrameInicial.setTabela(new JTable());
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelPessoa.habilitaNovo();
 				FrameInicial.atualizaTela();
 				funcaoSalvar();

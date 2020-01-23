@@ -1,10 +1,13 @@
 package online.lucianofelix.beans;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Produto {
+
 	// TODO variaveis de contole
+
 	private String nome_prod; // Nome do produto.
 	private String desc_prod; // Descrição do ítem.
 	private String detalhes_prod;// Detalhes e observações sobre o produto
@@ -12,13 +15,14 @@ public class Produto {
 	private String codi_prod_1; // O principal cÃ³digo do produto.
 	private String codi_prod_2; // Código extra 2 para o produto.
 	private int seq_produto; // Sequencia de inserÃ§Ã£o no banco.
-	private float quantMovimento;// Campo para movimentação do produto
+	private BigDecimal quantMovimento;// Campo para movimentação do produto
 	private List<ProdutoCotacao> listCotacaoProduto;
 	private List<GrupoSubgrupo> listGrupo;
-	private float prec_custo; // real, -- Preço de custo produto.
-	private float prec_prod_1; // real, -- Preço atual de venda do produto.
-	private float prec_prod_2; // real, -- Preço antecessor de venda do produto.
+	private BigDecimal prec_custo; // -- Preço de custo produto.
+	private BigDecimal prec_prod_1; // -- Preço atual de venda do produto.
+	private BigDecimal prec_prod_2;
 	private int estoqueAtual;
+
 	// TODO Dados do produto para a nota
 	// <prod>
 	// <cProd>861</cProd> código do produto no sistema
@@ -29,7 +33,7 @@ public class Produto {
 	// ou jurídica mesma Uf ou fora
 	// <uCom>FD</uCom> unidade do produto
 	// <qCom>1.00</qCom> quantidade comercializada
-	// <vUnCom>29.00</vUnCom> valor unitÃ¡rio comercializado
+	// <vUnCom>29.00</vUnCom> valor unitário comercializado
 	// <vProd>29.00</vProd> valor da venda
 	// <cEANTrib></cEANTrib>
 	// <uTrib>FD</uTrib>
@@ -37,8 +41,9 @@ public class Produto {
 	// <vUnTrib>29.00</vUnTrib> valor unitÃ¡rio
 	// <indTot>1</indTot>
 	// </prod>
+
 	private int cProd; // guardar o codigo sequencial.
-	private String cEAN;// código ean pode ser vazio.
+	private String cEAN; // código ean pode ser vazio.
 	private String xProd;
 	private int NCM;
 	private int CFOP;
@@ -192,18 +197,6 @@ public class Produto {
 		return seq_produto;
 	}
 
-	public float getPrec_custo() {
-		return prec_custo;
-	}
-
-	public float getPrec_prod_1() {
-		return prec_prod_1;
-	}
-
-	public float getPrec_prod_2() {
-		return prec_prod_2;
-	}
-
 	public void setNome_prod(String nome_prod) {
 		this.nome_prod = nome_prod;
 	}
@@ -226,34 +219,6 @@ public class Produto {
 
 	public void setSeq_produto(int seq_produto) {
 		this.seq_produto = seq_produto;
-	}
-
-	public void setPrec_custo(float prec_custo) {
-		this.prec_custo = prec_custo;
-	}
-
-	public void setPrec_prod_1(float prec_prod_1) {
-		this.prec_prod_1 = prec_prod_1;
-	}
-
-	public void setPrec_prod_2(float prec_prod_2) {
-		this.prec_prod_2 = prec_prod_2;
-	}
-
-	/**
-	 * @return the quantMovimento
-	 */
-	public float getQuantMovimento() {
-
-		return quantMovimento;
-	}
-
-	/**
-	 * @param quantMovimento
-	 *            the quantMovimento to set
-	 */
-	public void setQuantMovimento(float quantMovimento) {
-		this.quantMovimento = quantMovimento;
 	}
 
 	/**
@@ -333,6 +298,65 @@ public class Produto {
 
 	public void setDetalhes_prod(String detalhes_prod) {
 		this.detalhes_prod = detalhes_prod;
+	}
+
+	/**
+	 * @return the prec_custo
+	 */
+	public BigDecimal getPrec_custo() {
+		return prec_custo;
+	}
+
+	/**
+	 * @param prec_custo
+	 *            the prec_custo to set
+	 */
+	public void setPrec_custo(BigDecimal prec_custo) {
+		this.prec_custo = prec_custo;
+	}
+
+	/**
+	 * @return the prec_prod_1
+	 */
+	public BigDecimal getPrec_prod_1() {
+		return prec_prod_1;
+	}
+
+	/**
+	 * @param prec_prod_1
+	 *            the prec_prod_1 to set
+	 */
+	public void setPrec_prod_1(BigDecimal prec_prod_1) {
+		this.prec_prod_1 = prec_prod_1;
+	}
+
+	/**
+	 * @return the prec_prod_2
+	 */
+	public BigDecimal getPrec_prod_2() {
+		return prec_prod_2;
+	}
+
+	/**
+	 * @param prec_prod_2
+	 *            the prec_prod_2 to set
+	 */
+	public void setPrec_prod_2(BigDecimal prec_prod_2) {
+		this.prec_prod_2 = prec_prod_2;
+	}
+
+	/**
+	 * @return the quantMovimento
+	 */
+	public BigDecimal getQuantMovimento() {
+		return quantMovimento;
+	}
+
+	/**
+	 * @param quantMovimento the quantMovimento to set
+	 */
+	public void setQuantMovimento(BigDecimal quantMovimento) {
+		this.quantMovimento = quantMovimento;
 	}
 
 }

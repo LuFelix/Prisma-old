@@ -56,7 +56,7 @@ public class DAOProdutosEstoque {
 			prepStm.setString(1, "Padrão");
 			prepStm.setTimestamp(2, null);
 			prepStm.setString(3, itensProduto[i].getCodi_prod_1());
-			prepStm.setFloat(4, itensProduto[i].getQuantMovimento());
+			prepStm.setBigDecimal(4, itensProduto[i].getQuantMovimento());
 			prepStm.setString(5, codiPedi);
 			prepStm.setString(6, tipoMovimento);
 			prepStm.executeUpdate();

@@ -369,7 +369,7 @@ public class ControlaConta {
 	public void funcaoSalvar() {
 		System.out.println("ControlaConta.funcaoSalvar");
 		ControlaBotoes.limparBtnSalvar();
-		ControlaBotoes.habilitaNovoBotoes();
+		ControlaBotoes.clicaNovoBotoes();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

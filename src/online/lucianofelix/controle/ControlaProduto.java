@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -27,6 +30,7 @@ import online.lucianofelix.dao.DAOGrupoSubgrupo;
 import online.lucianofelix.dao.DAOProdutoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosCotacao;
 import online.lucianofelix.dao.DAOProdutosEstoque;
+import online.lucianofelix.dao.DAOTabelaPreco;
 import online.lucianofelix.dao.DAOTiposSistema;
 import online.lucianofelix.tableModels.commom.TableModelProdutos;
 import online.lucianofelix.visao.AbaCadastros;
@@ -45,6 +49,8 @@ public class ControlaProduto {
 	private DAOProdutosEstoque daoProdEstoque;
 	private DAOTiposSistema daoTipoS;
 	private DAOGrupoSubgrupo daoGrupo;
+	private DAOTabelaPreco daoTabPreco;
+	private ControlaTabelaPreco contTPreco;
 	private JTable tbl01;
 	TableModelProdutos mdlTabela;
 	List<Produto> listProd;
@@ -55,14 +61,20 @@ public class ControlaProduto {
 		daoProdEstoque = new DAOProdutosEstoque();
 		daoTipoS = new DAOTiposSistema();
 		daoGrupo = new DAOGrupoSubgrupo();
+		daoTabPreco = new DAOTabelaPreco();
+		contTPreco = new ControlaTabelaPreco();
 	}
-	public boolean consultaUltimoPreco(Produto p) {
-		ProdutoCotacao pc = daoProdCota.consultaUltCotVend(p);
+
+	public boolean consultaUltimoPreco(Produto p, String nomeTabela) {
+		ProdutoCotacao pc = daoProdCota.consultaUltCotVend(p, nomeTabela);
 		if (pc != null) {
-			p.setPrec_prod_1(pc.getValor());
+			p.setPrec_prod_1(new BigDecimal(pc.getValor()));
 			return true;
 		} else {
-			JOptionPane.showMessageDialog(null, "Produto sem preço");
+			JOptionPane.showMessageDialog(null,
+					"Produto sem preço para essa tabela", "Erro",
+					JOptionPane.ERROR_MESSAGE);
+
 			return false;
 		}
 	}
@@ -126,7 +138,7 @@ public class ControlaProduto {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				FrameInicial.setTabela(new JTable());
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelProdutos.habilitaNovo();
 				FrameInicial.atualizaTela();
 				funcaoSalvar();
@@ -220,7 +232,7 @@ public class ControlaProduto {
 					FrameInicial.setPainelVisualiza(new PainelProdutos(prod));
 					FrameInicial.atualizaTela();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					ControlaBotoes.habilitaNovoBotoes();
+					ControlaBotoes.descansaBotoes();
 					FrameInicial.atualizaTela();
 					FrameInicial.getBtnNovo().grabFocus();
 				}
@@ -247,7 +259,7 @@ public class ControlaProduto {
 					FrameInicial.atualizaTela();
 					// AbaCadastros.recarregaArvore();
 					JOptionPane.showMessageDialog(null, "Feito!");
-					ControlaBotoes.habilitaSomenteNovoBotoes();
+					ControlaBotoes.descansaBotoes();
 					FrameInicial.atualizaTela();
 					FrameInicial.getBtnNovo().grabFocus();
 
@@ -395,38 +407,20 @@ public class ControlaProduto {
 		return daoProd.procurarTodos();
 	}
 
-	public void novoPreco(String codiTabela, java.sql.Date dataHoraMarcaca,
-			String codiProduto, float valor) throws SQLException {
-		System.out.println("ControlaProduto.novoPreço");
-		daoProdCota.novoPrecoProduto(codiTabela, dataHoraMarcaca, codiProduto,
-				valor);
-	}
-	public void novoPreco(String codiTabela, String dataHoraMarcaca,
-			String codiProduto, float valor) throws SQLException {
-		System.out.println("ControlaProduto.novoPreço");
-		daoProdCota.novoPrecoProduto(codiTabela, dataHoraMarcaca, codiProduto,
-				valor);
-	}
-	public void novoPreco(String codiTabela, Timestamp dataHoraMarcaca,
-			String codiProduto, float valor) throws SQLException {
-		System.out.println("ControlaProduto.novoPreço");
-		daoProdCota.novoPrecoProduto(codiTabela, dataHoraMarcaca, codiProduto,
-				valor);
-	}
 	/**
 	 * Altera o preço do produto recebendo o produto como parâmetro
 	 * 
 	 * @param prod
 	 */
-	public void alteraPreco(Produto prod) {
+	public void editarPreco(Produto prod) {
 		Timestamp data = new Timestamp(System.currentTimeMillis());
-		float valor = Float.parseFloat(
+		BigDecimal valor = new BigDecimal(
 				JOptionPane.showInputDialog("Informe o novo valor:"));
+		String nomeTabela = contTPreco.selecionaNomeTabelaPreco();
 		try {
-			novoPreco(PainelProdutos.getCmbTabPreco().getItemAt(0), data,
-					prod.getCodi_prod_1(), valor);
+
+			novoPreco(nomeTabela, data, prod.getCodi_prod_1(), valor);
 			carregaDetalhes(prod);
-			// txtF09.setText(String.valueOf(valor));
 			PainelProdutos.habilitaTabelaPrecos(prod);
 			funcaoSobrescrever();
 			// FrameInicial.getBtnSalvar().doClick();
@@ -436,42 +430,28 @@ public class ControlaProduto {
 					" Erro ao Cadastrar: " + e1.getMessage(),
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	public void novoPreco(String nomeTabela, Timestamp dataHoraMarcaca,
+			String codiProduto, BigDecimal valor) throws SQLException {
+		System.out.println("ControlaProduto.novoPreço");
+		daoProdCota.novoPrecoProduto(daoTabPreco.pesquisaCodigoNome(nomeTabela),
+				dataHoraMarcaca, codiProduto, valor);
+	}
+	public String nomeTabelaPreco(String codiTabela) {
+
+		String nomeTabela = daoTabPreco.pesquisaNomeCodigo(codiTabela);
+
+		return nomeTabela;
 
 	}
-	/**
-	 * Altera o preço do produto lentdo o painel de produtos
-	 */
-	public void alteraPreco() {
-		String data = String.valueOf(new Timestamp(System.currentTimeMillis()))
-				.substring(0, 16);
-		float valor = Float.parseFloat(
-				JOptionPane.showInputDialog("Informe o novo valor:"));
-		prod = PainelProdutos.lerCampos();
-		try {
-			novoPreco(PainelProdutos.getCmbTabPreco().getItemAt(0),
-					Date.valueOf(data), prod.getCodi_prod_1(), valor);
-			carregaDetalhes(prod);
-			// txtF09.setText(String.valueOf(valor));
-			PainelProdutos.habilitaTabelaPrecos(prod);
-			funcaoSobrescrever();
-			// FrameInicial.getBtnSalvar().doClick();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Problemas: ",
-					" Erro ao Cadastrar: " + e1.getMessage(),
-					JOptionPane.ERROR_MESSAGE);
-		}
-
-	}
-
 	/**
 	 * Ajustar tamanho das colunas
 	 */
 	private void ajusta_tamanho_coluna() {
 		// tabela.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		tbl01.getColumnModel().getColumn(0).setPreferredWidth(100);
-		tbl01.getColumnModel().getColumn(1).setPreferredWidth(240);
-		tbl01.getColumnModel().getColumn(2).setPreferredWidth(80);
+		tbl01.getColumnModel().getColumn(0).setPreferredWidth(60);
+		tbl01.getColumnModel().getColumn(1).setPreferredWidth(220);
+		tbl01.getColumnModel().getColumn(2).setPreferredWidth(20);
 		// tabela.getColumnModel().getColumn(3).setPreferredWidth(80);
 		// tabela.getColumnModel().getColumn(4).setPreferredWidth(300);
 		// tabela.getColumnModel().getColumn(5).setPreferredWidth(80);
@@ -809,22 +789,8 @@ public class ControlaProduto {
 		ArrayList<String> colunas = new ArrayList<>();
 		mdlTabela = new TableModelProdutos(daoProd.pesquisaString(nome));
 		tbl01 = new JTable(mdlTabela);
-		tbl01.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Ao escrever
-			}
+		tbl01.addKeyListener(new KeyAdapter() {
 
-			@Override
-			public void keyReleased(KeyEvent tecla) {
-
-				if (tecla.getExtendedKeyCode() == 40
-						|| tecla.getExtendedKeyCode() == 38) {
-					int linha = tbl01.getSelectedRow();
-				}
-			}
-
-			@Override
 			public void keyPressed(KeyEvent tecla) {
 				int linha = tbl01.getSelectedRow();
 				System.out.println(tecla.getExtendedKeyCode());
@@ -833,47 +799,34 @@ public class ControlaProduto {
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
-					PainelPedidos.adicionaItem(mdlTabela.getProduto(linha));
+					PainelPedidos.adicionaItem(mdlTabela.getProduto(linha),
+							PainelPedidos.getLblTabPreco().getText());
 				} else if (tecla.getExtendedKeyCode() == 9) {
 					PainelPedidos.getTxtfCliente().grabFocus();
 				}
 			}
 		});
-		tbl01.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Ao soltar o botão do mouse
+		tbl01.addMouseListener(new MouseAdapter() {
 
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Ao Pressionar o botÃ£o do mouse
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Ao sair o mouse
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Ao entrar o mouse
-
-			}
-
-			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				// TODO Ao Clicar
 				int linha = tbl01.getSelectedRow();
-				PainelPedidos.adicionaItem(mdlTabela.getProduto(linha));
+
+				if (PainelPedidos.getLblTabPreco().getText().equals(null)) {
+					JOptionPane.showMessageDialog(null,
+							"Por favor selecione a Tabela de Preços ", "Erro",
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					PainelPedidos.adicionaItem(mdlTabela.getProduto(linha),
+							PainelPedidos.getLblTabPreco().getText());
+					System.out.println("preço para a tabela "
+							+ PainelPedidos.getLblTabPreco().getText());
+
+				}
 			}
 		});
 		colunas.add("Código");
 		colunas.add("Nome");
-		colunas.add("Preço");
+		// colunas.add("Preço");
 
 		tbl01.setShowGrid(true);
 		return tbl01;

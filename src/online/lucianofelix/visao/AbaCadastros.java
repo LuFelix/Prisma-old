@@ -47,6 +47,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	private static DefaultMutableTreeNode funcionarios;
 	private static DefaultMutableTreeNode pessoas;
 	private static DefaultMutableTreeNode nodProdutos;
+	private static DefaultMutableTreeNode nodPessoas;
 
 	private static JScrollPane scrArvNegocios;
 	private static DefaultTreeModel modArvore;
@@ -55,6 +56,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 	private static DefaultMutableTreeNode nodGrupos;
 	private static DefaultMutableTreeNode leafGrupos;
 	private static DefaultMutableTreeNode leafProdutos;
+	private static DefaultMutableTreeNode leafPessoas;
 	private static DefaultMutableTreeNode contas;
 	private static DefaultMutableTreeNode nodCentroCusto;
 	private static DefaultMutableTreeNode leafCentroCusto;
@@ -96,17 +98,13 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 					leaf, row, hasFocus);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 
-			if (node.getClass().equals(CentroCusto.class)) {
-				setIcon(new ImageIcon(
-						"C:\\SIMPRO\\img\\order\\personfolder_32x32.png"));
-			}
 			if (node.isRoot()) {
 				setIcon(new ImageIcon(
 						"C:\\SIMPRO\\img\\order\\archives32x32.png"));
 			}
-			if (node.toString().equals("Pessoas")) {
+			if (!node.isRoot() && node.isNodeAncestor(nodPessoas)) {
 				setIcon(new ImageIcon(
-						"C:\\SIMPRO\\img\\order\\personfolder_32x32.png"));
+						"C:\\SIMPRO\\img\\order\\usergroup24x24.png"));
 			}
 			if (node.toString().equals("Clientes")) {
 				setIcon(new ImageIcon(
@@ -119,8 +117,24 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			if (node.toString().equals("Funcionários")) {
 				setIcon(new ImageIcon("C:\\SIMPRO\\img\\order\\Func32x32.png"));
 			}
+			if (node.toString().equals("Pessoas")) {
+				setIcon(new ImageIcon(
+						"C:\\SIMPRO\\img\\order\\personfolder_32x32.png"));
+			}
+			if (!node.isRoot() && node.isNodeAncestor(nodProdutos)) {
+				setIcon(new ImageIcon(
+						"C:\\SIMPRO\\img\\order\\etiqueta24x24.png"));
+			}
 			if (node.toString().equals("Produtos")) {
 				setIcon(new ImageIcon("C:\\SIMPRO\\img\\order\\store.png"));
+			}
+			if (!node.isRoot() && node.isNodeAncestor(nodCentroCusto)) {
+				setIcon(new ImageIcon(
+						"C:\\SIMPRO\\img\\order\\Currency16x16.png"));
+			}
+			if (node.toString().equals("Centros de Custo")) {
+				setIcon(new ImageIcon(
+						"C:\\SIMPRO\\img\\order\\flowblock32x32.png"));
 			}
 			if (node.toString().equals("Serviços")) {
 				setIcon(new ImageIcon("C:\\SIMPRO\\img\\order\\Equipment.png"));
@@ -131,10 +145,6 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			if (node.toString().equals("Contas")) {
 				setIcon(new ImageIcon(
 						"C:\\SIMPRO\\img\\order\\contas32x32.png"));
-			}
-			if (node.toString().equals("Centros de Custo")) {
-				setIcon(new ImageIcon(
-						"C:\\SIMPRO\\img\\order\\flowblock32x32.png"));
 			}
 			if (node.toString().equals("Condições de Pagamento")) {
 				setIcon(new ImageIcon(
@@ -159,6 +169,9 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			Object nodeInfo = node.getUserObject();
 			nomeNo = nodeInfo.toString();
 			if (nomeNo.equals("Pessoas")) {
+				FrameInicial.getContPess().iniciar();
+			}
+			if (node.isLeaf() && node.isNodeAncestor(nodPessoas)) {
 				FrameInicial.getContPess().iniciar(nomeNo);
 			}
 			if (nomeNo.equals("Produtos")) {
@@ -239,30 +252,33 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 			nodProdutos.add(leafProdutos);
 		}
 	}
+	static void carregarNoPessoas() {
+		nodPessoas = new DefaultMutableTreeNode("Pessoas");
+		List<GrupoSubgrupo> listGrupo = new ArrayList<GrupoSubgrupo>(contGrupo
+				.pesquisarPorSubgrupoPessoas("Categorias de Pessoas"));;
+		for (int i = 0; i < listGrupo.size(); i++) {
+			GrupoSubgrupo grupo = listGrupo.get(i);
+			leafPessoas = new DefaultMutableTreeNode(grupo.getNomeGrupo());
+			nodPessoas.add(leafPessoas);
+		}
+	}
 
 	public static void criaNos() {
 		root = new DefaultMutableTreeNode("Cadastros e Tabelas");
 		contCCusto = new ControlaCentroCusto();
 		contTipoS = new ControlaTipoSistema();
 		contGrupo = new ControlaGrupoSubgrupo();
-		clientes = new DefaultMutableTreeNode("Clientes");
-		fornecedores = new DefaultMutableTreeNode("Fornecedores");
-		funcionarios = new DefaultMutableTreeNode("Funcionários");
-		pessoas = new DefaultMutableTreeNode("Pessoas");
-		pessoas.add(clientes);
-		pessoas.add(fornecedores);
-		pessoas.add(funcionarios);
-		// grupos = new DefaultMutableTreeNode("Grupos");
-		// contas = new DefaultMutableTreeNode("Contas");
+
 		carregarNoCCusto();
 		carregarNoGrupos();
 		carregarNoProdutos();
+		carregarNoPessoas();
 
 		condPagamento = new DefaultMutableTreeNode("Condições de Pagamento");
 		servicos = new DefaultMutableTreeNode("Serviços");
 		tabelasPrecos = new DefaultMutableTreeNode("Tabelas de Preços");
 
-		root.add(pessoas);
+		root.add(nodPessoas);
 		root.add(nodProdutos);
 		root.add(servicos);
 		root.add(nodCentroCusto);
@@ -288,7 +304,7 @@ public class AbaCadastros extends JPanel implements TreeSelectionListener {
 		arvore.setCellRenderer(new RenderizarTreeNegocios());
 		arvore.setShowsRootHandles(true);
 		arvore.setRootVisible(false);
-		arvore.setRowHeight(50);
+		arvore.setRowHeight(40);
 	}
 	public static void recarregaArvore() {
 		int pos = getArvoreNegocios().getMaxSelectionRow();

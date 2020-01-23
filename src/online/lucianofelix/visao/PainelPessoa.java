@@ -20,6 +20,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.border.EtchedBorder;
 
 import online.lucianofelix.beans.Pessoa;
 import online.lucianofelix.controle.ControlaPessoa;
@@ -58,7 +59,6 @@ public class PainelPessoa extends JPanel {
 	private JPanel painelMovimento;
 	private static JLabel lblImagem;
 	private static JTabbedPane tabVisualiza;
-	private static JScrollPane scrImagem;
 	private static JScrollPane scrP01;
 	private static JScrollPane scrP02;
 	private static JScrollPane scrP03;
@@ -82,6 +82,9 @@ public class PainelPessoa extends JPanel {
 
 		// JLabels e JTextFields
 		lblTituloTela = new JLabel("Contato");
+		lblTituloTela.setHorizontalAlignment(JLabel.CENTER);
+		lblTituloTela.setBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		lblTituloTela.setFont(new Font("Times New Roman", Font.BOLD, 28));
 
 		lblSeqPessoa = new JLabel("Número:");
@@ -127,12 +130,10 @@ public class PainelPessoa extends JPanel {
 		btnAdd = new JButton("Adiciona");
 		btnDel = new JButton("Remove");
 
-		lblImagem = new JLabel("Image not Found");
-		scrImagem = new JScrollPane(lblImagem);
-		scrImagem.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		lblImagem = new JLabel();
+		lblImagem.setBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+
 		tbl01 = new JTable();
 		scrP01 = new JScrollPane();
 
@@ -158,6 +159,7 @@ public class PainelPessoa extends JPanel {
 		painelMovimento.add(tabVisualiza);
 
 		painelGrid = new JPanel();
+		painelGrid.setPreferredSize(getMinimumSize());
 		painelGrid.setBorder(BorderFactory.createEtchedBorder());
 		painelGrid.setLayout(new GridLayout(7, 2));
 		painelGrid.setBackground(Color.WHITE);
@@ -179,7 +181,7 @@ public class PainelPessoa extends JPanel {
 
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppImagem.add(lblTituloTela);
-		sppImagem.add(scrImagem);
+		sppImagem.add(lblImagem);
 		sppImagem.setDividerLocation(50);
 		sppImagem.setEnabled(false);
 		sppImagem.setBackground(Color.WHITE);
@@ -301,6 +303,7 @@ public class PainelPessoa extends JPanel {
 		txtfNome.setText(null);
 		txtfCpf.setText(null);
 		txtfEmail.setText(null);
+		lblImagem.setIcon(null);
 		setTbl01(null);
 		setTbl02(null);
 		setTbl03(null);
@@ -330,6 +333,7 @@ public class PainelPessoa extends JPanel {
 			desabilitaTbl(getTbl02());
 			scrP01.setViewportView(getTbl01());
 			scrP02.setViewportView(getTbl02());
+			carregarImagem(null);
 
 		} else {
 
@@ -369,9 +373,8 @@ public class PainelPessoa extends JPanel {
 	}
 
 	public static void carregarImagem(String codiPessoa) {
-		lblImagem = new JLabel(new ImageIcon(
+		lblImagem.setIcon(new ImageIcon(
 				"C:\\SIMPRO\\img\\common\\" + "javinha4" + ".jpg "));
-		scrImagem.setViewportView(lblImagem);
 	}
 
 	public static JTextField getTxtfNome() {

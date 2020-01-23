@@ -11,8 +11,12 @@ import online.lucianofelix.visao.PainelProdutos;
 
 public class TableModelProdutos extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2639158535025776735L;
 	private List<Produto> linhas;
-	private String[] colunas = new String[]{"Código", "Nome", "Preço Atual"};
+	private String[] colunas = new String[]{"Código", "Nome", "Preço"};
 	private static final int Codigo = 0;
 	private static final int Nome = 1;
 	private static final int Preco = 2;

@@ -97,6 +97,12 @@ public class ControlaGrupoSubgrupo {
 		listGrupo = daoGrupo.listPorGrupoRaiz(grupoRaiz);
 		return listGrupo;
 	}
+	public List<GrupoSubgrupo> pesquisarPorSubgrupoPessoas(String str) {
+
+		int grupoRaiz = daoTipoS.buscaSeqNome(str);
+		listGrupo = daoGrupo.listPorGrupoRaiz(grupoRaiz);
+		return listGrupo;
+	}
 
 	// tabela fora de utilização
 	public JTable pesqNomeTabelaOld(String str) {
@@ -390,7 +396,7 @@ public class ControlaGrupoSubgrupo {
 		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelSubGrupo.habilitaNovo();
 				funcaoSalvar();
 			}

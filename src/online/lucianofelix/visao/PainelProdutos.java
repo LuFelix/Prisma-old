@@ -8,11 +8,10 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -37,6 +36,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -49,9 +49,11 @@ import online.lucianofelix.controle.ControlaGrupoSubgrupo;
 import online.lucianofelix.controle.ControlaListaProdutos;
 import online.lucianofelix.controle.ControlaProduto;
 import online.lucianofelix.controle.ControlaTabelaPreco;
-import online.lucianofelix.dao.DAOTabelaPreco;
 import online.lucianofelix.tableModels.commom.TableModelProdutoGrupo;
 import online.lucianofelix.tableModels.commom.TableModelProdutoImagens;
+import online.lucianofelix.util.JTextFieldMaiusNumero;
+import online.lucianofelix.util.JTextFieldMaiusculas;
+import online.lucianofelix.util.JTextFieldNumeros;
 import online.lucianofelix.util.ManipulaImagensProduto;
 
 public class PainelProdutos extends JPanel {
@@ -68,13 +70,14 @@ public class PainelProdutos extends JPanel {
 	// Labels e text fields
 
 	private static JLabel lblImagem;
+
 	private JLabel lbl01;
 	private JLabel lbl02;
 	private JLabel lbl03;
 	private JLabel lbl04;
 	private JLabel lbl05;
 	private JLabel lbl06;
-	private JLabel lbl07;
+	private static JLabel lbl07;
 	private JLabel lbl08;
 	private JLabel lbl09;
 	private JLabel lbl10;
@@ -95,7 +98,7 @@ public class PainelProdutos extends JPanel {
 
 	private static JCheckBox chkBListaPrecos;
 
-	private static JComboBox<String> cmbTabPreco;
+	// private static JComboBox<TabelaPreco> cmbTabPreco;
 	private static JComboBox<String> cmbGrupo;
 	private static JComboBox<String> cmbSubGrupo;
 	private List<GrupoSubgrupo> listGrupo;
@@ -120,7 +123,6 @@ public class PainelProdutos extends JPanel {
 	private static JScrollPane scrCategorias;
 	private static JScrollPane scrPrecos;
 	private static JScrollPane scrEstoque;
-	private static JScrollPane scrImagem;
 	private static JScrollPane scrImagensProd;
 	private static JScrollPane scrDetalhes;
 	private static JTextArea txtADeTalhes;
@@ -131,7 +133,6 @@ public class PainelProdutos extends JPanel {
 	private ControlaTabelaPreco contTabPreco;
 	private ControlaGrupoSubgrupo contGrupo;
 	private static Produto prod;
-	private DAOTabelaPreco daoTabPreco;
 	private JPanel pnlImagensProd;
 	private JPanel pnlDetalhes;
 	private JList listGrupoView;
@@ -149,49 +150,48 @@ public class PainelProdutos extends JPanel {
 		contProd = new ControlaProduto();
 		contGrupo = new ControlaGrupoSubgrupo();
 		contTabPreco = new ControlaTabelaPreco();
-		// Dados
-		daoTabPreco = new DAOTabelaPreco();
-
 		// TODO Configuração dos Labels e text fields
-
 		lblTituloTela = new JLabel("   Produto");
 		lblTituloTela.setBounds(10, 0, 150, 40);
 		lblTituloTela.setFont(new Font("Times New Roman", Font.BOLD, 32));
+		lblTituloTela.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
 		lbl02 = new JLabel("Sequência:");
-		txtF02 = new JTextField();
+		lbl02.setPreferredSize(getMinimumSize());
+		txtF02 = new JTextFieldMaiusculas();
 		lbl03 = new JLabel("Código Interno:");
-		txtF03 = new JTextField(0);
-		lbl04 = new JLabel("Código Fábrica/EAN:");
+		lbl03.setPreferredSize(getMinimumSize());
+		txtF03 = new JTextFieldNumeros();
+		lbl04 = new JLabel("Código EAN/Fábrica:");
+		lbl04.setPreferredSize(getMinimumSize());
 		txtF04 = new JTextField();
 		lbl05 = new JLabel("Produto:");
-		txtF05 = new JTextField();
+		lbl05.setPreferredSize(getMinimumSize());
+		txtF05 = new JTextFieldMaiusNumero();
+		txtF05.setCaretPosition(0);
+		txtF05.setPreferredSize(getMinimumSize());
 		lbl06 = new JLabel("Alíquota ICMS:");
+		lbl06.setPreferredSize(getMinimumSize());
+		lbl07 = new JLabel("Colocar Algo Aqui");
+		lbl07.setForeground(Color.RED);
+		lbl07.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		txtF06 = new JTextField();
 		lbl08 = new JLabel("Estoque:");
-		txtF08 = new JTextField();
-		lbl09 = new JLabel("Preço Atual:");
+		lbl08.setPreferredSize(getMinimumSize());
+		txtF08 = new JTextField("O que usar?");
+		lbl09 = new JLabel("Carregar Estoque Aqui:");
+		lbl09.setPreferredSize(getMinimumSize());
+		lbl09.setForeground(Color.RED);
+		lbl09.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblPrecoAtual = new JLabel();
+		lblPrecoAtual.setPreferredSize(getMinimumSize());
 		lblPrecoAtual.setForeground(Color.RED);
 		lblPrecoAtual.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		// txtF09 = new JTextField();
 		lbl10 = new JLabel("Grupo/Categoria:");
+		lbl10.setPreferredSize(getMinimumSize());
 		cmbSubGrupo = contGrupo.carregarSubGruposProdutos();
-		cmbSubGrupo.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
+		cmbSubGrupo.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == 10) {
 					String nomeCategoria = cmbSubGrupo.getSelectedItem()
@@ -201,28 +201,15 @@ public class PainelProdutos extends JPanel {
 					carregarCategorias(prod);
 				}
 				if (e.getKeyCode() == 9) {
-
 					FrameInicial.getBtnSalvar().grabFocus();
 				}
 
 			}
 		});
 		lbl11 = new JLabel("Descrição:");
-		txtF11 = new JTextField();
-		txtF11.setHorizontalAlignment(JTextField.LEFT);
-
-		// btnAddCategoria = new JButton("Adicionar Categoria");
-		// btnAddCategoria.addActionListener(new ActionListener() {
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// String nomeCategoria = cmbSubGrupo.getSelectedItem().toString();
-		// prod = lerCampos();
-		// contProd.adicionarCategoria(prod, nomeCategoria);
-		// carregarCategorias(prod);
-		//
-		// }
-		// });
+		txtF11 = new JTextFieldMaiusculas();
+		txtF11.setCaretPosition(0);
+		txtF11.setPreferredSize(getMinimumSize());
 
 		btnAddImagem = new JButton("Adicionar imagens");
 		btnAddImagem.addActionListener(new ActionListener() {
@@ -293,32 +280,17 @@ public class PainelProdutos extends JPanel {
 			}
 		});
 
-		cmbTabPreco = new JComboBox<String>();
-		cmbTabPreco.addItem("Tabela de Preços");
-		for (int i = 0; i < daoTabPreco.pesquisaString("").size(); i++) {
-			cmbTabPreco.addItem(
-					daoTabPreco.pesquisaString("").get(i).getDescTabela());
-		}
-		btnEditarPreco = new JButton("Alterar Preço");
+		btnEditarPreco = new JButton("Editar Preço");
 		btnEditarPreco.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				contProd.alteraPreco(lerCampos());
+				contProd.editarPreco(lerCampos());
 				btnEditarPreco.grabFocus();
 			}
 		});
-		btnEditarPreco.addFocusListener(new FocusListener() {
-
-			@Override
+		btnEditarPreco.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				FrameInicial.getBtnSalvar().grabFocus();
-
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 
@@ -335,11 +307,34 @@ public class PainelProdutos extends JPanel {
 		});
 
 		lblImagem = new JLabel("Image not Found");
-		scrImagem = new JScrollPane(lblImagem);
-		scrImagem.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		painelGrid = new JPanel();
+		painelGrid.setBorder(BorderFactory.createEtchedBorder());
+		painelGrid.setLayout(new GridLayout(10, 2));
+		painelGrid.setBackground(Color.WHITE);
+		painelGrid.setPreferredSize(getMinimumSize());
+		painelGrid.add(lbl02);
+		painelGrid.add(txtF02);
+		painelGrid.add(lbl03);
+		painelGrid.add(txtF03);
+		painelGrid.add(lbl04);
+		painelGrid.add(txtF04);
+		painelGrid.add(lbl05);
+		painelGrid.add(txtF05);
+		painelGrid.add(lbl11);
+		painelGrid.add(txtF11);
+		painelGrid.add(lbl06);
+		painelGrid.add(txtF06);
+		painelGrid.add(lbl07);
+		painelGrid.add(lblPrecoAtual);
+		painelGrid.add(lbl08);
+		painelGrid.add(lbl09);
+		// painelGrid.add(txtF08);
+		// painelGrid.add(txtF09);
+		painelGrid.add(lbl10);
+		painelGrid.add(cmbSubGrupo);
+
+		painelGrid.add(btnEditarPreco);
 
 		tabelaPrecos = new JTable();
 		tabelaMovEstoque = new JTable();
@@ -359,14 +354,14 @@ public class PainelProdutos extends JPanel {
 		pnlImagensProd.add(scrImagensProd, BorderLayout.CENTER);
 
 		setPnlDetalhes(new JPanel(new BorderLayout()));
-
 		pnlDetalhes.add(listGrupoView, BorderLayout.CENTER);
 
-		scrDetalhes = new JScrollPane(pnlDetalhes);
+		// scrDetalhes = new JScrollPane(pnlDetalhes);
 		txtADeTalhes = new JTextArea();
 		txtADeTalhes.setLineWrap(true);
 		txtADeTalhes.setWrapStyleWord(true);
 		scrDetalhes = new JScrollPane(txtADeTalhes);
+		scrDetalhes.setPreferredSize(getMinimumSize());
 
 		tabVisualiza = new JTabbedPane();
 		tabVisualiza.addTab("Categorias", scrCategorias);
@@ -375,46 +370,24 @@ public class PainelProdutos extends JPanel {
 		tabVisualiza.addTab("Histórico de Preços", scrPrecos);
 		tabVisualiza.add("Estoque", scrEstoque);
 
-		// TODO Painel principal
-		painelGrid = new JPanel();
-		painelGrid.setBorder(BorderFactory.createEtchedBorder());
-		painelGrid.setLayout(new GridLayout(10, 2));
-		painelGrid.setBackground(Color.WHITE);
-		painelGrid.add(lbl02);
-		painelGrid.add(txtF02);
-		painelGrid.add(lbl03);
-		painelGrid.add(txtF03);
-		painelGrid.add(lbl04);
-		painelGrid.add(txtF04);
-		painelGrid.add(lbl05);
-		painelGrid.add(txtF05);
-		painelGrid.add(lbl06);
-		painelGrid.add(txtF06);
-		painelGrid.add(lbl08);
-		painelGrid.add(txtF08);
-		painelGrid.add(lbl09);
-		painelGrid.add(lblPrecoAtual);
-		// painelGrid.add(txtF09);
-		painelGrid.add(lbl10);
-		painelGrid.add(cmbSubGrupo);
-		painelGrid.add(lbl11);
-		painelGrid.add(txtF11);
-		painelGrid.add(cmbTabPreco);
-		painelGrid.add(btnEditarPreco);
+		// Painel principal
 
 		// painelGrid.add(btnAddCategoria);
 
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		sppImagem.setPreferredSize(getMinimumSize());
 		sppImagem.add(lblTituloTela);
-		sppImagem.add(scrImagem);
-		sppImagem.setDividerLocation(50);
+		sppImagem.add(lblImagem);
+		sppImagem.setDividerLocation(40);
 		sppImagem.setEnabled(false);
 		sppImagem.setBackground(Color.WHITE);
 		sppImagem.setForeground(Color.WHITE);
 		sppImagem.setDividerSize(3);
 
 		sppSuperior = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		sppSuperior.setDividerLocation(200);
+		sppSuperior.setBackground(Color.WHITE);
+		sppSuperior.setForeground(Color.WHITE);
+		sppSuperior.setDividerLocation(180);
 		sppSuperior.setDividerSize(3);
 		sppSuperior.setEnabled(false);
 		sppSuperior.add(sppImagem);
@@ -460,15 +433,20 @@ public class PainelProdutos extends JPanel {
 		tabelaPrecos = new JTable();
 		modeloTabela = new DefaultTableModel();
 		modeloTabela = (DefaultTableModel) tabelaPrecos.getModel();
-		contProd.carregarCotacoes(prod);
-		Object colunas[] = {"Nome", "Preço Unitário", "Data"};
+		Object colunas[] = {"Nome", "Preço Unitário", "Data e Hora", "Tabela"};
 		modeloTabela.setColumnIdentifiers(colunas);
 		tabelaPrecos.setShowGrid(true);
 		tabelaPrecos.setModel(modeloTabela);
 		for (int i = 0; i < prod.getListCotacaoProduto().size(); i++) {
 			Object linha[] = {prod.getNome_prod(),
+
 					prod.getListCotacaoProduto().get(i).getValor(),
-					prod.getListCotacaoProduto().get(i).getDataHoraMarcacao()};
+
+					String.valueOf(prod.getListCotacaoProduto().get(i)
+							.getDataHoraMarcacao()), // .substring(0, 16),
+					contProd.nomeTabelaPreco(prod.getListCotacaoProduto().get(i)
+							.getCodiTabela())};
+
 			modeloTabela.addRow(linha);
 		}
 		tabelaPrecos.setEnabled(false);
@@ -491,7 +469,6 @@ public class PainelProdutos extends JPanel {
 		} else {
 			prod.setcEAN("Não Cadastrado");
 		}
-
 		if (!txtF05.getText().equals(null) & !txtF05.getText().equals("")) {
 			prod.setNome_prod(txtF05.getText());
 		} else {
@@ -502,11 +479,7 @@ public class PainelProdutos extends JPanel {
 		} else {
 			prod.setAliq_prod("17");
 		}
-		// if (txtF09.getText().equals("")) {
-		// prod.setPrec_prod_1(0);
-		// } else {
-		// prod.setPrec_prod_1(Float.parseFloat(txtF09.getText()));
-		// }
+
 		prod.setDesc_prod(txtF11.getText());
 		prod.setDetalhes_prod(txtADeTalhes.getText());
 
@@ -514,6 +487,34 @@ public class PainelProdutos extends JPanel {
 	}
 	void lerCategorias(Produto prod) {
 		// Produto possui uma lista de GruposSubGrupo
+	}
+
+	// TODO Carregar campos
+	public static void carregarCampos(Produto prod) {
+		if (prod != null) {
+			contProd.carregarCotacoes(prod);
+			txtF02.setText(String.valueOf(prod.getSeq_produto()));
+			txtF03.setText(String.valueOf(prod.getCodi_prod_1()));
+			txtF04.setText(prod.getcEAN());
+			txtF05.setText(prod.getNome_prod());
+			txtF05.setCaretPosition(0);
+			txtF06.setText(prod.getAliq_prod());
+
+			lbl07.setText(contProd.nomeTabelaPreco(
+					prod.getListCotacaoProduto().get(0).getCodiTabela()));
+			lblPrecoAtual.setText("R$ " + String
+					.valueOf(prod.getListCotacaoProduto().get(0).getValor())
+					.replace(".", ","));
+			// txtF08.setText(String.valueOf(prod.getEstoqueAtual()));
+			txtF11.setText(prod.getDesc_prod());
+			txtF11.setCaretPosition(0);
+			txtADeTalhes.setText(prod.getDetalhes_prod());
+			txtADeTalhes.setCaretPosition(0);
+			habilitaTabelaPrecos(prod);
+			carregarImagem(prod.getCodi_prod_1());
+			carregarCategorias(prod);
+			carregarImagensProd(prod);
+		}
 	}
 	static void carregarCategorias(Produto prod) {
 
@@ -546,30 +547,15 @@ public class PainelProdutos extends JPanel {
 	}
 
 	public static void carregarImagem(String codiProd) {
-		lblImagem = new JLabel(new ImageIcon(
+		lblImagem.setIcon(new ImageIcon(
 				"C:\\SIMPRO\\img\\listas\\prods\\" + codiProd + ".jpg "));
-		scrImagem.setViewportView(lblImagem);
-	}
+		lblImagem.setBackground(Color.WHITE);
+		lblImagem.setForeground(Color.WHITE);
+		lblImagem.setHorizontalAlignment(JLabel.CENTER);
+		lblImagem.setBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-	// TODO Carregar campos
-	public static void carregarCampos(Produto prod) {
-		if (prod != null) {
-
-			txtF02.setText(String.valueOf(prod.getSeq_produto()));
-			txtF03.setText(String.valueOf(prod.getCodi_prod_1()));
-			txtF04.setText(prod.getcEAN());
-			txtF05.setText(prod.getNome_prod());
-			txtF06.setText(prod.getAliq_prod());
-			txtF08.setText(String.valueOf(prod.getEstoqueAtual()));
-			lblPrecoAtual.setText("R$  " + String
-					.valueOf(prod.getListCotacaoProduto().get(0).getValor()));
-			txtF11.setText(prod.getDesc_prod());
-			txtADeTalhes.setText(prod.getDetalhes_prod());
-			habilitaTabelaPrecos(prod);
-			carregarImagem(prod.getCodi_prod_1());
-			carregarCategorias(prod);
-			carregarImagensProd(prod);
-		}
+		// scrImagem.setViewportView(lblImagem);
 	}
 
 	// TODO Habilitar Edição
@@ -578,13 +564,13 @@ public class PainelProdutos extends JPanel {
 		txtF04.grabFocus();
 		txtF05.setEditable(true);
 		txtF06.setEditable(true);
-		txtF08.setEditable(true);
+		// txtF08.setEditable(true);
 		// txtF09.setEditable(false);
 		txtF11.setEditable(true);
 		txtADeTalhes.setEditable(true);
 		cmbSubGrupo.setEnabled(true);
 		btnEditarPreco.setEnabled(true);
-		cmbTabPreco.setEnabled(true);
+		// cmbTabPreco.setEnabled(true);
 		tabelaCategorias.setEnabled(true);
 		tabelaImagens.setEnabled(true);
 		// btnAddCategoria.setEnabled(true);
@@ -601,13 +587,12 @@ public class PainelProdutos extends JPanel {
 		txtF04.grabFocus();
 		txtF05.setEditable(true);
 		txtF06.setEditable(true);
-		txtF08.setEditable(true);
+		// txtF08.setEditable(true);
 		// txtF09.setEditable(true);
 		txtF11.setEditable(true);
 		txtADeTalhes.setEditable(true);
-		cmbTabPreco.setEnabled(true);
 		cmbSubGrupo.setEnabled(true);
-		cmbTabPreco.setEnabled(true);
+		// cmbTabPreco.setEnabled(true);
 		btnEditarPreco.setEnabled(true);
 		tabelaCategorias.setCellSelectionEnabled(false);
 		tabelaImagens.setCellSelectionEnabled(false);
@@ -620,12 +605,12 @@ public class PainelProdutos extends JPanel {
 		txtF03.setEditable(false);
 		txtF05.setEditable(false);
 		txtF06.setEditable(false);
-		txtF08.setEditable(false);
+		// txtF08.setEditable(false);
 		// txtF09.setEditable(false);
 		txtF11.setEditable(false);
 		txtADeTalhes.setEditable(false);
 		btnEditarPreco.setEnabled(false);
-		cmbTabPreco.setEnabled(false);
+		// cmbTabPreco.setEnabled(false);
 		cmbSubGrupo.setEnabled(false);
 		chkBListaPrecos.setSelected(false);
 		// btnAddCategoria.setEnabled(false);
@@ -638,8 +623,9 @@ public class PainelProdutos extends JPanel {
 		txtF03.setText(null);
 		txtF04.setText(null);
 		txtF05.setText(null);
-		txtF08.setText(null);
+		// txtF08.setText(null);
 		txtF06.setText(null);
+		lbl07.setText(null);
 		// txtF09.setText(null);
 		lblPrecoAtual.setText(null);
 		txtF11.setText(null);
@@ -695,14 +681,6 @@ public class PainelProdutos extends JPanel {
 
 	public static void setBtnCancelar(JButton btnCancelar) {
 		PainelProdutos.btnCancelar = btnCancelar;
-	}
-
-	public static JComboBox<String> getCmbTabPreco() {
-		return cmbTabPreco;
-	}
-
-	public static void setCmbTabPreco(JComboBox<String> cmbTabPreco) {
-		PainelProdutos.cmbTabPreco = cmbTabPreco;
 	}
 
 	public JTable getTabelaPrecos() {

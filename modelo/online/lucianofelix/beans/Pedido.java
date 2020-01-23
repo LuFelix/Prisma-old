@@ -1,5 +1,6 @@
 package online.lucianofelix.beans;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ public class Pedido {
 	// TODO variáveis de controle
 	private int seqPedi;
 	private int quantItens;
-	private float totalPedi;
+	private BigDecimal totalPedi;
 	private String codiPedi;
 	private String obsPedi1;
 	private String obsPedi2;
@@ -224,14 +225,6 @@ public class Pedido {
 		this.quantItens = quantItens;
 	}
 
-	public float getTotalPedi() {
-		return totalPedi;
-	}
-
-	public void setTotalPedi(float totalPedi) {
-		this.totalPedi = totalPedi;
-	}
-
 	public String getCodiPedi() {
 		return codiPedi;
 	}
@@ -353,5 +346,19 @@ public class Pedido {
 
 	public void setLancPedido(List<Lancamento> lancPedido) {
 		this.lancPedido = lancPedido;
+	}
+
+	/**
+	 * @return the totalPedi
+	 */
+	public BigDecimal getTotalPedi() {
+		return totalPedi;
+	}
+
+	/**
+	 * @param totalPedi the totalPedi to set
+	 */
+	public void setTotalPedi(BigDecimal totalPedi) {
+		this.totalPedi = totalPedi;
 	}
 }

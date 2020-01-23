@@ -1,5 +1,6 @@
 package online.lucianofelix.dao;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,17 +21,56 @@ public class DAOProdutosCotacao {
 	private ConexaoSTM c2;
 	private List<ProdutoCotacao> listCot;
 	private ProdutoCotacao cot;
+	private DAOTabelaPreco daoTabPreco;
 
 	public DAOProdutosCotacao() {
-		System.out.println("DAOProdutosCotacao.construtor");
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		c2 = new ConexaoSTM(ConfigS.getBdPg(), "siacecf");
+		daoTabPreco = new DAOTabelaPreco();
 	}
+	public ProdutoCotacao consultaUltCotVend(Produto prod, String nomeTab) {
+		c.conectar();
+
+		String sql = "SELECT * FROM produtos_cotacoes where codi_produto = ? "
+				+ "and data_hora_marcacao = (Select max(data_hora_marcacao) "
+				+ "from produtos_cotacoes where codi_produto = ? and codi_tabela=?);";
+		System.out.println("codi produto daoprodutocotacao >>>>>>>>>>>>>"
+				+ prod.getCodi_prod_1());
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, prod.getCodi_prod_1());
+			prepStm.setString(2, prod.getCodi_prod_1());
+			prepStm.setString(3, daoTabPreco.pesquisaCodigoNome(nomeTab));
+			ResultSet rs = prepStm.executeQuery();
+			c.desconectar();
+			if (rs.next()) {
+				cot = new ProdutoCotacao();
+				cot.setDataHoraMarcacao(rs.getTimestamp("data_hora_marcacao"));
+				cot.setValor(rs.getFloat("valor"));
+				System.out.println(
+						"Valor do Produto >>>>>>>>>>>>>>>>>>>>>>>>>>      "
+								+ cot.getValor());
+				return cot;
+			} else {
+				cot = null;
+				return cot;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public ProdutoCotacao consultaUltCotVend(Produto prod) {
 		c.conectar();
 		System.out.println("Valor do Produto >>>>>>>>>>>>>>>>>>>>>>>>>>      "
 				+ prod.getPrec_prod_1());
-		String sql = "SELECT * FROM produtos_cotacoes where codi_produto = ? and data_hora_marcacao = (Select max(data_hora_marcacao) from produtos_cotacoes where codi_produto = ?);";
+		String sql = "SELECT * FROM produtos_cotacoes where codi_produto = ? "
+				+ "and data_hora_marcacao = (Select max(data_hora_marcacao) "
+				+ "from produtos_cotacoes where codi_produto = ?);";
 		try {
 			prepStm = c.getCon().prepareStatement(sql,
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -39,22 +79,23 @@ public class DAOProdutosCotacao {
 			prepStm.setString(2, prod.getCodi_prod_1());
 			ResultSet rs = prepStm.executeQuery();
 			c.desconectar();
-			if (rs.first()) {
-
+			if (rs.next()) {
 				cot = new ProdutoCotacao();
 				cot.setDataHoraMarcacao(rs.getTimestamp("data_hora_marcacao"));
 				cot.setValor(rs.getFloat("valor"));
-
 				System.out.println(
 						"Valor da última cotação de venda >>>>>>>>>>      "
 								+ cot.getValor());
-
+				return cot;
+			} else {
+				cot = null;
+				return cot;
 			}
-			return cot;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
+
 	}
 
 	public void novoPrecoProduto(String codiTabela, Date dataHoraMarcaca,
@@ -84,7 +125,7 @@ public class DAOProdutosCotacao {
 		c.desconectar();
 	}
 	public void novoPrecoProduto(String codiTabela, Timestamp dataHoraMarcaca,
-			String codiProduto, float valor) throws SQLException {
+			String codiProduto, BigDecimal valor) throws SQLException {
 		String sql = "insert into produtos_cotacoes (codi_tabela, data_hora_marcacao, codi_produto, valor) "
 				+ "values (?,?,?,?);";
 		c.conectar();
@@ -92,7 +133,7 @@ public class DAOProdutosCotacao {
 		prepStm.setString(1, codiTabela);
 		prepStm.setTimestamp(2, dataHoraMarcaca);
 		prepStm.setString(3, codiProduto);
-		prepStm.setFloat(4, valor);
+		prepStm.setBigDecimal(4, valor);
 		prepStm.executeUpdate();
 		c.desconectar();
 	}

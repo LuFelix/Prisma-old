@@ -36,8 +36,8 @@ public class DAOProdutosPedidos {
 			prepStm = c.getCon().prepareStatement(sql);
 			prepStm.setString(1, codiPedi);
 			prepStm.setString(2, itensProduto[i].getCodi_prod_1());
-			prepStm.setFloat(3, itensProduto[i].getPrec_prod_1());
-			prepStm.setFloat(4, itensProduto[i].getQuantMovimento());
+			prepStm.setBigDecimal(3, itensProduto[i].getPrec_prod_1());
+			prepStm.setBigDecimal(4, itensProduto[i].getQuantMovimento());
 			prepStm.executeUpdate();
 		}
 		c.desconectar();
@@ -50,8 +50,8 @@ public class DAOProdutosPedidos {
 		prepStm = c.getCon().prepareStatement(sql);
 		prepStm.setString(1, pedi.getCodiPedi());
 		prepStm.setString(2, prod.getCodi_prod_1());
-		prepStm.setFloat(3, prod.getPrec_prod_1());
-		prepStm.setFloat(4, prod.getQuantMovimento());
+		prepStm.setBigDecimal(3, prod.getPrec_prod_1());
+		prepStm.setBigDecimal(4, prod.getQuantMovimento());
 		prepStm.setString(5, prod.getNome_prod());
 		prepStm.executeUpdate();
 		c.desconectar();
@@ -70,9 +70,9 @@ public class DAOProdutosPedidos {
 			prepStm.setString(2, itensProduto[i].getCodi_prod_1());
 			prepStm.setString(3, itensProduto[i].getNome_prod());
 			prepStm.setString(4, itensProduto[i].getDesc_prod());
-			prepStm.setFloat(5, itensProduto[i].getPrec_prod_1());
+			prepStm.setBigDecimal(5, itensProduto[i].getPrec_prod_1());
 			prepStm.setString(6, itensProduto[i].getAliq_prod());
-			prepStm.setFloat(7, itensProduto[i].getQuantMovimento());
+			prepStm.setBigDecimal(7, itensProduto[i].getQuantMovimento());
 			prepStm.executeUpdate();
 		}
 		c.desconectar();
@@ -92,8 +92,8 @@ public class DAOProdutosPedidos {
 				while (result.next()) {
 					prod = new Produto();
 					prod.setCodi_prod_1(result.getString("codi_prod_1"));
-					prod.setPrec_prod_1(result.getFloat("prec_prod"));
-					prod.setQuantMovimento(result.getInt("quant_itens"));
+					prod.setPrec_prod_1(result.getBigDecimal("prec_prod"));
+					prod.setQuantMovimento(result.getBigDecimal("quant_itens"));
 					prod.setNome_prod(result.getString("nome_produto"));
 					arrayItProd.add(prod);
 				}
@@ -137,7 +137,7 @@ public class DAOProdutosPedidos {
 		String sql = "update produtos_pedidos set quant_itens =? where codi_pedido=? and codi_prod_1=?;";
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setFloat(1, prod.getQuantMovimento());
+			prepStm.setBigDecimal(1, prod.getQuantMovimento());
 			prepStm.setString(2, pedi.getCodiPedi());
 			prepStm.setString(3, prod.getCodi_prod_1());
 			prepStm.executeUpdate();

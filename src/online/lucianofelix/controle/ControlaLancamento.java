@@ -193,7 +193,7 @@ public class ControlaLancamento {
 		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelLancamento.habilitaNovo();
 				funcaoSalvar();
 			}

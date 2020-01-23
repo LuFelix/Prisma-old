@@ -75,7 +75,8 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 					atv = arrayAtivo.get(j);
 					atv.setIdNeg(atv.getIdNeg().trim());
 
-					System.out.println("Carregando:---" + atv.getIdNeg() + "--" + atv.getNomeRes() + "--");
+					System.out.println("Carregando:---" + atv.getIdNeg() + "--"
+							+ atv.getNomeRes() + "--");
 
 					if ((atv.getTpMerc() == 10) | (atv.getTpMerc() == 20)) {
 						daoAtivo.inserir(atv);
@@ -102,7 +103,8 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		ManipulaBdi manBdi = new ManipulaBdi();
 		File[] arrayArq = output.listFiles();
 		System.out.println("AtualizaSistemaBovespa.atualizaCotacao");
-		System.out.println("Quantidade de Arquivos na pasta " + arrayArq.length);
+		System.out
+				.println("Quantidade de Arquivos na pasta " + arrayArq.length);
 		File input = null;
 		File bdi = null;
 		for (int i = 0; i < arrayArq.length; i++) {
@@ -111,11 +113,12 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 				ManipulaArquivoZip.extract(input, output);
 				System.out.println("BDI: " + arrayArq[i].getName());
 				bdi = new File("C:\\SIMPRO\\bdi\\BDIN");
-				Object linha[] = { manBdi.datBdi(bdi) };
+				Object linha[] = {manBdi.datBdi(bdi)};
 				modelotabela.addRow(linha);
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Erro de acesso aos arquivos:\n" + e.getMessage(), "Erro!",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Erro de acesso aos arquivos:\n" + e.getMessage(),
+						"Erro!", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
 		}
@@ -140,7 +143,7 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		modelotabela.setColumnIdentifiers(colunas.toArray());
 		listData = daoCotaBov.datasDisponiveisDB();
 		for (int i = 0; i < listData.size(); i++) {
-			Object linha[] = { listData.get(i).substring(0, 10) };
+			Object linha[] = {listData.get(i).substring(0, 10)};
 			modelotabela.addRow(linha);
 		}
 		tabela1.setShowHorizontalLines(true);
@@ -160,7 +163,8 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		output = new File("C:\\SIMPRO\\bdi");
 		Ativo atv;
 		File[] arrayArq = output.listFiles();
-		System.out.println("Quantidade de Arquivos na pasta " + arrayArq.length);
+		System.out
+				.println("Quantidade de Arquivos na pasta " + arrayArq.length);
 		for (int i = 0; i < arrayArq.length; i++) {
 			input = new File("C:\\SIMPRO\\bdi\\" + arrayArq[i].getName());
 			System.out.println("BDI: " + arrayArq[i].getName());
@@ -169,23 +173,35 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 			bdi.setReadOnly();
 			arrayAtivo = manBdi.bdiparaArrayAtivos(bdi);
 			System.out.println();
-			System.out.println("+++++++++++++++++Atualizando cotações para a data: " + manBdi.datBdi(bdi)
-					+ "++++++++++++++++++++++++++++++++");
+			System.out.println(
+					"+++++++++++++++++Atualizando cotações para a data: "
+							+ manBdi.datBdi(bdi)
+							+ "++++++++++++++++++++++++++++++++");
 			System.out.println();
 			for (int j = 0; j < arrayAtivo.size(); j++) {
 				atv = new Ativo();
 				atv = arrayAtivo.get(j);
 				atv.setIdNeg(atv.getIdNeg().trim());
 				if ((atv.getTpMerc() == 10) | (atv.getTpMerc() == 20)) {
-					System.out.println("..." + atv.getIdNeg() + "--- Valores... " + atv.getCotacao().getDataCotacao()
-							+ "--" + atv.getCotacao().getPreAbe() + "--" + atv.getCotacao().getPreFec() + "--"
-							+ atv.getCotacao().getPreMax() + "--" + atv.getCotacao().getPreMin() + "--"
-							+ atv.getCotacao().getVolumeNeg() + "--" + atv.getCotacao().getQuaToTit() + "--"
-							+ atv.getCotacao().getTotNeg());
-					daoCotaBov.inserir(new CotacaoAtivo(atv.getIdNeg(), atv.getCotacao().getDataCotacao(),
-							atv.getCotacao().getPreAbe(), atv.getCotacao().getPreFec(), atv.getCotacao().getPreMax(),
-							atv.getCotacao().getPreMin(), atv.getCotacao().getVolumeNeg(),
-							atv.getCotacao().getQuaToTit(), atv.getCotacao().getTotNeg()));
+					System.out
+							.println("..." + atv.getIdNeg() + "--- Valores... "
+									+ atv.getCotacao().getDataCotacao() + "--"
+									+ atv.getCotacao().getPreAbe() + "--"
+									+ atv.getCotacao().getPreFec() + "--"
+									+ atv.getCotacao().getPreMax() + "--"
+									+ atv.getCotacao().getPreMin() + "--"
+									+ atv.getCotacao().getVolumeNeg() + "--"
+									+ atv.getCotacao().getQuaToTit() + "--"
+									+ atv.getCotacao().getTotNeg());
+					daoCotaBov.inserir(new CotacaoAtivo(atv.getIdNeg(),
+							atv.getCotacao().getDataCotacao(),
+							atv.getCotacao().getPreAbe(),
+							atv.getCotacao().getPreFec(),
+							atv.getCotacao().getPreMax(),
+							atv.getCotacao().getPreMin(),
+							atv.getCotacao().getVolumeNeg(),
+							atv.getCotacao().getQuaToTit(),
+							atv.getCotacao().getTotNeg()));
 				}
 			}
 		}
@@ -202,10 +218,12 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 	 */
 	public boolean atualizaBancoManual() {
 		System.out.println("AtualizaSistemaBdiBovespa.atualizaBancoManual");
-		String diaMes = JOptionPane.showInputDialog("Informe a data para atualização - DD/MM");
+		String diaMes = JOptionPane
+				.showInputDialog("Informe a data para atualização - DD/MM");
 		output = new File("C:\\SIMPRO\\bdi");
 		System.out.println("BDI==>  " + "bdi" + manData.inverteData9(diaMes));
-		input = new File("C:\\SIMPRO\\bdi\\bdi" + manData.inverteData9(diaMes) + ".zip");
+		input = new File(
+				"C:\\SIMPRO\\bdi\\bdi" + manData.inverteData9(diaMes) + ".zip");
 		System.out.println(input.exists());
 		try {
 			ManipulaArquivoZip.extract(input, output);
@@ -213,7 +231,8 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 			bdi.setReadOnly();
 			arrayAtivo = manBdi.bdiparaArrayAtivos(bdi);
 			JTextArea areaAtu = new JTextArea();
-			areaAtu.append("+++++++++++++++++Atualizando cotações para a data: " + manBdi.datBdi(bdi)
+			areaAtu.append("+++++++++++++++++Atualizando cotações para a data: "
+					+ manBdi.datBdi(bdi)
 					+ "++++++++++++++++++++++++++++++++\n\n");
 			System.out.println();
 
@@ -224,25 +243,36 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 				atv.setIdNeg(atv.getIdNeg().trim());
 				Thread.sleep(15);
 				if ((atv.getTpMerc() == 10) | (atv.getTpMerc() == 20)) {
-					areaAtu.append("..." + atv.getIdNeg() + "--- Valores... " + atv.getCotacao().getDataCotacao() + "--"
-							+ atv.getCotacao().getPreAbe() + "--" + atv.getCotacao().getPreFec() + "--"
-							+ atv.getCotacao().getPreMax() + "--" + atv.getCotacao().getPreMin() + "--"
-							+ atv.getCotacao().getVolumeNeg() + "--" + atv.getCotacao().getQuaToTit() + "--"
+					areaAtu.append("..." + atv.getIdNeg() + "--- Valores... "
+							+ atv.getCotacao().getDataCotacao() + "--"
+							+ atv.getCotacao().getPreAbe() + "--"
+							+ atv.getCotacao().getPreFec() + "--"
+							+ atv.getCotacao().getPreMax() + "--"
+							+ atv.getCotacao().getPreMin() + "--"
+							+ atv.getCotacao().getVolumeNeg() + "--"
+							+ atv.getCotacao().getQuaToTit() + "--"
 							+ atv.getCotacao().getTotNeg() + "\n");
 					areaAtu.setCaretPosition(areaAtu.getDocument().getLength());
-					daoCotaBov.inserir(new CotacaoAtivo(atv.getIdNeg(), atv.getCotacao().getDataCotacao(),
-							atv.getCotacao().getPreAbe(), atv.getCotacao().getPreFec(), atv.getCotacao().getPreMax(),
-							atv.getCotacao().getPreMin(), atv.getCotacao().getVolumeNeg(),
-							atv.getCotacao().getQuaToTit(), atv.getCotacao().getTotNeg()));
+					daoCotaBov.inserir(new CotacaoAtivo(atv.getIdNeg(),
+							atv.getCotacao().getDataCotacao(),
+							atv.getCotacao().getPreAbe(),
+							atv.getCotacao().getPreFec(),
+							atv.getCotacao().getPreMax(),
+							atv.getCotacao().getPreMin(),
+							atv.getCotacao().getVolumeNeg(),
+							atv.getCotacao().getQuaToTit(),
+							atv.getCotacao().getTotNeg()));
 
 				}
 			}
 			JOptionPane.showMessageDialog(null, "Atualização encerrada",
-					"Atualizadopara a data: " + manData.inverteData9(diaMes), JOptionPane.INFORMATION_MESSAGE);
+					"Atualizadopara a data: " + manData.inverteData9(diaMes),
+					JOptionPane.INFORMATION_MESSAGE);
 			FrameInicial.getScrLista().setViewportView(datasSistemaFuse());
 			return true;
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Não conseguiu acesso ao arquivo!", "Erro de leitura",
+			JOptionPane.showMessageDialog(null,
+					"Não conseguiu acesso ao arquivo!", "Erro de leitura",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 			return false;
@@ -299,7 +329,8 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		manData.setStrData("");
 		System.out.println("Data: " + getStrData());
 
-		setStringUrl("http://www.bmfbovespa.com.br/fechamento-pregao/bdi/bdi" + getStrData() + ".zip");
+		setStringUrl("http://www.bmfbovespa.com.br/fechamento-pregao/bdi/bdi"
+				+ getStrData() + ".zip");
 
 		BaixarArquivos baixar = new BaixarArquivos();
 		baixar.gravaArquivoDeURL(getStringUrl(), pathLocal, "");
@@ -327,9 +358,11 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		manData = new ManipulaData();
 		String pathLocal = "C:\\SIMPRO\\bdi\\bdi";
 		manData.setStrData(mesDia);
-		setStringUrl("http://bvmf.bmfbovespa.com.br/fechamento-pregao/bdi/bdi" + mesDia + ".zip");
+		setStringUrl("http://bvmf.bmfbovespa.com.br/fechamento-pregao/bdi/bdi"
+				+ mesDia + ".zip");
 		BaixarArquivos baixar = new BaixarArquivos();
-		baixar.gravaArquivoDeURL(getStringUrl(), pathLocal, getStringUrl().substring(55, 59) + ".zip");
+		baixar.gravaArquivoDeURL(getStringUrl(), pathLocal,
+				getStringUrl().substring(55, 59) + ".zip");
 		return true;
 	}
 
@@ -337,7 +370,9 @@ public class AtualizaSistemaBDIBovespa extends Thread {
 		System.out.println("AtualizaSistemaBdibovespa.baixarBdiWebManual");
 
 		String pathLocal = "C:\\SIMPRO\\anos\\";
-		setStringUrl("http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A" + ano + ".zip");
+		setStringUrl(
+				"http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A"
+						+ ano + ".zip");
 		BaixarArquivos baixar = new BaixarArquivos();
 		baixar.gravaArquivoDeURL(getStringUrl(), pathLocal, ano + ".zip");
 		return true;

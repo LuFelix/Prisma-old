@@ -49,6 +49,9 @@ public class DAOProdutoPrepSTM {
 	 * 
 	 * @param prod
 	 * @return boolean
+	 * 
+	 * 
+	 * 
 	 */
 	public boolean alterar(Produto prod) {
 		System.out.println(">>>>>>>>>>  DaoProduto.alterar");
@@ -60,9 +63,9 @@ public class DAOProdutoPrepSTM {
 			prepStm.setString(1, prod.getNome_prod());
 			prepStm.setString(2, prod.getDesc_prod());
 			prepStm.setString(3, prod.getAliq_prod());
-			prepStm.setFloat(4, prod.getPrec_custo());
-			prepStm.setFloat(5, prod.getPrec_prod_1());
-			prepStm.setFloat(6, prod.getPrec_prod_2());
+			prepStm.setBigDecimal(4, prod.getPrec_custo());
+			prepStm.setBigDecimal(5, prod.getPrec_prod_1());
+			prepStm.setBigDecimal(6, prod.getPrec_prod_2());
 			prepStm.setString(7, prod.getCodi_prod_2());
 			prepStm.setString(8, prod.getcEAN());
 			prepStm.setString(9, prod.getDetalhes_prod());
@@ -93,9 +96,9 @@ public class DAOProdutoPrepSTM {
 			prepStm.setString(1, prod.getNome_prod());
 			prepStm.setString(2, prod.getDesc_prod());
 			prepStm.setString(3, prod.getAliq_prod());
-			prepStm.setFloat(4, prod.getPrec_custo());
-			prepStm.setFloat(5, prod.getPrec_prod_1());
-			prepStm.setFloat(6, prod.getPrec_prod_2());
+			prepStm.setBigDecimal(4, prod.getPrec_custo());
+			prepStm.setBigDecimal(5, prod.getPrec_prod_1());
+			// prepStm.setFloat(6, prod.getPrec_prod_2());
 			prepStm.setString(7, prod.getCodi_prod_1());
 			prepStm.setString(8, prod.getCodi_prod_2());
 			prepStm.setString(9, prod.getcEAN());
@@ -184,8 +187,8 @@ public class DAOProdutoPrepSTM {
 				prod.setDesc_prod(result.getString("desc_prod"));
 				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
-				prod.setPrec_custo(result.getFloat("prec_custo"));
-				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
+				prod.setPrec_custo(result.getBigDecimal("prec_custo"));
+				prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
 				prod.setcEAN(result.getString("codi_ean"));
 				listProd.add(prod);
 			}
@@ -258,8 +261,8 @@ public class DAOProdutoPrepSTM {
 				prod.setDesc_prod(result.getString("desc_prod"));
 				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
-				prod.setPrec_custo(result.getFloat("prec_custo"));
-				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
+				prod.setPrec_custo(result.getBigDecimal("prec_custo"));
+				prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
 				prod.setcEAN(result.getString("codi_ean"));
 				listProd.add(prod);
 			}
@@ -291,10 +294,10 @@ public class DAOProdutoPrepSTM {
 				prod.setDesc_prod(result.getString("desc_prod"));
 				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(result.getString("aliq_prod"));
-				prod.setPrec_custo(result.getFloat("prec_custo"));
+				prod.setPrec_custo(result.getBigDecimal("prec_custo"));
 				prod.setSeq_produto(result.getInt("seq_produto"));
 				prod.setCodi_prod_1(result.getString("codi_prod_1"));
-				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
+				prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
 				prod.setcEAN(result.getString("codi_ean"));
 				return prod;
 			} else {
@@ -362,7 +365,7 @@ public class DAOProdutoPrepSTM {
 			prod.setDesc_prod(result.getString("desc_prod"));
 			prod.setDetalhes_prod(result.getString("detalhes_prod"));
 			prod.setAliq_prod(result.getString("aliq_prod"));
-			prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
+			prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
 			prod.setSeq_produto(result.getInt("seq_produto"));
 			prod.setcEAN(result.getString("codi_ean"));
 			return prod;
@@ -395,7 +398,7 @@ public class DAOProdutoPrepSTM {
 				prod.setDesc_prod(res.getString("desc_prod"));
 				prod.setDetalhes_prod(result.getString("detalhes_prod"));
 				prod.setAliq_prod(res.getString("aliq_prod"));
-				prod.setPrec_prod_1(res.getFloat("prec_prod_1"));
+				prod.setPrec_prod_1(res.getBigDecimal("prec_prod_1"));
 				prod.setSeq_produto(res.getInt("seq_produto"));
 				prod.setcEAN(result.getString("codi_ean"));
 				listProd.add(prod);
@@ -430,7 +433,7 @@ public class DAOProdutoPrepSTM {
 				prod.setAliq_prod(result.getString("aliq_prod"));
 				// prod.setEstoque(result.getInt("quan_prod")); // resolver
 				// estoque
-				prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
+				prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
 				prod.setSeq_produto(result.getInt("seq_produto"));
 				prod.setcEAN(result.getNString("codi_ean"));
 				listProd.add(prod);
@@ -455,7 +458,7 @@ public class DAOProdutoPrepSTM {
 			result.next();
 			prod.setAliq_prod(result.getString("aliq_prod"));
 			// prod.setEstoque(result.getInt("quan_prod"));
-			prod.setPrec_prod_1(result.getFloat("prec_prod"));
+			prod.setPrec_prod_1(result.getBigDecimal("prec_prod"));
 			prod.setCodi_prod_1(result.getString("codi_prod"));
 			prod.setNome_prod(result.getString("nome_prod"));
 			prod.setDesc_prod(result.getString("desc_prod"));
@@ -483,9 +486,9 @@ public class DAOProdutoPrepSTM {
 			prod.setDesc_prod(result.getString("desc_prod"));
 			prod.setDetalhes_prod(result.getString("detalhes_prod"));
 			prod.setAliq_prod(result.getString("aliq_prod"));
-			prod.setPrec_custo(result.getFloat("prec_custo real"));
-			prod.setPrec_prod_1(result.getFloat("prec_prod_1"));
-			prod.setPrec_prod_2(result.getFloat("prec_prod_2"));
+			prod.setPrec_custo(result.getBigDecimal("prec_custo real"));
+			prod.setPrec_prod_1(result.getBigDecimal("prec_prod_1"));
+			// prod.setPrec_prod_2(result.getBigDecimal("prec_prod_2"));
 			prod.setSeq_produto(result.getInt("seq_produto"));
 			return prod;
 		} catch (SQLException e) {

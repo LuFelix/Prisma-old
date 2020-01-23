@@ -152,7 +152,7 @@ public class AbaFuse extends JPanel implements TreeSelectionListener {
 		// Listen for when the selection changes.
 		arvoreSistema.addTreeSelectionListener(this);
 		arvoreSistema.setShowsRootHandles(true);
-		arvoreSistema.setRootVisible(false);
+		arvoreSistema.setRootVisible(true);
 		// arvoreSistema.setSelectionRow(4);
 		arvoreSistema.setRowHeight(25);
 		scrMineracao = new JScrollPane(arvoreSistema);

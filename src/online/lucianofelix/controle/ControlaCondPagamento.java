@@ -16,9 +16,9 @@ import javax.swing.table.DefaultTableModel;
 import online.lucianofelix.beans.CondPagamento;
 import online.lucianofelix.dao.DAOCondPagamento;
 import online.lucianofelix.visao.FrameInicial;
+import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 import online.lucianofelix.visao.PainelCondPagamento;
 import online.lucianofelix.visao.PainelPedidos;
-import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 
 public class ControlaCondPagamento {
 
@@ -41,21 +41,24 @@ public class ControlaCondPagamento {
 			@Override
 			public void keyPressed(KeyEvent tecla) {
 				int posicao = tabela.getSelectedRow();
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 					PainelCondPagamento.irParaPoicao(posicao);
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					PainelCondPagamento.irParaPoicao(posicao);
 					PainelCondPagamento.getBtnEditar().doClick();
-					FrameInicial.getTabela().changeSelection(--posicao, 0, false, false);
+					FrameInicial.getTabela().changeSelection(--posicao, 0,
+							false, false);
 					PainelCondPagamento.getTxtFNomeProd().grabFocus();
 				}
 			}
 
 			@Override
 			public void keyReleased(KeyEvent tecla) {
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 					int posicao = tabela.getSelectedRow();
 					PainelCondPagamento.irParaPoicao(posicao);
 				}
@@ -100,8 +103,9 @@ public class ControlaCondPagamento {
 		arrayCondPag = daoCondPag.pesquisaString(nome);
 		modelotabela.setColumnIdentifiers(colunas.toArray());
 		for (int i = 0; i < arrayCondPag.size(); i++) {
-			Object linha[] = { arrayCondPag.get(i).getCodiCondPag(), arrayCondPag.get(i).getNomeCondicao(),
-					arrayCondPag.get(i).getQuantParcelas(), };
+			Object linha[] = {arrayCondPag.get(i).getCodiCondPag(),
+					arrayCondPag.get(i).getNomeCondicao(),
+					arrayCondPag.get(i).getQuantParcelas(),};
 			modelotabela.addRow(linha);
 		}
 		tabela.setShowGrid(true);
@@ -138,7 +142,8 @@ public class ControlaCondPagamento {
 			@Override
 			public void keyReleased(KeyEvent tecla) {
 				// TODO Ao Soltar a tecla
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 					int posicao = tabela.getSelectedRow();
 				}
 			}
@@ -147,7 +152,8 @@ public class ControlaCondPagamento {
 			public void keyPressed(KeyEvent tecla) {
 				// TODO Ao Pressionar Tecla
 				int posicao = tabela.getSelectedRow();
-				if (tecla.getExtendedKeyCode() == 40 || tecla.getExtendedKeyCode() == 38) {
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
@@ -194,8 +200,9 @@ public class ControlaCondPagamento {
 		arrayCondPag = daoCondPag.pesquisaString(nome);
 		modelotabela.setColumnIdentifiers(colunas.toArray());
 		for (int i = 0; i < arrayCondPag.size(); i++) {
-			Object linha[] = { arrayCondPag.get(i).getCodiCondPag(), arrayCondPag.get(i).getNomeCondicao(),
-					arrayCondPag.get(i).getQuantParcelas() };
+			Object linha[] = {arrayCondPag.get(i).getCodiCondPag(),
+					arrayCondPag.get(i).getNomeCondicao(),
+					arrayCondPag.get(i).getQuantParcelas()};
 			modelotabela.addRow(linha);
 		}
 		tabela.setShowGrid(true);
@@ -205,19 +212,23 @@ public class ControlaCondPagamento {
 
 	public void funcaoSalvar() {
 		ControlaBotoes.limparBtnSalvar();
-		ControlaBotoes.habilitaNovoBotoes();
+		ControlaBotoes.clicaNovoBotoes();
 		PainelCondPagamento.habilitaNovo();
 		funcaoCancelarNovo();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!PainelCondPagamento.getTxtFCodigoCondPag().getText().equals("")
-						& !PainelCondPagamento.getTxtFCodigoCondPag().equals(null)) {
+				if (!PainelCondPagamento.getTxtFCodigoCondPag().getText()
+						.equals("")
+						& !PainelCondPagamento.getTxtFCodigoCondPag()
+								.equals(null)) {
 					condPag = PainelCondPagamento.lerCampos();
 					try {
 						daoCondPag.alterar(condPag);
-						FrameInicial.setTabela(pesqNomeTabela(condPag.getCodiCondPag()));
-						FrameInicial.setPainelVisualiza(new PainelCondPagamento(condPag.getCodiCondPag()));
+						FrameInicial.setTabela(
+								pesqNomeTabela(condPag.getCodiCondPag()));
+						FrameInicial.setPainelVisualiza(new PainelCondPagamento(
+								condPag.getCodiCondPag()));
 						FrameInicial.atualizaTela();
 						ControlaBotoes.desHabilitaEdicaoBotoes();
 						PainelCondPagamento.desHabilitaEdicao();
@@ -226,13 +237,16 @@ public class ControlaCondPagamento {
 						FrameInicial.getBtnNovo().grabFocus();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Problemas: Código Nulo ou Duplicado", "Erro ao Cadastrar",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"Problemas: Código Nulo ou Duplicado",
+								"Erro ao Cadastrar", JOptionPane.ERROR_MESSAGE);
 					}
 
 				} else {
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel gravar!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel gravar!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 
@@ -248,13 +262,17 @@ public class ControlaCondPagamento {
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!PainelCondPagamento.getTxtFCodigoCondPag().getText().equals("")
-						& !PainelCondPagamento.getTxtFCodigoCondPag().equals(null)) {
+				if (!PainelCondPagamento.getTxtFCodigoCondPag().getText()
+						.equals("")
+						& !PainelCondPagamento.getTxtFCodigoCondPag()
+								.equals(null)) {
 					condPag = PainelCondPagamento.lerCampos();
 					try {
 						daoCondPag.alterar(condPag);
-						FrameInicial.setTabela(pesqNomeTabela(condPag.getCodiCondPag()));
-						FrameInicial.setPainelVisualiza(new PainelCondPagamento(condPag.getCodiCondPag()));
+						FrameInicial.setTabela(
+								pesqNomeTabela(condPag.getCodiCondPag()));
+						FrameInicial.setPainelVisualiza(new PainelCondPagamento(
+								condPag.getCodiCondPag()));
 						FrameInicial.atualizaTela();
 						PainelCondPagamento.desHabilitaEdicao();
 						ControlaBotoes.desHabilitaEdicaoBotoes();
@@ -264,14 +282,17 @@ public class ControlaCondPagamento {
 					} catch (Exception e2) {
 						PainelCondPagamento.desHabilitaEdicao();
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Erro ao gravar\n" + e2.getMessage(), "Erro",
+						JOptionPane.showMessageDialog(null,
+								"Erro ao gravar\n" + e2.getMessage(), "Erro",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
 					ControlaBotoes.desHabilitaEdicaoBotoes();
 					PainelCondPagamento.desHabilitaEdicao();
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel concluir!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel concluir!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 
@@ -280,8 +301,10 @@ public class ControlaCondPagamento {
 
 	public String criaCodigo() {
 		Calendar c = Calendar.getInstance();
-		String codiCondPag = String.valueOf(daoCondPag.consultaUltimo()) + String.valueOf(c.get(Calendar.YEAR))
-				+ String.valueOf(c.get(Calendar.MONTH)) + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+		String codiCondPag = String.valueOf(daoCondPag.consultaUltimo())
+				+ String.valueOf(c.get(Calendar.YEAR))
+				+ String.valueOf(c.get(Calendar.MONTH))
+				+ String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 
 		return codiCondPag;
 
@@ -297,7 +320,8 @@ public class ControlaCondPagamento {
 				if (daoCondPag.remover(condPag)) {
 					iniciar();
 				} else {
-					JOptionPane.showMessageDialog(null, "Problemas: Erro ao apagar a reserva de código",
+					JOptionPane.showMessageDialog(null,
+							"Problemas: Erro ao apagar a reserva de código",
 							"Erro ao Excluir", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -361,11 +385,13 @@ public class ControlaCondPagamento {
 			public void keyPressed(KeyEvent tecla) {
 				if (tecla.getExtendedKeyCode() == 40) {
 					FrameInicial.getTabela().grabFocus();
-					FrameInicial.getTabela().changeSelection(0, 0, false, false);
+					FrameInicial.getTabela().changeSelection(0, 0, false,
+							false);
 				} else {
 					String nome = FrameInicial.getTxtfPesquisa().getText();
 					FrameInicial.setTabela(pesqNomeTabela(nome));
-					FrameInicial.setPainelVisualiza(new PainelCondPagamento(nome));
+					FrameInicial
+							.setPainelVisualiza(new PainelCondPagamento(nome));
 					FrameInicial.atualizaTela();
 				}
 

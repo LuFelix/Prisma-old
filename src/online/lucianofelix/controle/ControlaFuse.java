@@ -20,8 +20,8 @@ import online.lucianofelix.dao.DAOFuse;
 import online.lucianofelix.dao.DAOOperacao;
 import online.lucianofelix.util.ManipulaData;
 import online.lucianofelix.visao.FrameInicial;
-import online.lucianofelix.visao.PainelFuse;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
+import online.lucianofelix.visao.PainelFuse;
 
 public class ControlaFuse {
 
@@ -104,7 +104,7 @@ public class ControlaFuse {
 		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelFuse.habilitaNovo();
 				funcaoSalvar();
 			}

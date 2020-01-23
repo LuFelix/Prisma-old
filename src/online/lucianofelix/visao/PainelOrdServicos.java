@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
@@ -96,14 +97,18 @@ public class PainelOrdServicos extends JPanel {
 		PainelOrdServicos.btnSalvar = btnSalvar;
 	}
 
-	public PainelOrdServicos() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-			UnsupportedLookAndFeelException {
+	public PainelOrdServicos()
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException {
 
 		// TODO Construtor da Tela de Pedido
-		UIManager.put("TextField.font", new Font("Times New Roman", Font.BOLD, 16));
+		UIManager.put("TextField.font",
+				new Font("Times New Roman", Font.BOLD, 16));
 		UIManager.put("Label.font", new Font("Times New Roman", Font.BOLD, 10));
-		UIManager.put("Button.font", new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		UIManager.put("Button.font",
+				new Font("Times New Roman", Font.BOLD, 12));
+		UIManager.setLookAndFeel(
+				"com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		contPedi = new ControlaPedido();
 		daoPedi = new DAOPedidoPrepSTM();
 		controledaLista = new ControlaListaPedidos(listpedi);
@@ -252,7 +257,8 @@ public class PainelOrdServicos extends JPanel {
 					} else {
 						pedi = controledaLista.previous();
 					}
-					System.out.println("Foi para: " + controledaLista.getCurrentPosition());
+					System.out.println("Foi para: "
+							+ controledaLista.getCurrentPosition());
 					carregarCampos(pedi);
 				}
 			}
@@ -330,7 +336,8 @@ public class PainelOrdServicos extends JPanel {
 		tam--;
 		if (listavazia()) {
 			FrameInicial.setPainelVisualiza(null);
-			FrameInicial.getScrVisualiza().setViewportView(FrameInicial.getPainelVisualiza());
+			FrameInicial.getScrVisualiza()
+					.setViewportView(FrameInicial.getPainelVisualiza());
 			JOptionPane.showMessageDialog(null, "Lista Vazia");
 		} else {
 			pedi = controledaLista.first();
@@ -347,9 +354,12 @@ public class PainelOrdServicos extends JPanel {
 		// sobrecarga
 
 	public PainelOrdServicos(String nome) {
-		UIManager.put("TextField.font", new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Label.font", new Font("Times New Roman", Font.PLAIN, 12));
-		UIManager.put("Button.font", new Font("Times New Roman", Font.BOLD, 12));
+		UIManager.put("TextField.font",
+				new Font("Times New Roman", Font.BOLD, 12));
+		UIManager.put("Label.font",
+				new Font("Times New Roman", Font.PLAIN, 12));
+		UIManager.put("Button.font",
+				new Font("Times New Roman", Font.BOLD, 12));
 
 		contPedi = new ControlaPedido();
 		daoPedi = new DAOPedidoPrepSTM();
@@ -525,10 +535,12 @@ public class PainelOrdServicos extends JPanel {
 					if (controledaLista.getCurrentPosition() == 0) {
 						controledaLista.setCurrentPosition(tam);
 						pedi = controledaLista.getAt(tam);
-						contPedi.posicionarTabela(controledaLista.getCurrentPosition());
+						contPedi.posicionarTabela(
+								controledaLista.getCurrentPosition());
 					} else {
 						pedi = controledaLista.previous();
-						contPedi.posicionarTabela(controledaLista.getCurrentPosition());
+						contPedi.posicionarTabela(
+								controledaLista.getCurrentPosition());
 					}
 					carregarCampos(pedi);
 					// FrameECF.atualizaTela(pedi);
@@ -541,11 +553,13 @@ public class PainelOrdServicos extends JPanel {
 				if (!listavazia()) {
 					if (controledaLista.getCurrentPosition() < tam) {
 						pedi = controledaLista.next();
-						contPedi.posicionarTabela(controledaLista.getCurrentPosition());
+						contPedi.posicionarTabela(
+								controledaLista.getCurrentPosition());
 					} else {
 						controledaLista.setCurrentPosition(0);
 						pedi = controledaLista.getAt(0);
-						contPedi.posicionarTabela(controledaLista.getCurrentPosition());
+						contPedi.posicionarTabela(
+								controledaLista.getCurrentPosition());
 					}
 					carregarCampos(pedi);
 				}
@@ -614,27 +628,34 @@ public class PainelOrdServicos extends JPanel {
 		btnSalvar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!txtfCondPag.getText().equals("") & !txtfUsuario.equals("")) {
+				if (!txtfCondPag.getText().equals("")
+						& !txtfUsuario.equals("")) {
 					pedi = new Pedido();
 					try {
 						pedi = leCampos();
 						daoPedi.alterar(pedi);
 						limparCampos();
-						FrameInicial.setTabela(contPedi.tblPedidosNomeTipo(pedi.getCodiPedi(), ""));
-						FrameInicial.setPainelVisualiza(new PainelPedidos(pedi.getCodiPedi()));
+						FrameInicial.setTabela(contPedi
+								.tblPedidosNomeTipo(pedi.getCodiPedi(), ""));
+						FrameInicial.setPainelVisualiza(
+								new PainelPedidos(pedi.getCodiPedi()));
 						FrameInicial.atualizaTela();
 						desHabilitaEdicao();
 						JOptionPane.showMessageDialog(null, "Feito!");
-						FrameInicial.getContPedi().iniciar(pedi.getTipoPedido());
+						FrameInicial.getContPedi()
+								.iniciar(pedi.getTipoPedido());
 						btnNovo.grabFocus();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Problemas: Codigo Nulo ou Duplicado", "Erro ao Salvar",
-								JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,
+								"Problemas: Codigo Nulo ou Duplicado",
+								"Erro ao Salvar", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel gravar!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel gravar!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -646,25 +667,31 @@ public class PainelOrdServicos extends JPanel {
 		btnSalvar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!txtfCondPag.getText().equals("") & !txtfUsuario.equals("")) {
+				if (!txtfCondPag.getText().equals("")
+						& !txtfUsuario.equals("")) {
 					pedi = leCampos();
 					try {
 						daoPedi.alterar(pedi);
 						limparCampos();
 						desHabilitaEdicao();
 						JOptionPane.showMessageDialog(null, "Pedido Alterado!");
-						FrameInicial.setPainelVisualiza(new PainelPedidos(pedi.getxNome()));
-						FrameInicial.setTabela(contPedi.tblPedidosNomeTipo(pedi.getCodiPedi(), pedi.getTipoPedido()));
+						FrameInicial.setPainelVisualiza(
+								new PainelPedidos(pedi.getxNome()));
+						FrameInicial.setTabela(contPedi.tblPedidosNomeTipo(
+								pedi.getCodiPedi(), pedi.getTipoPedido()));
 						FrameInicial.atualizaTela();
 						pedi = new Pedido();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Erro ao gravar\n" + e2.getMessage(), "Erro",
+						JOptionPane.showMessageDialog(null,
+								"Erro ao gravar\n" + e2.getMessage(), "Erro",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Favor verificar os campos informados. ",
-							"Não foi possivel alterar o Pedido!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,
+							"Favor verificar os campos informados. ",
+							"Não foi possivel alterar o Pedido!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -749,7 +776,8 @@ public class PainelOrdServicos extends JPanel {
 		tabelaItensPedido = new JTable();
 		modeloTabela = new DefaultTableModel();
 		modeloTabela = (DefaultTableModel) tabelaItensPedido.getModel();
-		Object colunas[] = { "Código", "Nome", "Quantidade", "Preço Unit.", "Total ítem" };
+		Object colunas[] = {"Código", "Nome", "Quantidade", "Preço Unit.",
+				"Total ítem"};
 		modeloTabela.setColumnIdentifiers(colunas);
 		tabelaItensPedido = new JTable(modeloTabela);
 		// for (int i = 0; i < arrayItemProd.size(); i++) {
@@ -772,7 +800,8 @@ public class PainelOrdServicos extends JPanel {
 			daoPedi.reservaCodigo(codipedido);
 		} catch (SQLException e) {
 			// TODO Erro ao conectar banco.
-			JOptionPane.showMessageDialog(null, "Erro ao reservar código para o pedido/n" + e.getMessage());
+			JOptionPane.showMessageDialog(null,
+					"Erro ao reservar código para o pedido/n" + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -879,11 +908,13 @@ public class PainelOrdServicos extends JPanel {
 		if (!txtfCliente.getText().equals("") & !txtfCliente.equals(null)) {
 			pedi.setxNome(txtfCliente.getText());
 		}
-		if (!txtFQuantItens.getText().equals(null) & !txtFQuantItens.getText().equals("")) {
+		if (!txtFQuantItens.getText().equals(null)
+				& !txtFQuantItens.getText().equals("")) {
 			pedi.setQuantItens(Integer.parseInt(txtFQuantItens.getText()));
 		}
-		if (!txtFPrecopedi.getText().equals(null) & !txtFPrecopedi.getText().equals("")) {
-			pedi.setTotalPedi(Float.parseFloat(txtFPrecopedi.getText()));
+		if (!txtFPrecopedi.getText().equals(null)
+				& !txtFPrecopedi.getText().equals("")) {
+			pedi.setTotalPedi(new BigDecimal(txtFPrecopedi.getText()));
 		}
 		pedi.setCodiCondPag(txtfCondPag.getText());
 		// ItensProduto[] arrteste = pedi.getItensProdutoArray(arrayItemProd);
@@ -935,8 +966,10 @@ public class PainelOrdServicos extends JPanel {
 	public String criaCodiPedi() {
 		Calendar c = Calendar.getInstance();
 		daoPedi.consultaUltimo();
-		String codiPedi = String.valueOf(daoPedi.consultaUltimo()) + String.valueOf(c.get(Calendar.YEAR))
-				+ String.valueOf(c.get(Calendar.MONTH)) + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+		String codiPedi = String.valueOf(daoPedi.consultaUltimo())
+				+ String.valueOf(c.get(Calendar.YEAR))
+				+ String.valueOf(c.get(Calendar.MONTH))
+				+ String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 		return codiPedi;
 	}
 

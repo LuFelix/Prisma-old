@@ -153,7 +153,7 @@ public class ControlaCentroCusto {
 	private void funcaoSalvar() {
 		System.out.println("ControlaCentroCusto.funcaoSalvar");
 		ControlaBotoes.limparBtnSalvar();
-		ControlaBotoes.habilitaNovoBotoes();
+		ControlaBotoes.clicaNovoBotoes();
 		PainelCentroCusto.habilitaNovo();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
@@ -307,7 +307,7 @@ public class ControlaCentroCusto {
 		FrameInicial.getBtnNovo().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ControlaBotoes.habilitaNovoBotoes();
+				ControlaBotoes.clicaNovoBotoes();
 				PainelCentroCusto.habilitaNovo();
 				funcaoSalvar();
 			}

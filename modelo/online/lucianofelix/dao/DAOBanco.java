@@ -9,7 +9,7 @@ import java.util.List;
 import online.lucianofelix.util.Conexao;
 
 public class DAOBanco {
-	List<String> listTabelas;
+	List<String> list;
 	Conexao c;
 
 	public DAOBanco() {
@@ -18,7 +18,7 @@ public class DAOBanco {
 
 	public List<String> listaTabelas() {
 		c.conectar();
-		listTabelas = new ArrayList<String>();
+		list = new ArrayList<String>();
 		String sql = "{call lista_tabelas()}";
 		try {
 
@@ -28,10 +28,33 @@ public class DAOBanco {
 			ResultSet rs = cStm.executeQuery();
 
 			while (rs.next()) {
-				listTabelas.add(rs.getString(1));
+				list.add(rs.getString(1));
 			}
 			c.desconectar();
-			return listTabelas;
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+
+	}
+	public List<String> exibeTabela() {
+		c.conectar();
+		list = new ArrayList<String>();
+		String sql = "{call lista_conteudo_tabela()}";
+		try {
+
+			CallableStatement cStm = c.getCon().prepareCall(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = cStm.executeQuery();
+
+			while (rs.next()) {
+				list.add(rs.getString(1));
+			}
+			c.desconectar();
+			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			c.desconectar();
