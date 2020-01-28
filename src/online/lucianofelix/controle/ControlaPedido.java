@@ -130,6 +130,7 @@ public class ControlaPedido {
 		if (!pedi.equals(null)) {
 			System.out.println("Codigo do pedido: " + pedi.getCodiPedi());
 			daoPedi.remover(pedi);
+			daoLancamento.excluirLancPedido(pedi);
 			FrameInicial.limpaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
 			iniciar(pedi.getTipoPedido());
@@ -267,7 +268,7 @@ public class ControlaPedido {
 
 	}
 
-	// TODO Tabela de pesquisa por nome filtra tipo
+	// TODO Tabela de pesquisa por nome cliente filtra tipo
 	public JTable tblPedidosNomeTipo(String nome, String tipo) {
 		ArrayList<String> colunas = new ArrayList<>();
 		tabela = new JTable();
@@ -347,7 +348,8 @@ public class ControlaPedido {
 		for (int i = 0; i < listPedi.size(); i++) {
 			Object linha[] = {listPedi.get(i).getSeqPedi(),
 					listPedi.get(i).getxNome(), listPedi.get(i).getQuantItens(),
-					listPedi.get(i).getTotalPedi()};
+					String.valueOf(listPedi.get(i).getTotalPedi()).replace(".",
+							",")};
 			modelotabela.addRow(linha);
 		}
 		tabela.setShowGrid(true);
@@ -417,6 +419,23 @@ public class ControlaPedido {
 		} else {
 			daoProdPedi.alterarQuantItem(pedi, prod);
 		}
+	}
+	/**
+	 * Alterar pagamentos
+	 * 
+	 * @param pedi
+	 * @param lanc
+	 */
+	public void alterarValorPagamento(Pedido pedi, Lancamento lanc) {
+		if (lanc.getValor().compareTo(new BigDecimal(0)) <= 0) {
+			daoLancamento.removerItemLancRec(pedi, lanc);
+		} else {
+			daoLancamento.alterarQuantItemRec(pedi, lanc);
+		}
+	}
+
+	public void removerPagamento(Pedido pedi, Lancamento lanc) {
+		daoLancamento.removerItemLancRec(pedi, lanc);
 	}
 
 	// TODO Capturar o QR code do CUPOM FISCAL
@@ -496,16 +515,4 @@ public class ControlaPedido {
 
 	}
 
-	// TODO Alterar o valor de um pagamento
-	public void alterarValorPagamento(Pedido pedi, Lancamento lanc) {
-		if (lanc.getValor() <= 0) {
-			daoLancamento.removerItemLancRec(pedi, lanc);
-		} else {
-			daoLancamento.alterarQuantItemRec(pedi, lanc);
-		}
-	}
-
-	public void removerPagamento(Pedido pedi, Lancamento lanc) {
-		daoLancamento.removerItemLancRec(pedi, lanc);
-	}
 }

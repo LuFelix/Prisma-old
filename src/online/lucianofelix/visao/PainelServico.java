@@ -77,14 +77,14 @@ public class PainelServico extends JPanel {
 	// TODO Fim do 1 construtor e criação do 2 sobrecarregado
 
 	public PainelServico(String nome) {
-		UIManager.put("TextField.font", new Font("Times New Roman", Font.BOLD, 12));
+		UIManager.put("TextField.font",
+				new Font("Times New Roman", Font.BOLD, 12));
 		UIManager.put("Label.font", new Font("Times New Roman", Font.BOLD, 12));
-		UIManager.put("Button.font", new Font("Times New Roman", Font.BOLD, 12));
+		UIManager.put("Button.font",
+				new Font("Times New Roman", Font.BOLD, 12));
 		contServ = new ControlaServico();
 		daoServ = new DAOServico();
 
-		
-		
 		// TODO Configuração dos Labels e text fields
 		lbl01 = new JLabel("Serviço");
 		lbl01.setFont(new Font("Times New Roman", Font.BOLD, 28));
@@ -127,8 +127,10 @@ public class PainelServico extends JPanel {
 		pnlGrid.add(txtF08);
 
 		scrImagem = new JScrollPane(lblImagem);
-		scrImagem.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrImagem.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrImagem.setVerticalScrollBarPolicy(
+				JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+		scrImagem.setHorizontalScrollBarPolicy(
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		sppImagem = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppImagem.add(lbl01);
@@ -146,8 +148,8 @@ public class PainelServico extends JPanel {
 		sppSuperior.add(sppImagem);
 		sppSuperior.add(pnlGrid);
 
-		//Painel Inferior
-		
+		// Painel Inferior
+
 		tbl01 = new JTable();
 		scrP01 = new JScrollPane();
 		scrP01.setViewportView(tbl01);
@@ -234,8 +236,14 @@ public class PainelServico extends JPanel {
 	public static Servico lerCampos() {
 		serv = new Servico();
 		serv.setCodiServico(txtF02.getText());
-		serv.setNomeServico(txtF03.getText());
 		// serv.setSeqServico(Integer.parseInt(txtFSeqServico.getText()));
+		if (!txtF03.getText().equals("") & !txtF03.getText().equals(null)) {
+			serv.setDescServico(txtF03.getText());
+		}
+		serv.setNomeServico(txtF03.getText());
+		if (!txtF04.getText().equals("") & !txtF04.getText().equals(null)) {
+			serv.setDescServico(txtF04.getText());
+		}
 		serv.setDescServico(txtF04.getText());
 		if (!txtF05.getText().equals("")) {
 			serv.setTempoResposta(Float.parseFloat(txtF05.getText()));
@@ -243,7 +251,6 @@ public class PainelServico extends JPanel {
 		if (!txtF07.getText().equals("")) {
 			serv.setPrecoHora(Float.parseFloat(txtF07.getText()));
 		}
-
 		if (!txtF07.getText().equals("")) {
 			serv.setPrecoAdicional(Float.parseFloat(txtF07.getText()));
 		}
@@ -264,7 +271,8 @@ public class PainelServico extends JPanel {
 	}
 
 	public static void carregarImagem(String codiPessoa) {
-		lblImagem = new JLabel(new ImageIcon("C:\\SIMPRO\\img\\common\\" + "javinha2" + ".jpg "));
+		lblImagem = new JLabel(new ImageIcon(
+				"C:\\SIMPRO\\img\\common\\" + "javinha2" + ".jpg "));
 		scrImagem.setViewportView(lblImagem);
 	}
 

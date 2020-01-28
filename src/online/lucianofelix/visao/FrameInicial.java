@@ -37,7 +37,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -99,7 +98,7 @@ public class FrameInicial {
 	private static File arquivoAberto;
 	// static int tipoTela;
 	private static Pessoa usuarioLogado;
-	protected static JTextField txtfPesquisa;
+	private static JTextField txtfPesquisa;
 
 	// +++++Objetos de Controle+++++++++++
 	private static ControlaLancamento contLanc;
@@ -149,6 +148,7 @@ public class FrameInicial {
 
 	private JMenu mnuExibir;
 	private JMenu mnuPDV;
+	private JMenu mnuTask;
 
 	private JMenu mnHelp;
 
@@ -181,7 +181,7 @@ public class FrameInicial {
 		frmPrincipal = new JFrame();
 		// System Observer to a Rapid Trade Evolution
 		frmPrincipal.setTitle(
-				"::- SIMPRO - Sistema Minerador de Probabilidades -::Linha de Tendência");
+				"-::- STI - SIGA - Sistema Informações Gerenciais e Administrativas -::- Tendências");
 		frmPrincipal.setResizable(true);
 		UIManager.put("Button.font",
 				new Font("Times New Roman", Font.BOLD, 16));
@@ -191,9 +191,9 @@ public class FrameInicial {
 		try {
 			// UIManager.setLookAndFeel(
 			// new com.nilo.plaf.nimrod.NimRODLookAndFeel());
-			// UIManager.setLookAndFeel(
-			// "javax.swing.plaf.metal.MetalLookAndFeel");
+			// UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 			// UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				// System.out.println(info.getName());
 
@@ -202,8 +202,9 @@ public class FrameInicial {
 					break;
 				}
 			}
+
 			// PlasticLookAndFeel.setHighContrastFocusColorsEnabled(true);
-			// UIManager.put("ScrollBar.is3DEnabled", Boolean.TRUE);
+			UIManager.put("ScrollBar.is3DEnabled", Boolean.TRUE);
 			// UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
 			// UIManager.setLookAndFeel("com.jgoodies.looks.plaf.nimbus");
 			// UIManager.setLookAndFeel("javax.swing.plaf.Macintosh.MacintoshLookAndFeel");
@@ -211,12 +212,13 @@ public class FrameInicial {
 			// UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
 			// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			//
-			// NimRODTheme nt = new
-			// NimRODTheme("C:\\SIMPRO\\images\\NimRODThemeFileBlue.theme");
+
+			// Set NINROD Theme
+			// NimRODTheme nt = new NimRODTheme(
+			// "C:\\SIMPRO\\images\\NimRODThemeFileBlue.theme");
 			// NimRODLookAndFeel NimRODLF = new NimRODLookAndFeel();
-			// NimRODLF.setCurrentTheme( nt);
-			// UIManager.setLookAndFeel( NimRODLF);
+			// NimRODLF.setCurrentTheme(nt);
+			// UIManager.setLookAndFeel(NimRODLF);
 			//
 			//
 			// frmPrincipal.setUndecorated(true);
@@ -227,12 +229,13 @@ public class FrameInicial {
 			// e1.printStackTrace();
 			// } catch (IllegalAccessException e1) {
 			// e1.printStackTrace();
-		} catch (
 
-		UnsupportedLookAndFeelException e1)
-
-		{
-			e1.printStackTrace();
+			// } catch (
+			//
+			// UnsupportedLookAndFeelException e1)
+			//
+			// {
+			// e1.printStackTrace();
 		} catch (
 
 		Exception e)
@@ -262,6 +265,15 @@ public class FrameInicial {
 		// Subitens do menu exibir
 		mnuExibir = new JMenu("Exibir");
 		mnuPDV = new JMenu("PDV");
+		mnuTask = new JMenu("Tarefas");
+		mnuTask.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// new FrmPrincipal();
+
+			}
+		});
 		mnItmFuse = new JMenuItem("Fuse");
 		mnItmLists = new JMenuItem("Lists");
 		mnItmOrder = new JMenuItem("Order");
@@ -808,7 +820,7 @@ public class FrameInicial {
 		// Configuração do painel principal
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setBorder(new EmptyBorder(0, 0, 0, 0));
-		jspPrincipal.setEnabled(false);
+		jspPrincipal.setEnabled(true);
 		painelTabelas = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		painelTabelas.setDividerSize(3);
 		painelTabelas.setDividerLocation(425);
@@ -823,7 +835,7 @@ public class FrameInicial {
 		painelPrincipal.add(painelTabelas);
 		jspPrincipal.add(painelPrincipal);
 		// jspPrincipal.add(painelTabulado2);
-		jspPrincipal.setDividerSize(2);
+		jspPrincipal.setDividerSize(3);
 		jspPrincipal.setDividerLocation(530);
 
 		// painelPrincipal.add(painelFuncoes);
@@ -1143,6 +1155,44 @@ public class FrameInicial {
 			public void keyReleased(KeyEvent tecla) {
 				String nome = txtfPesquisa.getText();
 				setTabela(contPess.pesqNomeTabelaAdicionaUsuarioAopedido(nome));
+				scrLista.setViewportView(getTabela());
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+		});
+	}
+	public static void pesqUsuarioAddPLanc() {
+		limparTxtfPesquisa();
+		txtfPesquisa.grabFocus();
+		setTabela(contPess.pesqNomeTblAddUsuariLanc(""));
+		scrLista.setViewportView(getTabela());
+		txtfPesquisa.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				String nome = txtfPesquisa.getText();
+				if (tecla.getExtendedKeyCode() == 27) {// ESC
+					JOptionPane.showMessageDialog(null, "Cancelar Lançamento",
+							"", JOptionPane.QUESTION_MESSAGE);
+				} else if (tecla.getExtendedKeyCode() == 10) {// enter
+					getTabela().grabFocus();
+					getTabela().changeSelection(0, 0, false, false);
+				} else if (tecla.getExtendedKeyCode() == 40 // seta para baixo
+						| tecla.getExtendedKeyCode() == 38) { // seta cima
+					getTabela().grabFocus();
+					getTabela().changeSelection(0, 0, false, false);
+				} else {
+					nome = txtfPesquisa.getText();
+					setTabela(contPess.pesqNomeTblAddUsuariLanc(nome));
+					scrLista.setViewportView(getTabela());
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				String nome = txtfPesquisa.getText();
+				setTabela(contPess.pesqNomeTblAddUsuariLanc(nome));
 				scrLista.setViewportView(getTabela());
 			}
 

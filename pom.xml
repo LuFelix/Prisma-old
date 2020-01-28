@@ -94,7 +94,49 @@
 		    <artifactId>YahooFinanceAPI</artifactId>
 		    <version>3.15.0</version>
 		</dependency>
-    	
+		<!-- https://mvnrepository.com/artifact/com.google.maps/google-maps-services API Google Maps-->
+		<dependency>
+		    <groupId>com.google.maps</groupId>
+		    <artifactId>google-maps-services</artifactId>
+		    <version>0.10.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple Biblioteca para logar e usar o maps-->
+		<dependency> 
+  			<groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-simple</artifactId>
+		  <version>1.7.25</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi API exporta relatórios para formatos MS Office-->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>3.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.barbecue/barbecue API criação de código de barras -->
+		<dependency>
+		    <groupId>net.sourceforge.barbecue</groupId>
+		    <artifactId>barbecue</artifactId>
+		    <version>1.5-beta1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports API gera o relatório em si-->
+		<dependency>
+		    <groupId>net.sf.jasperreports</groupId>
+		    <artifactId>jasperreports</artifactId>
+		    <version>6.1.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts API de Fontes para relatorio-->
+		<dependency>
+		    <groupId>net.sf.jasperreports</groupId>
+		    <artifactId>jasperreports-fonts</artifactId>
+		    <version>6.10.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/xerces/xercesImpl API validação, serialização e manipulação de XML.-->
+		<dependency>
+		    <groupId>xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.9.1</version>
+		</dependency>
+	  	
   
 	</dependencies>
 </project>

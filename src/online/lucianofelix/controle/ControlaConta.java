@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -65,7 +66,10 @@ public class ControlaConta {
 				+ String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 		return codigo;
 	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public JTable tblctSaldoCentCust() {
 		tbl01 = new JTable();
 		mdlTblContas = new TableModelContas(daoConta.listContaGroupByCCusto());
@@ -74,6 +78,12 @@ public class ControlaConta {
 		return tbl01;
 	}
 
+	/**
+	 * Tabela pesquisa a por nome, detalhes e codigo
+	 * 
+	 * @param str
+	 * @return
+	 */
 	public JTable pesqNomeTabela(String str) {
 		tbl01 = new JTable();
 		mdlTblContas = new TableModelContas(daoConta.listContaGroupByCCusto());
@@ -142,6 +152,7 @@ public class ControlaConta {
 		tbl01.setShowHorizontalLines(true);
 		return tbl01;
 	}
+
 	// TODO Tabela de contas (não considera centro de custo)
 	public JTable tblContasCentroCusto() {
 		tbl01 = new JTable();
@@ -217,7 +228,14 @@ public class ControlaConta {
 		return tbl01;
 
 	}
-	// TODO Tabela de contas do centro de custo Inicial
+
+	/**
+	 * Tabela de contas do centro de custo Inicial
+	 * 
+	 * @param nomeCentro
+	 * @return
+	 */
+
 	public JTable tblContasCentroCusto(String nomeCentro) {
 		tbl01 = new JTable();
 		mdlTblContas = new TableModelContas(
@@ -289,6 +307,7 @@ public class ControlaConta {
 		return tbl01;
 
 	}
+
 	// TAbela dando erro
 	public JTable tblContasCentroCusto(String str, String codiCentro) {
 		tbl01 = new JTable();
@@ -365,7 +384,10 @@ public class ControlaConta {
 
 	}
 
-	// TODO Função Salvar
+	/**
+	 * Função Salvar
+	 */
+
 	public void funcaoSalvar() {
 		System.out.println("ControlaConta.funcaoSalvar");
 		ControlaBotoes.limparBtnSalvar();
@@ -379,7 +401,7 @@ public class ControlaConta {
 					FrameInicial.setTabela(pesqNomeTabela(c.getCodiConta()));
 					PainelConta.carregarCampos(c);
 					FrameInicial.atualizaTela();
-					// JOptionPane.showMessageDialog(null, "Feito");
+					JOptionPane.showMessageDialog(null, "Feito");
 					iniciar(c.getCentroCusto());
 				} else {
 					erro();
@@ -388,7 +410,9 @@ public class ControlaConta {
 		});
 	}
 
-	// TODO Função sobrescrever
+	/**
+	 * Função sobrescrever
+	 */
 	public void funcaoSobrescrever() {
 		System.out.println("ControlaConta.funcaoSobrescrever");
 		ControlaBotoes.limparBtnSalvar();
@@ -399,7 +423,7 @@ public class ControlaConta {
 				c = PainelConta.lerCampos();
 				if (!c.equals(null) & daoConta.alterar(c)) {
 
-					// JOptionPane.showMessageDialog(null, "Feito!");
+					JOptionPane.showMessageDialog(null, "Feito!");
 					iniciar(c.getCentroCusto());
 				} else {
 					erro();
@@ -408,7 +432,12 @@ public class ControlaConta {
 		});
 	}
 
-	// TODO Funcao excluir
+	/**
+	 * TODO Funcao excluir
+	 * 
+	 * @return
+	 */
+
 	public boolean funcaoExcluir() {
 		System.out.println("ControlaConta.excluir");
 		c = PainelConta.lerCampos();
@@ -425,7 +454,9 @@ public class ControlaConta {
 		}
 	}
 
-	// TODO Iniciar contas sem considerar o centro de custo
+	/**
+	 * Iniciar contas sem considerar o centro de custo
+	 */
 	public void iniciar() {
 		System.out.println("ControlaConta.iniciar();");
 		ControlaBotoes.limpaTodosBotoes();
@@ -438,7 +469,13 @@ public class ControlaConta {
 		configuraTxtPesquisa();
 
 	}
-	// TODO Iniciar contas do centro de custo
+
+	/**
+	 * TODO Iniciar contas do centro de custo
+	 * 
+	 * @param codiCentro
+	 */
+
 	public void iniciar(String codiCentro) {
 		System.out.println("ControlaConta.iniciar(String Codicentro);");
 		ControlaBotoes.limpaTodosBotoes();
@@ -452,7 +489,10 @@ public class ControlaConta {
 
 	}
 
-	// TODO Configura TXT Pesquisa
+	/**
+	 * TODO Configura TXT Pesquisa
+	 */
+
 	void configuraTxtPesquisa() {
 		FrameInicial.limparTxtfPesquisa();
 		FrameInicial.getTxtfPesquisa().addKeyListener(new KeyListener() {
@@ -495,7 +535,12 @@ public class ControlaConta {
 			}
 		});
 	}
-	// TODO Configura Botoes
+
+	/**
+	 * 
+	 * TODO Configura Botoes
+	 */
+
 	void configuraBotes() {
 		FrameInicial.getBtnEditar().addActionListener(new ActionListener() {
 			@Override
@@ -527,28 +572,60 @@ public class ControlaConta {
 		});
 	}
 
-	// TODO Consultar Saldo
-	public float consultaSaldo(Conta conta) {
+	/**
+	 * TODO Consultar Saldo
+	 * 
+	 * @param conta
+	 * @return
+	 */
+
+	public BigDecimal consultaSaldo(Conta conta) {
 		System.out.println("ControlaConta.consultaSaldo");
-		float total = 0;
+		BigDecimal total = new BigDecimal(0);
 		listLanc = daoContaLanc.listCtasReceber(conta);
 		for (Lancamento contaLancamento : listLanc) {
-			total = total + contaLancamento.getValor();
+			total = total.add(contaLancamento.getValor());
 		}
 		return total;
 	}
 
-	// TODO Lista de contas por tipo(Nao considera centro de custo)
+	/**
+	 * TODO Lista de contas por tipo Receita/Despesa (Nao considera centro de
+	 * custo)
+	 * 
+	 * @param tipoConta
+	 * @return
+	 */
+
 	public List<Conta> listContTipo(String tipoConta) {
 		listContas = new ArrayList<Conta>(daoConta.listContTipo(tipoConta));
 		return listContas;
 	}
 
-	// TODO Lista de contas por centro de Custo
-	public List<Conta> lisContCCusto(String codiCentroCusto) {
-		listContas = new ArrayList<Conta>(
-				daoConta.listContCCusto(codiCentroCusto));
+	/**
+	 * TODO Lista de contas por centro de Custo
+	 * 
+	 * @param codiCentroCusto
+	 * @return
+	 */
+
+	public List<Conta> lisContCCusto(String codiCCusto) {
+		listContas = new ArrayList<Conta>(daoConta.listContCCusto(codiCCusto));
 		return listContas;
+	}
+
+	/**
+	 * TODO ComboBox nome de contas do Centro de custo
+	 * 
+	 * @param codiCCusto
+	 * @return
+	 */
+	public JComboBox<String> cmbContasCCusto(String codiCCusto) {
+		JComboBox<String> jcbCCusto = new JComboBox<>();
+		for (Conta ct : lisContCCusto(codiCCusto)) {
+			jcbCCusto.addItem(ct.getNomeConta());
+		}
+		return jcbCCusto;
 	}
 
 	// TODO Cancelar

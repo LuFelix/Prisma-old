@@ -210,6 +210,12 @@ public class ControlaCondPagamento {
 		return tabela;
 	}
 
+	public String buscaNomeCodigo(String codiCP) {
+		String nomeCP = daoCondPag.pesquisaNomeCodigo(codiCP);
+
+		return nomeCP;
+	}
+
 	public void funcaoSalvar() {
 		ControlaBotoes.limparBtnSalvar();
 		ControlaBotoes.clicaNovoBotoes();

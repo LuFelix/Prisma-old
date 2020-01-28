@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import online.lucianofelix.tableModels.commom.TableModelPessoa;
 import online.lucianofelix.visao.AbaCadastros;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
+import online.lucianofelix.visao.PainelLancamento;
 import online.lucianofelix.visao.PainelPedidos;
 import online.lucianofelix.visao.PainelPessoa;
 
@@ -330,6 +332,56 @@ public class ControlaPessoa {
 		}
 		tbl01.setShowGrid(true);
 		tbl01.setModel(modelotabela);
+		return tbl01;
+	}
+
+	public JTable pesqNomeTblAddUsuariLanc(String str) {
+		tbl01 = new JTable();
+		TableModelPessoa mdlTblPess = new TableModelPessoa(
+				daoP.pesquisaString(str));
+		tbl01.setModel(mdlTblPess);
+		tbl01.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Ao escrever
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				// TODO Ao Soltar a tecla
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					Pessoa p = mdlTblPess.getPessoa(tbl01.getSelectedRow());
+					PainelLancamento.adicionaUsuario(p);
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				// TODO Ao Pressionar Tecla
+				Pessoa p = mdlTblPess.getPessoa(tbl01.getSelectedRow());
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 10) {
+					PainelLancamento.adicionaUsuario(p);
+				} else if (tecla.getKeyCode() == 9) {
+					// PainelPedidos.getTxtfCondPag().grabFocus();
+				}
+			}
+		});
+		tbl01.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Ao Clicar
+				Pessoa p = mdlTblPess.getPessoa(tbl01.getSelectedRow());
+				PainelLancamento.adicionaUsuario(p);
+			}
+		});
+
+		tbl01.setShowGrid(true);
 		return tbl01;
 	}
 

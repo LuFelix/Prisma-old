@@ -253,7 +253,7 @@ public class PainelCondPagamento extends JPanel {
 			condPag.setSeq_condPagamento(Integer.parseInt(txtF02.getText()));
 		}
 		if (!txtF04.getText().equals("") & !txtF04.equals(null)) {
-			condPag.setQuantParcelas(Integer.parseInt(txtF04.getText()));
+			condPag.setQuantParcelas(Integer.parseInt(txtF04.getText().trim()));
 		}
 		condPag.setNomeCondicao(txtF05.getText());
 		return condPag;

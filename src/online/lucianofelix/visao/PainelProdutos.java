@@ -306,7 +306,8 @@ public class PainelProdutos extends JPanel {
 			}
 		});
 
-		lblImagem = new JLabel("Image not Found");
+		lblImagem = new JLabel();
+		lblImagem.setHorizontalAlignment(JLabel.CENTER);
 
 		painelGrid = new JPanel();
 		painelGrid.setBorder(BorderFactory.createEtchedBorder());
@@ -397,6 +398,7 @@ public class PainelProdutos extends JPanel {
 		painelMovimento.setBorder(BorderFactory.createEtchedBorder());
 		painelMovimento.setLayout(new GridLayout());
 		painelMovimento.setBackground(Color.WHITE);
+
 		painelMovimento.add(tabVisualiza);
 
 		limparCampos();
@@ -408,10 +410,11 @@ public class PainelProdutos extends JPanel {
 		jspPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		jspPrincipal.setDividerSize(3);
 		jspPrincipal.setDividerLocation(350);
-		jspPrincipal.setEnabled(false);
+		jspPrincipal.setEnabled(true);
 		jspPrincipal.setBackground(Color.WHITE);
 		jspPrincipal.add(sppSuperior);
 		jspPrincipal.add(painelMovimento);
+
 		setLayout(new GridLayout());
 		setBackground(Color.WHITE);
 		add(jspPrincipal);

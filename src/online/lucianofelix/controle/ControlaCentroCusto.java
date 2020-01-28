@@ -38,9 +38,8 @@ public class ControlaCentroCusto {
 		contConta = new ControlaConta();
 	}
 
-	public JComboBox cmbCentrosCusto() {
+	public JComboBox<String> cmbCentrosCusto() {
 		cmbCCusto = new JComboBox<String>();
-		cmbCCusto.addItem("Centro de Custo");
 		cmbCCusto.setToolTipText("Selecione o centro de custo para a conta.");
 
 		listCentroCusto = new ArrayList<CentroCusto>(pesqNomeArray(""));
@@ -55,10 +54,10 @@ public class ControlaCentroCusto {
 
 	// TODO Carregar as contas do centro de custo
 	public void carregaContasCCusto(CentroCusto c) {
-
 		c.setListContas(contConta.lisContCCusto(c.getCodiCentroCusto()));
 
 	}
+
 	// TODO Retorna um JTable pesquisado em codigo nome
 	private JTable pesqNomeTabela(String str) {
 		tabela = new JTable();

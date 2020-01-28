@@ -179,6 +179,21 @@ public class ControlaLancamento {
 		configuraTxtPesquisa();
 
 	}
+	public void iniciar(String lanc) {
+		System.out.println("ControlaLancamento.pesquisaLancamento");
+		ControlaBotoes.limpaTodosBotoes();
+		ControlaBotoes.desHabilitaEdicaoBotoes();
+		configuraBotoes();
+
+		FrameInicial.setTabela(pesqNomeTabela(""));
+		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		// lanc = tblMdLanc
+		// .getLancamento(FrameInicial.getTabela().getSelectedRow());
+		FrameInicial.setPainelVisualiza(new PainelLancamento());
+		FrameInicial.atualizaTela();
+		configuraTxtPesquisa();
+
+	}
 
 	void configuraBotoes() {
 		FrameInicial.getBtnEditar().addActionListener(new ActionListener() {

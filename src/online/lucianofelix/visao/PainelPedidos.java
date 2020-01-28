@@ -173,6 +173,14 @@ public class PainelPedidos extends JPanel {
 		});
 		lblCliente = new JLabel("Nome Cliente: ");
 		txtFNomeCliente = new JTextFieldMaiusculas();
+		txtFNomeCliente.addFocusListener(new FocusAdapter() {
+
+			public void focusGained(FocusEvent e) {
+				// TODO txtfCliente ao receber foco
+				FrameInicial.pesquisaUsuarioAdicionarAOPedido();
+			}
+		});
+
 		lblQuantItens = new JLabel("Quantidade de ítens: ");
 		txtFQuantItens = new JTextField();
 		txtFQuantItens.setHorizontalAlignment(JTextField.RIGHT);
@@ -415,12 +423,13 @@ public class PainelPedidos extends JPanel {
 	}
 
 	public static void adicionaPagamento(CondPagamento condPag) {
-		float valor = Float.parseFloat(JOptionPane.showInputDialog("Valor:"));
+		BigDecimal valor = new BigDecimal(
+				JOptionPane.showInputDialog("Valor:"));
 		pedi = leCampos();
 		lanc = new Lancamento();
 		lanc.setCodiCondPag(condPag.getCodiCondPag());
 		lanc.setValor(valor);
-		if (valor <= 0) {
+		if (valor.compareTo(new BigDecimal(0)) <= 0) {
 			contPedi.removerPagamento(pedi, lanc);
 		} else {
 			contLanc.adicionaLancamentoPedido(pedi, lanc);
@@ -481,7 +490,7 @@ public class PainelPedidos extends JPanel {
 								.setScale(2, BigDecimal.ROUND_DOWN));
 			}
 		}
-		nItens = quant.ROUND_UP;
+		nItens = BigDecimal.ROUND_UP;
 		tbl01.setShowGrid(true);
 		scrP01.setViewportView(tbl01);
 		txtFQuantItens.setText(String.valueOf(nItens));

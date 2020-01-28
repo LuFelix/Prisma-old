@@ -52,7 +52,7 @@ public class DAOLancamento {
 			prepStm.setString(2, lanc.getCodiPedido());
 			prepStm.setString(3, lanc.getCodiPessoa());
 			prepStm.setDate(4, dataHoraMovimento);
-			prepStm.setBigDecimal(5, BigDecimal.valueOf(lanc.getValor()));
+			prepStm.setBigDecimal(5, lanc.getValor());
 			prepStm.setString(6, lanc.getObsLancamento());
 			prepStm.setDate(7, dataHoraMovimento);
 			prepStm.setString(8, lanc.getTipoLancamento());
@@ -83,8 +83,7 @@ public class DAOLancamento {
 		String sql = "insert into tbl_ctas_lanc_receber ( codi_conta, codi_cond_pag, codi_pedido, codi_pessoa, "
 				+ "data_hora_lancamento, valor, obs_lancamento, data_hora_recebimento, tipo_lanc) values (?,?,?,?,?,?,?,?,?);";
 		System.out.println(lanc.getValor() + "   " + lanc.getCodiCondPag()
-				+ "   " + dataHoraMovimento + "  "
-				+ BigDecimal.valueOf(lanc.getValor()));
+				+ "   " + dataHoraMovimento + "  " + lanc.getValor());
 
 		c.conectar();
 
@@ -95,7 +94,7 @@ public class DAOLancamento {
 			prepStm.setString(3, lanc.getCodiPedido());
 			prepStm.setString(4, lanc.getCodiPessoa());
 			prepStm.setDate(5, dataHoraMovimento);
-			prepStm.setBigDecimal(6, BigDecimal.valueOf(lanc.getValor()));
+			prepStm.setBigDecimal(6, lanc.getValor());
 			prepStm.setString(7, lanc.getObsLancamento());
 			prepStm.setDate(8, lanc.getDataHoraLancamento());
 			prepStm.setString(9, lanc.getTipoLancamento());
@@ -121,7 +120,7 @@ public class DAOLancamento {
 			prepStm.setString(2, lanc.getCodiCondPag());
 			prepStm.setString(3, lanc.getCodiPedido());
 			prepStm.setString(4, lanc.getCodiPessoa());
-			prepStm.setFloat(5, lanc.getValor());
+			prepStm.setBigDecimal(5, lanc.getValor());
 			prepStm.setString(6, lanc.getObsLancamento());
 			prepStm.setString(7, lanc.getTipoLancamento());
 			prepStm.setInt(8, lanc.getSequencia());
@@ -136,8 +135,8 @@ public class DAOLancamento {
 	}
 	public void novoLancRec(String codiConta, String codiCondPag,
 			String codiPedido, String codiPessoa, Date dataHoraMovimento,
-			float valor, String obsLanc, Date dataHoraReceb, String tipoLanc,
-			String codiContaReceber, String tipoDocVinculado)
+			BigDecimal valor, String obsLanc, Date dataHoraReceb,
+			String tipoLanc, String codiContaReceber, String tipoDocVinculado)
 			throws SQLException {
 		dataHoraMovimento = new Date(Calendar.getInstance().getTimeInMillis());
 		String sql = "insert into tbl_ctas_lanc_receber ( codi_conta, codi_cond_pag, codi_pedido, codi_pessoa, "
@@ -149,7 +148,7 @@ public class DAOLancamento {
 		prepStm.setString(3, codiPedido);
 		prepStm.setString(4, codiPessoa);
 		prepStm.setDate(5, dataHoraMovimento);
-		prepStm.setFloat(6, valor);
+		prepStm.setBigDecimal(6, valor);
 		prepStm.setString(7, obsLanc);
 		prepStm.setDate(8, dataHoraReceb);
 		prepStm.setString(9, tipoLanc);
@@ -182,7 +181,7 @@ public class DAOLancamento {
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
 					lanc.setDataHoraLancamento(
 							res.getDate("data_hora_lancamento"));
-					lanc.setValor(res.getFloat("valor"));
+					lanc.setValor(res.getBigDecimal("valor"));
 					lanc.setTipoLancamento(
 							res.getString("codi_tipo_lancamento"));
 					listMov.add(lanc);
@@ -204,8 +203,8 @@ public class DAOLancamento {
 	// Consulta somente receber por conta / categoria
 	public List<Lancamento> listCtasReceber(Conta conta) {
 		System.out.println("DAOContaMovimento.listCtasReceber");
-		String sql = "select * from tbl_ctas_lanc_receber where codi_cta_receber = '"
-				+ conta.getCodiConta() + "' order by seq_cta_receber asc;";
+		String sql = "select * from tbl_ctas_lanc_receber where codi_conta = '"
+				+ conta.getCodiConta() + "' order by seq_cta_receber desc;";
 		listMov = new ArrayList<Lancamento>();
 		try {
 			c.conectar();
@@ -223,7 +222,7 @@ public class DAOLancamento {
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
 					lanc.setDataHoraLancamento(
 							res.getDate("data_hora_registro"));
-					lanc.setValor(res.getFloat("valor"));
+					lanc.setValor(res.getBigDecimal("valor"));
 					listMov.add(lanc);
 				} while (res.next());
 			}
@@ -258,7 +257,7 @@ public class DAOLancamento {
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
 					lanc.setDataHoraLancamento(
 							res.getDate("data_hora_registro"));
-					lanc.setValor(res.getFloat("valor"));
+					lanc.setValor(res.getBigDecimal("valor"));
 					listMov.add(lanc);
 				} while (res.next());
 			}
@@ -291,7 +290,7 @@ public class DAOLancamento {
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
 					lanc.setDataHoraLancamento(
 							res.getDate("data_hora_registro"));
-					lanc.setValor(res.getFloat("valor"));
+					lanc.setValor(res.getBigDecimal("valor"));
 					lanc.setObsLancamento(res.getString("obs_lanc"));
 					lanc.setTipoLancamento(res.getString("tipo_lanc"));
 					listMov.add(lanc);
@@ -312,9 +311,10 @@ public class DAOLancamento {
 	}
 	public boolean excluirLancRec(Lancamento lanc) {
 		c.conectar();
-		String sql = "delete from tbl_ctas_lanc_receber where codi_lanc=? and codi_cond_pag=?;";
+		String sql = "delete from tbl_ctas_lanc_receber where codi_pedido=? and codi_cond_pag=?;";
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, lanc.getCodiPedido());
 			prepStm.setString(2, lanc.getCodiCondPag());
 			prepStm.executeUpdate();
 			c.desconectar();
@@ -326,6 +326,29 @@ public class DAOLancamento {
 		}
 
 	}
+	/**
+	 * Exclui todos os lancamentos do pedido
+	 * 
+	 * @param pedi
+	 * @return
+	 */
+	public boolean excluirLancPedido(Pedido pedi) {
+		c.conectar();
+		String sql = "delete from tbl_ctas_lanc_receber where codi_pedido=? ;";
+		try {
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, pedi.getCodiPedi());
+			prepStm.executeUpdate();
+			c.desconectar();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return false;
+		}
+
+	}
+
 	public boolean removerItemLancRec(Pedido pedi, Lancamento lanc) {
 		c.conectar();
 		String sql = "delete from tbl_ctas_lanc_receber where codi_pedido=? and codi_cond_pag=?;";
@@ -349,7 +372,7 @@ public class DAOLancamento {
 		String sql = "update tbl_ctas_lanc_receber  set valor =? where codi_pedido=? and codi_cond_pag=?;";
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setFloat(1, lanc.getValor());
+			prepStm.setBigDecimal(1, lanc.getValor());
 			prepStm.setString(2, pedi.getCodiPedi());
 			prepStm.setString(3, lanc.getCodiCondPag());
 			prepStm.executeUpdate();

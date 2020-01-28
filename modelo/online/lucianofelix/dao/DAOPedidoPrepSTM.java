@@ -202,7 +202,7 @@ public class DAOPedidoPrepSTM {
 
 	// TODO Remove um pedido
 	public boolean remover(Pedido pedi) {
-		String sql = "delete from pedidos where codi_pedido=?; ";
+		String sql = "delete  from pedidos where codi_pedido=?; ";
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);

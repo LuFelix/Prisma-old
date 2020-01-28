@@ -162,6 +162,8 @@ public class ControlaProduto {
 			public void keyPressed(KeyEvent e) {
 				if (e.getExtendedKeyCode() == 38) {
 					iniciar();
+				} else if (e.getExtendedKeyCode() == 27) {
+					FrameInicial.getTxtfPesquisa().grabFocus();
 				}
 
 			}

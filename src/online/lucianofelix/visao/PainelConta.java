@@ -162,7 +162,7 @@ public class PainelConta extends JPanel {
 		tabVisualiza.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				habilitaTabelaMovimentos(conta);
+				habilitaTabelaMovimentos(lerCampos());
 			}
 		});
 		scrImagem = new JScrollPane(lblImagem);

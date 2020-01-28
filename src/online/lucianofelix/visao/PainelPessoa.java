@@ -59,16 +59,18 @@ public class PainelPessoa extends JPanel {
 	private JPanel painelMovimento;
 	private static JLabel lblImagem;
 	private static JTabbedPane tabVisualiza;
-	private static JScrollPane scrP01;
+	private static JScrollPane scrPOcupacoes;
 	private static JScrollPane scrP02;
 	private static JScrollPane scrP03;
 	private static JScrollPane scrP04;
+	private static JScrollPane scrEndereco;
 	private static JButton btnAdd;
 	private static JButton btnDel;
-	private static JTable tbl01;
+	private static JTable tblOcupacoes;
 	private static JTable tbl02;
 	private static JTable tbl03;
 	private static JTable tbl04;
+	private static JTable tblEndereco;
 
 	public PainelPessoa(Pessoa p) {
 		UIManager.put("TextField.font",
@@ -134,8 +136,8 @@ public class PainelPessoa extends JPanel {
 		lblImagem.setBorder(
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		tbl01 = new JTable();
-		scrP01 = new JScrollPane();
+		tblOcupacoes = new JTable();
+		scrPOcupacoes = new JScrollPane();
 
 		tbl02 = new JTable();
 		scrP02 = new JScrollPane();
@@ -146,8 +148,12 @@ public class PainelPessoa extends JPanel {
 		setTbl04(new JTable());
 		scrP04 = new JScrollPane();
 
+		setTblEndereco(new JTable());
+		scrEndereco = new JScrollPane();
+
 		tabVisualiza = new JTabbedPane();
-		tabVisualiza.add("Ocupações", scrP01);
+		tabVisualiza.add("Endereço", scrEndereco);
+		tabVisualiza.add("Ocupações", scrPOcupacoes);
 		tabVisualiza.add("Contratos", scrP03);
 		tabVisualiza.add("Últimos Pedidos", scrP02);
 		tabVisualiza.add("Recebimentos / Pagamentos", scrP04);
@@ -235,7 +241,7 @@ public class PainelPessoa extends JPanel {
 		txtfEmail.setEditable(true);
 		btnAdd.setEnabled(true);
 		btnDel.setEnabled(true);
-		habilitaTbl(getTbl01());
+		habilitaTbl(getTblOcupacoes());
 	}
 	static void habilitaTbl(JTable tabela) {
 		// tabela.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -304,10 +310,10 @@ public class PainelPessoa extends JPanel {
 		txtfCpf.setText(null);
 		txtfEmail.setText(null);
 		lblImagem.setIcon(null);
-		setTbl01(null);
+		setTblOcupacoes(null);
 		setTbl02(null);
 		setTbl03(null);
-		scrP01.setViewportView(getTbl01());
+		scrPOcupacoes.setViewportView(getTblOcupacoes());
 		scrP02.setViewportView(getTbl02());
 		scrP03.setViewportView(getTbl03());
 	}
@@ -327,11 +333,11 @@ public class PainelPessoa extends JPanel {
 			txtfCpf.setText(String.valueOf(p.getCpf()));
 			txtfEmail.setText(p.getEmail());
 			carregarImagem(p.getCodiPessoa());
-			setTbl01(contP.carregaProfissoes(p));
+			setTblOcupacoes(contP.carregaProfissoes(p));
 			setTbl02(contP.carregaUltPed(p));
-			desabilitaTbl(getTbl01());
+			desabilitaTbl(getTblOcupacoes());
 			desabilitaTbl(getTbl02());
-			scrP01.setViewportView(getTbl01());
+			scrPOcupacoes.setViewportView(getTblOcupacoes());
 			scrP02.setViewportView(getTbl02());
 			carregarImagem(null);
 
@@ -356,7 +362,7 @@ public class PainelPessoa extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				contP.adicionaOcup(lerCampos());
-				habilitaTbl(getTbl01());
+				habilitaTbl(getTblOcupacoes());
 
 			}
 		});
@@ -439,13 +445,6 @@ public class PainelPessoa extends JPanel {
 	//
 	// return true;
 	// }
-	public static JTable getTbl01() {
-		return tbl01;
-	}
-
-	public static void setTbl01(JTable tbl01) {
-		PainelPessoa.tbl01 = tbl01;
-	}
 
 	public static JTable getTbl02() {
 		return tbl02;
@@ -477,5 +476,33 @@ public class PainelPessoa extends JPanel {
 
 	public static void setTbl04(JTable tbl04) {
 		PainelPessoa.tbl04 = tbl04;
+	}
+	/**
+	 * @return the tblEndereco
+	 */
+	public static JTable getTblEndereco() {
+		return tblEndereco;
+	}
+	/**
+	 * @param tblEndereco
+	 *            the tblEndereco to set
+	 */
+	public static void setTblEndereco(JTable tblEndereco) {
+		PainelPessoa.tblEndereco = tblEndereco;
+	}
+
+	/**
+	 * @return the tblOcupacoes
+	 */
+	public static JTable getTblOcupacoes() {
+		return tblOcupacoes;
+	}
+
+	/**
+	 * @param tblOcupacoes
+	 *            the tblOcupacoes to set
+	 */
+	public static void setTblOcupacoes(JTable tblOcupacoes) {
+		PainelPessoa.tblOcupacoes = tblOcupacoes;
 	}
 }

@@ -1,5 +1,6 @@
 package online.lucianofelix.beans;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -11,7 +12,7 @@ public class Lancamento {
 	private String codiPedido; // Referência para a tabela de pedidos.
 	private String codiPessoa;// Referência para a tabela de pessoas.
 	private Date dataHoraLancamento; // Data hora do recebimento.
-	private float valor;// O valor do movimento
+	private BigDecimal valor;// O valor do movimento
 	private String obsLancamento; // Uma observação sobre o recebimento.
 	private String tipoLancamento; // Movimento de entrada ou de saída;
 	private String especieLancamento;// Espécie de lançamento
@@ -47,14 +48,6 @@ public class Lancamento {
 
 	public void setCodiPessoa(String codiPessoa) {
 		this.codiPessoa = codiPessoa;
-	}
-
-	public float getValor() {
-		return valor;
-	}
-
-	public void setValor(float valor) {
-		this.valor = valor;
 	}
 
 	public String getObsLancamento() {
@@ -95,6 +88,20 @@ public class Lancamento {
 
 	public void setDataHoraLancamento(Date dataHoraLancamento) {
 		this.dataHoraLancamento = dataHoraLancamento;
+	}
+
+	/**
+	 * @return the valor
+	 */
+	public BigDecimal getValor() {
+		return valor;
+	}
+
+	/**
+	 * @param valor the valor to set
+	 */
+	public void setValor(BigDecimal valor) {
+		this.valor = valor;
 	}
 
 }
