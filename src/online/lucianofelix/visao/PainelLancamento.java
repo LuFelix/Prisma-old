@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import online.lucianofelix.beans.CondPagamento;
 import online.lucianofelix.beans.Conta;
 import online.lucianofelix.beans.Lancamento;
 import online.lucianofelix.beans.Pessoa;
@@ -34,9 +35,9 @@ public class PainelLancamento extends JPanel {
 	private JLabel lbl01;
 	private JLabel lbl02;
 	private JLabel lbl03;
-	private JLabel lbl04;
-	private JLabel lbl05;
-	private JLabel lbl06;
+	private JLabel lblTitular;
+	private JLabel lblTitulo;
+	private JLabel lblCondPag;
 	private JLabel lbl07;
 	private JLabel lbl08;
 	private JLabel lbl09;
@@ -46,8 +47,8 @@ public class PainelLancamento extends JPanel {
 	private static JTextField txtF02;
 	private static JTextField txtF03;
 	private static JTextField txtFTitular;
-	private static JTextField txtF05;
-	private static JTextField txtF06;
+	private static JTextField txtFTitulo;
+	private static JTextField txtFCondPag;
 	private static JTextField txtF07;
 	private static JTextField txtF08;
 
@@ -102,7 +103,7 @@ public class PainelLancamento extends JPanel {
 		lbl03 = new JLabel("Código:");
 		txtF03 = new JTextField();
 
-		lbl04 = new JLabel("Titular:");
+		lblTitular = new JLabel("Titular:");
 		txtFTitular = new JTextField();
 		txtFTitular.setEditable(false);
 		txtFTitular.setFocusable(false);
@@ -112,11 +113,18 @@ public class PainelLancamento extends JPanel {
 			}
 		});
 
-		lbl05 = new JLabel("Título: ");
-		txtF05 = new JTextField();
+		lblTitulo = new JLabel("Título: ");
+		txtFTitulo = new JTextField();
 
-		lbl06 = new JLabel("Condição Pagamento:");
-		txtF06 = new JTextField();
+		lblCondPag = new JLabel("Condição Pagamento:");
+		txtFCondPag = new JTextField();
+		txtFCondPag.setEditable(false);
+		txtFCondPag.setFocusable(false);
+		txtFCondPag.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				FrameInicial.pesqCondPagAddPLanc();
+			}
+		});
 
 		lbl07 = new JLabel("Data criação:");
 		lbl07.setFont(new Font("Times New Roman", Font.BOLD, 18));
@@ -176,12 +184,12 @@ public class PainelLancamento extends JPanel {
 		// pnlGrid.add(txtF02);
 		// pnlGrid.add(lbl03);
 		// pnlGrid.add(txtF03);
-		pnlGrid.add(lbl04);
+		pnlGrid.add(lblTitular);
 		pnlGrid.add(txtFTitular);
-		pnlGrid.add(lbl05);
-		pnlGrid.add(txtF05);
-		pnlGrid.add(lbl06);
-		pnlGrid.add(txtF06);
+		pnlGrid.add(lblTitulo);
+		pnlGrid.add(txtFTitulo);
+		pnlGrid.add(lblCondPag);
+		pnlGrid.add(txtFCondPag);
 		pnlGrid.add(lbl07);
 		pnlGrid.add(txtF07);
 		pnlGrid.add(lbl08);
@@ -216,14 +224,18 @@ public class PainelLancamento extends JPanel {
 		txtFTitular.setText(usua.getNome());
 
 	}
+	public static void adicionaCondPag(CondPagamento condPag) {
+		txtFCondPag.setText(condPag.getNomeCondicao());
+
+	}
 
 	public static void desHabilitaEdicao() {
 
 		txtF02.setEditable(false);
 		txtF03.setEditable(false);
 		txtFTitular.setFocusable(false);
-		txtF05.setEditable(false);
-		txtF06.setEditable(false);
+		txtFTitulo.setEditable(false);
+		txtFCondPag.setFocusable(false);
 		txtF07.setEditable(false);
 		cmbCCusto.setEnabled(false);
 		cmbContas.setEnabled(false);
@@ -233,7 +245,7 @@ public class PainelLancamento extends JPanel {
 	public static Lancamento lerCampos() {
 		lanc = new Lancamento();
 		lanc.setCodiPessoa(txtFTitular.getText());
-		lanc.setCodiCondPag(txtF06.getText());
+		lanc.setCodiCondPag(txtFCondPag.getText());
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>CMB Conta "
 				+ cmbContas.getSelectedItem());
 		if (!cmbContas.getSelectedItem().equals(null)) {
@@ -248,8 +260,8 @@ public class PainelLancamento extends JPanel {
 		if (l.getCodiPessoa() != null & l.getCodiPessoa() != "") {
 			txtFTitular.setText(contPess.pesqNomeCodigo(l.getCodiPessoa()));
 		}
-		txtF05.setText(l.getCodiPedido());
-		txtF06.setText(contCdPag.buscaNomeCodigo(l.getCodiCondPag()));
+		txtFTitulo.setText(l.getCodiPedido());
+		txtFCondPag.setText(contCdPag.buscaNomeCodigo(l.getCodiCondPag()));
 		txtF07.setText(String.valueOf(l.getDataHoraLancamento()));
 		txtF08.setText(String.valueOf(l.getValor()));
 		cmbCCusto.setSelectedItem(contConta.nomeCentCustCodi(l.getCodiConta()));
@@ -259,8 +271,8 @@ public class PainelLancamento extends JPanel {
 	public static void habilitaEdicao() {
 
 		txtFTitular.setFocusable(true);
-		txtF05.setEditable(true);
-		txtF06.setEditable(true);
+		txtFTitulo.setEditable(true);
+		txtFCondPag.setFocusable(true);
 		cmbContas.setEnabled(true);
 		cmbCCusto.setEnabled(true);
 	}
@@ -270,9 +282,9 @@ public class PainelLancamento extends JPanel {
 		txtF02.setText("0");
 		txtFTitular.setFocusable(true);
 		txtFTitular.grabFocus();
-		txtF05.setEditable(true);
-		txtF06.setEditable(true);
-		txtF06.setEditable(true);
+		txtFTitulo.setEditable(true);
+		txtFCondPag.setFocusable(true);
+		txtFCondPag.setEditable(true);
 		txtF07.setEditable(false);
 		txtF08.setEditable(true);
 		cmbCCusto.setEnabled(true);
@@ -285,9 +297,9 @@ public class PainelLancamento extends JPanel {
 		txtF02.setText(null);
 		txtF03.setText(null);
 		txtFTitular.setText(null);
-		txtF05.setText(null);
-		txtF06.setText(null);
-		txtF06.setText(null);
+		txtFTitulo.setText(null);
+		txtFCondPag.setText(null);
+		txtFCondPag.setText(null);
 		txtF07.setText(null);
 		txtF08.setText(null);
 		cmbCCusto.setSelectedItem(0);

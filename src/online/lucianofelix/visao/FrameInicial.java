@@ -1163,10 +1163,54 @@ public class FrameInicial {
 			}
 		});
 	}
+	/**
+	 * Pesquisar usuário para adição ao lancamento
+	 */
 	public static void pesqUsuarioAddPLanc() {
 		limparTxtfPesquisa();
 		txtfPesquisa.grabFocus();
 		setTabela(contPess.pesqNomeTblAddUsuariLanc(""));
+		scrLista.setViewportView(getTabela());
+		txtfPesquisa.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				String nome = txtfPesquisa.getText();
+				if (tecla.getExtendedKeyCode() == 27) {// ESC
+					JOptionPane.showMessageDialog(null, "Cancelar Lançamento",
+							"", JOptionPane.QUESTION_MESSAGE);
+				} else if (tecla.getExtendedKeyCode() == 10) {// enter
+					getTabela().grabFocus();
+					getTabela().changeSelection(0, 0, false, false);
+				} else if (tecla.getExtendedKeyCode() == 40 // seta para baixo
+						| tecla.getExtendedKeyCode() == 38) { // seta cima
+					getTabela().grabFocus();
+					getTabela().changeSelection(0, 0, false, false);
+				} else {
+					nome = txtfPesquisa.getText();
+					setTabela(contPess.pesqNomeTblAddUsuariLanc(nome));
+					scrLista.setViewportView(getTabela());
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				String nome = txtfPesquisa.getText();
+				setTabela(contPess.pesqNomeTblAddUsuariLanc(nome));
+				scrLista.setViewportView(getTabela());
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+		});
+	}
+	/**
+	 * Pesquisar Cond Pag para add ao Lancamento
+	 */
+	public static void pesqCondPagAddPLanc() {
+		limparTxtfPesquisa();
+		txtfPesquisa.grabFocus();
+		setTabela(contCondPag.pesqNomeTblAddCondPagLanc(""));
 		scrLista.setViewportView(getTabela());
 		txtfPesquisa.addKeyListener(new KeyListener() {
 			@Override

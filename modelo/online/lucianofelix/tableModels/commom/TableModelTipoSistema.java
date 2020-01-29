@@ -11,6 +11,11 @@ import online.lucianofelix.visao.AbaCadastros;
 
 public class TableModelTipoSistema extends AbstractTableModel {
 
+	/**
+	 * SERIAL
+	 */
+	private static final long serialVersionUID = 6763304050149263808L;
+
 	private List<TipoSistema> linhas;
 	private String[] colunas = new String[]{"Número", "Nome"};
 	private static final int Numero = 0;

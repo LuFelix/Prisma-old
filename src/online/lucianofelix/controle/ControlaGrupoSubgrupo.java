@@ -58,10 +58,12 @@ public class ControlaGrupoSubgrupo {
 					PainelSubGrupo.limparCampos();
 					FrameInicial.getTxtfPesquisa()
 							.setText(grupo.getNomeGrupo());
-					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					AbaCadastros.recarregaArvore();
-					FrameInicial.atualizaTela();
+					FrameInicial.setTabela(
+							tblGrupoNomeTipoSistema(grupo.getNoAncora()));
+					FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 					JOptionPane.showMessageDialog(null, "Feito");
+					FrameInicial.atualizaTela();
 					iniciar();
 				} else {
 					JOptionPane.showMessageDialog(null,
@@ -469,6 +471,7 @@ public class ControlaGrupoSubgrupo {
 				.setTabela(tblGrupoNomeTipoSistema(AbaCadastros.getNomeNo()));
 		if (FrameInicial.getTabela().getRowCount() <= 0) {
 			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+			FrameInicial.atualizaTela();
 		} else {
 			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 			grupo = mdlTblGrupo
@@ -476,6 +479,7 @@ public class ControlaGrupoSubgrupo {
 		}
 		FrameInicial.setPainelVisualiza(new PainelSubGrupo(grupo));
 		FrameInicial.atualizaTela();
+
 	}
 	public void iniciar(String tipoSistema) {
 		System.out.println("ControlaGrupoSbgrupo.iniciar");
@@ -485,7 +489,7 @@ public class ControlaGrupoSubgrupo {
 		FrameInicial.setTabela(tblGrupoNomeTipoSistema(tipoSistema));
 
 		if (FrameInicial.getTabela().getRowCount() <= 0) {
-			JOptionPane.showMessageDialog(null, "Sem Produtos nessa categoria");
+			JOptionPane.showMessageDialog(null, "Categoria vazia");
 		} else {
 			FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 			grupo = mdlTblGrupo

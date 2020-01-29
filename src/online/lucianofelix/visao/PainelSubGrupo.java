@@ -171,7 +171,6 @@ public class PainelSubGrupo extends JPanel {
 		pnlInferior.setBackground(Color.WHITE);
 		pnlInferior.add(tabVisualiza);
 
-		desHabilitaEdicao();
 		carregarCampos(grupo);
 		sppPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppPrincipal.setDividerSize(3);
@@ -182,6 +181,7 @@ public class PainelSubGrupo extends JPanel {
 		sppPrincipal.add(pnlInferior);
 		setLayout(new GridLayout());
 		setBackground(Color.WHITE);
+		desHabilitaEdicao();
 		add(sppPrincipal);
 
 	}
@@ -227,9 +227,12 @@ public class PainelSubGrupo extends JPanel {
 			grupo.setNoRaiz(3);
 		} else if (AbaCadastros.getNomeNo().equals("Categorias de Pedidos")) {
 			grupo.setNoRaiz(4);
+		} else if (AbaCadastros.getNomeNo()
+				.equals("Categorias de Documentos")) {
+			grupo.setNoRaiz(5);
 		} else {
 			JOptionPane.showMessageDialog(null,
-					"Problemas: Verifique as informações preenchidas",
+					"Problemas: Verifique as informações preenchidas categoria não suportada",
 					"Erro ao Salvar. Campos com * são necessários",
 					JOptionPane.ERROR_MESSAGE);
 		}

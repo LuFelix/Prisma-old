@@ -2,8 +2,10 @@ package online.lucianofelix.controle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -15,9 +17,11 @@ import javax.swing.table.DefaultTableModel;
 
 import online.lucianofelix.beans.CondPagamento;
 import online.lucianofelix.dao.DAOCondPagamento;
+import online.lucianofelix.tableModels.commom.TableModelCondPag;
 import online.lucianofelix.visao.FrameInicial;
 import online.lucianofelix.visao.FrameInicial.ControlaBotoes;
 import online.lucianofelix.visao.PainelCondPagamento;
+import online.lucianofelix.visao.PainelLancamento;
 import online.lucianofelix.visao.PainelPedidos;
 
 public class ControlaCondPagamento {
@@ -133,12 +137,7 @@ public class ControlaCondPagamento {
 		tabela = new JTable();
 		DefaultTableModel modelotabela = new DefaultTableModel();
 		modelotabela = (DefaultTableModel) tabela.getModel();
-		tabela.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Ao escrever
-			}
-
+		tabela.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent tecla) {
 				// TODO Ao Soltar a tecla
@@ -164,27 +163,7 @@ public class ControlaCondPagamento {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Ao soltar o bot√£o do mouse
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Ao Pressionar o bot„o do mouse
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Ao sair o mouse
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Ao entrar o mouse
-			}
-
+		tabela.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// TODO Ao Clicar
@@ -207,6 +186,51 @@ public class ControlaCondPagamento {
 		}
 		tabela.setShowGrid(true);
 		tabela.setModel(modelotabela);
+		return tabela;
+	}
+	// TODO Tabela que adiciona cond. de pag ao pedido.
+	public JTable pesqNomeTblAddCondPagLanc(String nome) {
+		TableModelCondPag mdlTbl = new TableModelCondPag(
+				daoCondPag.pesquisaString(nome));
+		tabela = new JTable(mdlTbl);
+		tabela.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent tecla) {
+				// TODO Ao Soltar a tecla
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+					CondPagamento cp = mdlTbl
+							.getCondPag(tabela.getSelectedRow());
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent tecla) {
+				// TODO Ao Pressionar Tecla
+				int posicao = tabela.getSelectedRow();
+				if (tecla.getExtendedKeyCode() == 40
+						|| tecla.getExtendedKeyCode() == 38) {
+				} else if (tecla.getExtendedKeyCode() == 27) {// esc
+					FrameInicial.getTxtfPesquisa().grabFocus();
+				} else if (tecla.getExtendedKeyCode() == 10) {
+					PainelLancamento.adicionaCondPag(
+							mdlTbl.getCondPag(tabela.getSelectedRow()));
+				} else if (tecla.getExtendedKeyCode() == 9) {
+					FrameInicial.getBtnSalvar().grabFocus();
+
+				}
+			}
+		});
+		tabela.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Ao Clicar
+				PainelLancamento.adicionaCondPag(
+						mdlTbl.getCondPag(tabela.getSelectedRow()));
+			}
+		});
+
+		tabela.setShowGrid(true);
 		return tabela;
 	}
 
