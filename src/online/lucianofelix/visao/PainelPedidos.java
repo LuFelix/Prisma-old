@@ -525,7 +525,7 @@ public class PainelPedidos extends JPanel {
 					daoCondPagamento.pesquisaNomeCodigo(
 							pedi.getLancPedido().get(i).getCodiCondPag()),
 					pedi.getLancPedido().get(i).getValor(),
-					pedi.getLancPedido().get(i).getDataHoraLancamento()};
+					pedi.getLancPedido().get(i).getDtHrLanc()};
 			modeloTabelaPagamentos.addRow(linha);
 		}
 		getTbl02().setShowGrid(true);

@@ -96,7 +96,7 @@ public class DAOLancamento {
 			prepStm.setDate(5, dataHoraMovimento);
 			prepStm.setBigDecimal(6, lanc.getValor());
 			prepStm.setString(7, lanc.getObsLancamento());
-			prepStm.setDate(8, lanc.getDataHoraLancamento());
+			prepStm.setTimestamp(8, lanc.getDtHrLanc());
 			prepStm.setString(9, lanc.getTipoLancamento());
 			prepStm.execute();
 			c.desconectar();
@@ -179,8 +179,7 @@ public class DAOLancamento {
 					lanc.setCodiCondPag(res.getString("codi_cond_pag"));
 					lanc.setCodiPedido(res.getString("codi_pedido"));
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
-					lanc.setDataHoraLancamento(
-							res.getDate("data_hora_lancamento"));
+					lanc.setDtHrLanc(res.getTimestamp("data_hora_lancamento"));
 					lanc.setValor(res.getBigDecimal("valor"));
 					lanc.setTipoLancamento(
 							res.getString("codi_tipo_lancamento"));
@@ -220,8 +219,7 @@ public class DAOLancamento {
 					lanc.setCodiCondPag(res.getString("codi_cond_pag"));
 					lanc.setCodiPedido(res.getString("codi_pedido"));
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
-					lanc.setDataHoraLancamento(
-							res.getDate("data_hora_registro"));
+					lanc.setDtHrLanc(res.getTimestamp("data_hora_registro"));
 					lanc.setValor(res.getBigDecimal("valor"));
 					listMov.add(lanc);
 				} while (res.next());
@@ -255,8 +253,7 @@ public class DAOLancamento {
 					lanc.setCodiCondPag(res.getString("codi_cond_pag"));
 					lanc.setCodiPedido(res.getString("codi_pedido"));
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
-					lanc.setDataHoraLancamento(
-							res.getDate("data_hora_registro"));
+					lanc.setDtHrLanc(res.getTimestamp("data_hora_registro"));
 					lanc.setValor(res.getBigDecimal("valor"));
 					listMov.add(lanc);
 				} while (res.next());
@@ -288,8 +285,7 @@ public class DAOLancamento {
 					lanc.setCodiCondPag(res.getString("codi_cond_pag"));
 					lanc.setCodiPedido(res.getString("codi_pedido"));
 					lanc.setCodiPessoa(res.getString("codi_pessoa"));
-					lanc.setDataHoraLancamento(
-							res.getDate("data_hora_registro"));
+					lanc.setDtHrLanc(res.getTimestamp("data_hora_registro"));
 					lanc.setValor(res.getBigDecimal("valor"));
 					lanc.setObsLancamento(res.getString("obs_lanc"));
 					lanc.setTipoLancamento(res.getString("tipo_lanc"));

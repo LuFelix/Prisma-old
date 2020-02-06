@@ -5,7 +5,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -20,6 +23,9 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.jdatepicker.JDatePicker;
+import org.joda.time.DateTime;
+
 import online.lucianofelix.beans.CondPagamento;
 import online.lucianofelix.beans.Conta;
 import online.lucianofelix.beans.Lancamento;
@@ -33,23 +39,24 @@ public class PainelLancamento extends JPanel {
 
 	private JLabel lblImagem;
 	private JLabel lbl01;
-	private JLabel lbl02;
-	private JLabel lbl03;
+	private JLabel lblSequencia;
+	private JLabel lblCodigo;
 	private JLabel lblTitular;
 	private JLabel lblTitulo;
 	private JLabel lblCondPag;
-	private JLabel lbl07;
+	private JLabel lblDTVenc;
 	private JLabel lbl08;
 	private JLabel lbl09;
 	private JLabel lbl10;
 	private JLabel lbl11;
 
-	private static JTextField txtF02;
-	private static JTextField txtF03;
+	private static JTextField txtFSequencia;
+	private static JTextField txtFCodigo;
 	private static JTextField txtFTitular;
 	private static JTextField txtFTitulo;
 	private static JTextField txtFCondPag;
-	private static JTextField txtF07;
+
+	private static JDatePicker dtvenc;
 	private static JTextField txtF08;
 
 	private JScrollPane scrImagem;
@@ -98,11 +105,10 @@ public class PainelLancamento extends JPanel {
 		lbl01 = new JLabel("Lançamento");
 		lbl01.setFont(new Font("Times New Roman", Font.BOLD, 28));
 
-		lbl02 = new JLabel("Sequência:");
-		txtF02 = new JTextField();
-		lbl03 = new JLabel("Código:");
-		txtF03 = new JTextField();
-
+		setLblSequencia(new JLabel("Sequência:"));
+		txtFSequencia = new JTextField();
+		lblCodigo = new JLabel("Código:");
+		txtFCodigo = new JTextField();
 		lblTitular = new JLabel("Titular:");
 		txtFTitular = new JTextField();
 		txtFTitular.setEditable(false);
@@ -112,10 +118,8 @@ public class PainelLancamento extends JPanel {
 				FrameInicial.pesqUsuarioAddPLanc();
 			}
 		});
-
 		lblTitulo = new JLabel("Título: ");
 		txtFTitulo = new JTextField();
-
 		lblCondPag = new JLabel("Condição Pagamento:");
 		txtFCondPag = new JTextField();
 		txtFCondPag.setEditable(false);
@@ -126,11 +130,9 @@ public class PainelLancamento extends JPanel {
 			}
 		});
 
-		lbl07 = new JLabel("Data criação:");
-		lbl07.setFont(new Font("Times New Roman", Font.BOLD, 18));
-		txtF07 = new JTextField();
-		txtF07.setHorizontalAlignment(JTextField.RIGHT);
-		txtF07.setFont(new Font("Times New Roman", Font.BOLD, 16));
+		lblDTVenc = new JLabel("Data criação:");
+		lblDTVenc.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		dtvenc = new JDatePicker(Calendar.getInstance());
 
 		lbl08 = new JLabel("Valor:");
 		lbl08.setFont(new Font("Times New Roman", Font.BOLD, 22));
@@ -176,7 +178,19 @@ public class PainelLancamento extends JPanel {
 		pnlGrid.setBackground(Color.WHITE);
 
 		cmbCCusto = contCCusto.cmbCentrosCusto();
-		cmbContas = contConta.cmbContas();
+		cmbContas = new JComboBox<>();
+		cmbCCusto.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				cmbCCustoSelecionaItem(e);
+			}
+			private void cmbCCustoSelecionaItem(ItemEvent e) {
+				recarregaContas((String) e.getItem());
+			}
+			private void recarregaContas(String item) {
+				contConta.carregarContas(cmbContas, item);
+			}
+		});
 
 		pnlGrid.add(cmbCCusto);
 		pnlGrid.add(cmbContas);
@@ -190,8 +204,8 @@ public class PainelLancamento extends JPanel {
 		pnlGrid.add(txtFTitulo);
 		pnlGrid.add(lblCondPag);
 		pnlGrid.add(txtFCondPag);
-		pnlGrid.add(lbl07);
-		pnlGrid.add(txtF07);
+		pnlGrid.add(lblDTVenc);
+		pnlGrid.add(dtvenc);
 		pnlGrid.add(lbl08);
 		pnlGrid.add(txtF08);
 
@@ -231,12 +245,12 @@ public class PainelLancamento extends JPanel {
 
 	public static void desHabilitaEdicao() {
 
-		txtF02.setEditable(false);
-		txtF03.setEditable(false);
+		txtFSequencia.setEditable(false);
+		txtFCodigo.setEditable(false);
 		txtFTitular.setFocusable(false);
 		txtFTitulo.setEditable(false);
 		txtFCondPag.setFocusable(false);
-		txtF07.setEditable(false);
+		dtvenc.setEnabled(false);
 		cmbCCusto.setEnabled(false);
 		cmbContas.setEnabled(false);
 
@@ -262,7 +276,13 @@ public class PainelLancamento extends JPanel {
 		}
 		txtFTitulo.setText(l.getCodiPedido());
 		txtFCondPag.setText(contCdPag.buscaNomeCodigo(l.getCodiCondPag()));
-		txtF07.setText(String.valueOf(l.getDataHoraLancamento()));
+		DateTime dt = new DateTime(l.getDtHrLanc());
+		dtvenc.getModel().setDate(dt.getDayOfMonth(), dt.getMonthOfYear(),
+				dt.getYear());
+
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>  " + "dia " + dt.getDayOfMonth() + " mes "
+						+ dt.getMonthOfYear() + " ano " + dt.getYear());
 		txtF08.setText(String.valueOf(l.getValor()));
 		cmbCCusto.setSelectedItem(contConta.nomeCentCustCodi(l.getCodiConta()));
 		cmbContas.setSelectedItem(contConta.nomeContaCodigo(l.getCodiConta()));
@@ -273,38 +293,65 @@ public class PainelLancamento extends JPanel {
 		txtFTitular.setFocusable(true);
 		txtFTitulo.setEditable(true);
 		txtFCondPag.setFocusable(true);
+		dtvenc.setEnabled(true);
 		cmbContas.setEnabled(true);
 		cmbCCusto.setEnabled(true);
 	}
 	public static void habilitaNovo() {
 		limparCampos();
 
-		txtF02.setText("0");
+		txtFSequencia.setText("0");
 		txtFTitular.setFocusable(true);
-		txtFTitular.grabFocus();
 		txtFTitulo.setEditable(true);
 		txtFCondPag.setFocusable(true);
 		txtFCondPag.setEditable(true);
-		txtF07.setEditable(false);
+		dtvenc.setEnabled(true);
 		txtF08.setEditable(true);
 		cmbCCusto.setEnabled(true);
+		cmbCCusto.grabFocus();
 		cmbContas.setEnabled(true);
 
 	}
 	// TODO Limpar campos
 	public static void limparCampos() {
 
-		txtF02.setText(null);
-		txtF03.setText(null);
+		txtFSequencia.setText(null);
+		txtFCodigo.setText(null);
 		txtFTitular.setText(null);
 		txtFTitulo.setText(null);
 		txtFCondPag.setText(null);
 		txtFCondPag.setText(null);
-		txtF07.setText(null);
+		dtvenc.getModel().setDate(0, 0, 0);
 		txtF08.setText(null);
 		cmbCCusto.setSelectedItem(0);
 		cmbContas.setSelectedItem(0);
 
+	}
+	/**
+	 * @return the cmbContas
+	 */
+	public static JComboBox<String> getCmbContas() {
+		return cmbContas;
+	}
+	/**
+	 * @param cmbContas
+	 *            the cmbContas to set
+	 */
+	public static void setCmbContas(JComboBox<String> cmbContas) {
+		PainelLancamento.cmbContas = cmbContas;
+	}
+	/**
+	 * @return the lblSequencia
+	 */
+	public JLabel getLblSequencia() {
+		return lblSequencia;
+	}
+	/**
+	 * @param lblSequencia
+	 *            the lblSequencia to set
+	 */
+	public void setLblSequencia(JLabel lblSequencia) {
+		this.lblSequencia = lblSequencia;
 	}
 
 }

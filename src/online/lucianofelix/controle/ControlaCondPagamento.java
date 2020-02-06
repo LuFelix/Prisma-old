@@ -201,6 +201,7 @@ public class ControlaCondPagamento {
 						|| tecla.getExtendedKeyCode() == 38) {
 					CondPagamento cp = mdlTbl
 							.getCondPag(tabela.getSelectedRow());
+					PainelLancamento.adicionaCondPag(cp);
 				}
 			}
 

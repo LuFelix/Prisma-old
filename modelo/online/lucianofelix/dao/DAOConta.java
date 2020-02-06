@@ -23,7 +23,7 @@ public class DAOConta {
 		System.out.println("DAOConta.construtor");
 		c = new Conexao(ConfigS.getBdPg(), "siacecf");
 		c2 = new ConexaoSTM(ConfigS.getBdPg(), "siacecf");
-		// daoCCusto = new DAOCentroCusto();
+
 	}
 
 	/**
@@ -258,6 +258,92 @@ public class DAOConta {
 			prepStm.setString(3, str);
 			prepStm.setString(4, str);
 			prepStm.setString(5, str);
+			ResultSet res = prepStm.executeQuery();
+			while (res.next()) {
+				conta = new Conta();
+				conta.setSeqConta(res.getInt("seq_conta"));
+				conta.setCodiConta(res.getString("codi_conta"));
+				conta.setAgencia(res.getString("agencia"));
+				conta.setConta(res.getString("conta"));
+				conta.setBanco(res.getString("banco"));
+				conta.setNomeConta(res.getString("nome_conta"));
+				conta.setTiular(res.getString("titular"));
+				conta.setNumCartao(res.getString("num_cartao"));
+				conta.setSenha(res.getString("senha"));
+				conta.setDescConta(res.getString("desc_conta"));
+				conta.setObsConta(res.getString("obs_conta"));
+				conta.setTipoConta(res.getString("tipo_conta"));
+				conta.setCentroCusto(res.getString("codi_centro_custo"));
+				listConta.add(conta);
+			}
+			c.desconectar();
+			return listConta;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	/**
+	 * Pesquisa contas do centro de custo
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public List<Conta> pesqContasCodiCCusto(String codiCentro) {
+		System.out.println("DAOConta.pesquisarString");
+		String sql = "select * from tbl_contas where codi_centro_custo = ? order by nome_conta;";
+		listConta = new ArrayList<Conta>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, codiCentro);
+			ResultSet res = prepStm.executeQuery();
+			while (res.next()) {
+				conta = new Conta();
+				conta.setSeqConta(res.getInt("seq_conta"));
+				conta.setCodiConta(res.getString("codi_conta"));
+				conta.setAgencia(res.getString("agencia"));
+				conta.setConta(res.getString("conta"));
+				conta.setBanco(res.getString("banco"));
+				conta.setNomeConta(res.getString("nome_conta"));
+				conta.setTiular(res.getString("titular"));
+				conta.setNumCartao(res.getString("num_cartao"));
+				conta.setSenha(res.getString("senha"));
+				conta.setDescConta(res.getString("desc_conta"));
+				conta.setObsConta(res.getString("obs_conta"));
+				conta.setTipoConta(res.getString("tipo_conta"));
+				conta.setCentroCusto(res.getString("codi_centro_custo"));
+				listConta.add(conta);
+			}
+			c.desconectar();
+			return listConta;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			c.desconectar();
+			return null;
+		}
+	}
+	/**
+	 * Busca todas as contas do centro de custo por nome
+	 * 
+	 * @param nomeCCusto
+	 * @return
+	 */
+	public List<Conta> pesqContasNomeCCusto(String nomeCCentro) {
+		System.out.println("DAOConta.pesquisarString");
+		daoCCusto = new DAOCentroCusto();
+		String codiCentro = daoCCusto.buscaCodigoNome(nomeCCentro);
+		String sql = "select * from tbl_contas where codi_centro_custo = ? order by nome_conta;";
+		listConta = new ArrayList<Conta>();
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, codiCentro);
 			ResultSet res = prepStm.executeQuery();
 			while (res.next()) {
 				conta = new Conta();

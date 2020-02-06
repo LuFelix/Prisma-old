@@ -1,7 +1,6 @@
 package online.lucianofelix.beans;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 public class Lancamento {
@@ -11,12 +10,13 @@ public class Lancamento {
 	private String codiCondPag;// Chave para a tabela de condição de pagamento.
 	private String codiPedido; // Referência para a tabela de pedidos.
 	private String codiPessoa;// Referência para a tabela de pessoas.
-	private Date dataHoraLancamento; // Data hora do recebimento.
+	private Timestamp dtHrLanc; // Data hora do lancamento.
+	private Timestamp dtHrVenc; // Data hora do vencimento.
+	private Timestamp dtHrReceb;// Data hora do recebimento.
 	private BigDecimal valor;// O valor do movimento
 	private String obsLancamento; // Uma observação sobre o recebimento.
 	private String tipoLancamento; // Movimento de entrada ou de saída;
 	private String especieLancamento;// Espécie de lançamento
-	private Timestamp dataHoraRecebimento;
 
 	public int getSequencia() {
 		return sequencia;
@@ -82,14 +82,6 @@ public class Lancamento {
 		this.codiConta = codiConta;
 	}
 
-	public Date getDataHoraLancamento() {
-		return dataHoraLancamento;
-	}
-
-	public void setDataHoraLancamento(Date dataHoraLancamento) {
-		this.dataHoraLancamento = dataHoraLancamento;
-	}
-
 	/**
 	 * @return the valor
 	 */
@@ -98,10 +90,56 @@ public class Lancamento {
 	}
 
 	/**
-	 * @param valor the valor to set
+	 * @param valor
+	 *            the valor to set
 	 */
 	public void setValor(BigDecimal valor) {
 		this.valor = valor;
+	}
+
+	/**
+	 * @return the dtHrLanc
+	 */
+	public Timestamp getDtHrLanc() {
+		return dtHrLanc;
+	}
+
+	/**
+	 * @param dtHrLanc
+	 *            the dtHrLanc to set
+	 */
+	public void setDtHrLanc(Timestamp dtHrLanc) {
+		this.dtHrLanc = dtHrLanc;
+	}
+
+	/**
+	 * @return the dtHrVenc
+	 */
+	public Timestamp getDtHrVenc() {
+		return dtHrVenc;
+	}
+
+	/**
+	 * @param dtHrVenc
+	 *            the dtHrVenc to set
+	 */
+	public void setDtHrVenc(Timestamp dtHrVenc) {
+		this.dtHrVenc = dtHrVenc;
+	}
+
+	/**
+	 * @return the dtHrReceb
+	 */
+	public Timestamp getDtHrReceb() {
+		return dtHrReceb;
+	}
+
+	/**
+	 * @param dtHrReceb
+	 *            the dtHrReceb to set
+	 */
+	public void setDtHrReceb(Timestamp dtHrReceb) {
+		this.dtHrReceb = dtHrReceb;
 	}
 
 }

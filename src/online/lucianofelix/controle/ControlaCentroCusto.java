@@ -41,7 +41,7 @@ public class ControlaCentroCusto {
 	public JComboBox<String> cmbCentrosCusto() {
 		cmbCCusto = new JComboBox<String>();
 		cmbCCusto.setToolTipText("Selecione o centro de custo para a conta.");
-
+		cmbCCusto.addItem("Centro de Custo");
 		listCentroCusto = new ArrayList<CentroCusto>(pesqNomeArray(""));
 		if (listCentroCusto.size() > 0) {
 			for (CentroCusto centroCusto : listCentroCusto) {

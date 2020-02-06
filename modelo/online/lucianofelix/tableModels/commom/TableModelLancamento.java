@@ -1,10 +1,11 @@
 package online.lucianofelix.tableModels.commom;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
+import org.joda.time.DateTime;
 
 import online.lucianofelix.beans.Lancamento;
 import online.lucianofelix.dao.DAOPessoaPG;
@@ -38,7 +39,7 @@ public class TableModelLancamento extends AbstractTableModel {
 			case Documento :
 				return l.getCodiPedido();
 			case Data :
-				return l.getDataHoraLancamento();
+				return l.getDtHrVenc();
 			case Valor :
 				return l.getValor();
 
@@ -69,7 +70,7 @@ public class TableModelLancamento extends AbstractTableModel {
 			case Documento :
 				return String.class;
 			case Data :
-				return Date.class;
+				return DateTime.class;
 			case Valor :
 				return Float.class;
 

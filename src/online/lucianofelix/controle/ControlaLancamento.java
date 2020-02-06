@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -118,26 +118,7 @@ public class ControlaLancamento {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-			}
+		tabela.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -154,13 +135,7 @@ public class ControlaLancamento {
 		tabela.setModel(tblMdLanc);
 		return tabela;
 	}
-	/**
-	 *  
-	 */
-	public String carregarTitular() {
-		return nome;
 
-	}
 	/**
 	 * TODO Iniciar
 	 */
@@ -294,9 +269,8 @@ public class ControlaLancamento {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				lanc = PainelLancamento.lerCampos();
-				System.out
-						.println(lanc.getValor() + "   " + lanc.getCodiCondPag()
-								+ "   " + lanc.getDataHoraLancamento());
+				System.out.println(lanc.getValor() + "   "
+						+ lanc.getCodiCondPag() + " " + lanc.getDtHrLanc());
 				if (!lanc.equals(null) & daoLancamento.inserirLancRec(lanc)) {
 					PainelLancamento.limparCampos();
 					FrameInicial.setTabela(pesqNomeTabela(lanc.getCodiConta()));

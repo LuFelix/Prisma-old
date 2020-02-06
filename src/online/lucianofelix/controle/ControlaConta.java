@@ -672,20 +672,23 @@ public class ControlaConta {
 
 		return tbl03;
 	}
-	// TODO Combo Box com todas as contas
-	public JComboBox<String> cmbContas() {
-		cmbContasCCusto = new JComboBox<String>();
-		cmbContasCCusto.addItem("Conta");
-		cmbContasCCusto.setToolTipText("Selecione a conta");
 
-		listContas = new ArrayList<Conta>(pesqNomeArray(""));
+	/**
+	 * TODO Carrega as contas no combbox em execucao
+	 * 
+	 * @param cmb
+	 */
+	public void carregarContas(JComboBox<String> cmb, String cCusto) {
+		cmb.setToolTipText("Selecione a conta");
+
+		listContas = new ArrayList<Conta>(
+				daoConta.pesqContasNomeCCusto(cCusto));
+		cmb.removeAllItems();
 		if (listContas.size() > 0) {
 			for (Conta conta : listContas) {
-				cmbContasCCusto.addItem(conta.getNomeConta());
+				cmb.addItem(conta.getNomeConta());
 			}
 		}
-		return cmbContasCCusto;
-
 	}
 
 	// TODO Combo Box com as contas do centro de custo
