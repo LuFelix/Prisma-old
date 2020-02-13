@@ -166,6 +166,33 @@ public abstract class DAOPessoa {
 		}
 
 	}
+	public Pessoa pessoaNome(String nomePessoa) {
+		setSql("select * from pessoas where codi_pessoa=?;");
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, nomePessoa);
+			result = prepStm.executeQuery();
+			if (result.next()) {
+				p = new Pessoa();
+				p.setSeqUsuario(result.getInt("seq_pessoa"));
+				p.setCodiPessoa(result.getString("codi_pessoa"));
+				p.setNome(result.getString("nome_pessoa"));
+				p.setCpf(result.getString("cnpj_cpf_pessoa"));
+				p.setEmail(result.getString("email_pessoa"));
+				p.setRelacao(result.getString("codi_grupo"));
+				p.setTipoPessoa(result.getString("tipo_pessoa"));
+			}
+			c.desconectar();
+			return p;
+		} catch (SQLException e) {
+			c.desconectar();
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
 	public List<Pessoa> listaPessoas() {
 		setSql("select * from pessoas order by nome_pessoa;");
 		listP = new ArrayList<Pessoa>();

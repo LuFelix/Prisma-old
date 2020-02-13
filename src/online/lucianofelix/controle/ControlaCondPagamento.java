@@ -156,7 +156,8 @@ public class ControlaCondPagamento {
 				} else if (tecla.getExtendedKeyCode() == 27) {// esc
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
-					PainelPedidos.adicionaPagamento(arrayCondPag.get(posicao));
+					PainelPedidos
+							.adicionaBaixaTitReceber(arrayCondPag.get(posicao));
 				} else if (tecla.getExtendedKeyCode() == 9) {
 					FrameInicial.getBtnSalvar().grabFocus();
 
@@ -168,8 +169,9 @@ public class ControlaCondPagamento {
 			public void mouseClicked(MouseEvent arg0) {
 				// TODO Ao Clicar
 				int posicao = tabela.getSelectedRow();
-				PainelPedidos.adicionaPagamento(arrayCondPag.get(posicao));
-				System.out.println("posicao " + posicao);
+				PainelPedidos
+						.adicionaBaixaTitReceber(arrayCondPag.get(posicao));
+				System.out.println("posicao condpag " + posicao);
 			}
 		});
 		colunas.add("Código");

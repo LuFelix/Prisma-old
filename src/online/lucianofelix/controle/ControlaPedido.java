@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -60,6 +60,7 @@ public class ControlaPedido {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pedi = PainelPedidos.leCampos();
+				Lancamento l = new Lancamento();
 				if (pedi.getTipoPedido().equals("Compra")) {
 					tipoMovEstoque = "Entra";
 					tipoMovConta = "Sai";
@@ -67,8 +68,31 @@ public class ControlaPedido {
 					tipoMovEstoque = "Sai";
 					tipoMovConta = "Entra";
 				}
+				l.setCodiCondPag(pedi.getCodiCondPag());
+
+				l.setCodiPedido(pedi.getCodiPedi());
+				l.setCodiCtaReceber(pedi.getCodiPedi());
+				l.setCodiPessoa(pedi.getCodiPessoaCliente());
+				l.setValor(pedi.getTotalPedi());
+				l.setCodiConta("162017514");
+
+				// contLancamento.Atualizar TituReceber mudar quantidade de
+				// títulos de acordo com a condição de pagamento (melhor
+				// verificar os que tem baixas)
+				// se o titulo tiver baixas perguntar se quer excluir as baixas
+				// para liberar o titulo e calcular o restante dividindo em
+				// novos títulos com a nova condição
+				// perguntar se tem acrescimo (em especie ou %)
+				// aplicar os juros da condição e os acrescimos ou descontos
+				// salvar os novos titulos com o numero do titulo anterior e a
+				// data anterior colocar nas observações do lancamento que se
+				// refere a uma mudança de forma de pagamento no pedido
+
+				daoLancamento.inserirTituRec(l);
 				try {
+
 					daoPedi.alterar(pedi);
+
 					PainelPedidos.limparCampos();
 					FrameInicial.setPainelVisualiza(
 							new PainelPedidos(pedi.getCodiPedi()));
@@ -96,8 +120,19 @@ public class ControlaPedido {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pedi = PainelPedidos.leCampos();
+				Lancamento l = new Lancamento();
+
+				l.setCodiCondPag(pedi.getCodiCondPag());
+
+				l.setCodiPedido(pedi.getCodiPedi());
+				l.setCodiCtaReceber(pedi.getCodiPedi());
+				l.setCodiPessoa(pedi.getCodiPessoaCliente());
+				l.setValor(pedi.getTotalPedi());
+				l.setCodiConta("162017514");
 				try {
+
 					daoPedi.alterar(pedi);
+					daoLancamento.inserirTituRec(l);
 					FrameInicial.setTabela(tblPedidosNomeTipo(
 							pedi.getCodiPedi(), pedi.getTipoPedido()));
 					FrameInicial.setPainelVisualiza(
@@ -309,26 +344,7 @@ public class ControlaPedido {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-			}
+		tabela.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -361,10 +377,14 @@ public class ControlaPedido {
 		System.out.println("ControlaPedido.carregarProdutosPedido");
 		pedi.setItensProduto(daoProdPedi.pesquisaItensPedido(pedi));
 	}
-
+	/**
+	 * Carregan as baixas do pedido
+	 * 
+	 * @param pedi
+	 */
 	public void carregarPagamentosPedido(Pedido pedi) {
 		System.out.println("ControlaPedido.carregarProdutosPedido");
-		pedi.setLancPedido(daoLancamento.consultLancPedido(pedi));
+		pedi.setLancPedido(daoLancamento.listBaixasPediCompra(pedi));
 	}
 
 	public ArrayList<Pedido> listaPedidosTipo(String tipoPedido) {

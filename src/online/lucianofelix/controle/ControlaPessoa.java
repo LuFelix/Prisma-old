@@ -247,12 +247,21 @@ public class ControlaPessoa {
 	 * 
 	 */
 
-	public String pesqNomeCodigo(String codiPessoa) {
-
+	public String pesqCodigoNome(String codiPessoa) {
 		Pessoa pessoa = daoP.pessoaCodigo(codiPessoa);
+		return pessoa.getCodiPessoa();
+	}
+	/**
+	 * Retorna o Codigo da pessoa através do nome
+	 * 
+	 * @param codiPessoa
+	 * @return nomePessoa
+	 * 
+	 */
 
+	public String pesqNomeCodigo(String nomePessoa) {
+		Pessoa pessoa = daoP.pessoaCodigo(nomePessoa);
 		return pessoa.getNome();
-
 	}
 
 	// TODO Tabela que adiciona usuários ao pedido

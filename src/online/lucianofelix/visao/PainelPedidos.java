@@ -156,7 +156,8 @@ public class PainelPedidos extends JPanel {
 				+ String.valueOf(Calendar.getInstance().get(Calendar.MONTH) + 1
 						+ " - " + String.valueOf(
 								Calendar.getInstance().get(Calendar.YEAR)))));
-		lblData.setFont(new Font("Times New Roman", Font.ITALIC, 16));
+		lblData.setForeground(Color.BLUE);
+		lblData.setFont(new Font("Times New Roman", Font.ITALIC, 18));
 		lblTabPreco = new JLabel("Tabela de Preços:");
 		lblTabPreco.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblTabPreco.setForeground(Color.RED);
@@ -422,17 +423,30 @@ public class PainelPedidos extends JPanel {
 
 	}
 
-	public static void adicionaPagamento(CondPagamento condPag) {
-		BigDecimal valor = new BigDecimal(
-				JOptionPane.showInputDialog("Valor:"));
-		pedi = leCampos();
-		lanc = new Lancamento();
-		lanc.setCodiCondPag(condPag.getCodiCondPag());
-		lanc.setValor(valor);
-		if (valor.compareTo(new BigDecimal(0)) <= 0) {
-			contPedi.removerPagamento(pedi, lanc);
-		} else {
-			contLanc.adicionaLancamentoPedido(pedi, lanc);
+	public static void adicionaBaixaTitReceber(CondPagamento condPag) {
+		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
+				".");
+		BigDecimal valor = null;
+		if (entrada != null) {
+			valor = new BigDecimal(entrada);
+			pedi = leCampos();
+			lanc = new Lancamento();
+			lanc.setCodiCondPag(condPag.getCodiCondPag());
+			lanc.setValor(valor);
+			lanc.setCodiCtaReceber(pedi.getCodiPedi());
+			JOptionPane.showMessageDialog(null,
+					"PainelPedidos adicionaBaixTitReceber CodiPedido "
+							+ pedi.getCodiPessoaCliente());
+			lanc.setCodiPessoa(pedi.getCodiPessoaCliente());
+			JOptionPane.showMessageDialog(null,
+					"PainelPedidos adicionaBaixTitReceber codiPessoaCliente  "
+							+ pedi.getCodiPessoaCliente());
+
+			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
+				contPedi.removerPagamento(pedi, lanc);
+			} else {
+				contLanc.adicionaBaixaTitPedido(lanc);
+			}
 		}
 		atualizaTabelaPagamentos(pedi);
 	}
@@ -514,7 +528,7 @@ public class PainelPedidos extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int posicao = getTbl02().getSelectedRow();
-				adicionaPagamento(daoCondPagamento.pesquisaCondPagCodigo(
+				adicionaBaixaTitReceber(daoCondPagamento.pesquisaCondPagCodigo(
 						pedi.getLancPedido().get(posicao).getCodiCondPag()));
 				carregarCampos(pedi);
 			}

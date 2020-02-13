@@ -24,13 +24,15 @@ public class JTextFieldNumeros extends JTextField {
 		@Override
 		public void insertString(int offset, String str, AttributeSet attr)
 				throws BadLocationException {
-			super.insertString(offset, str.replaceAll("[^0-9|^ ]", ""), attr);
+			super.insertString(offset, str.replaceAll("[^0-9|^,|.|null]", ""),
+					attr);
 
 		}
 		@SuppressWarnings("unused")
 		public void replace(int offset, String str, AttributeSet attr)
 				throws BadLocationException {
-			super.insertString(offset, str.replaceAll("[^0-9|^ ]", ""), attr);
+			super.insertString(offset, str.replaceAll("[^0-9|^,|.|null]", ""),
+					attr);
 
 		}
 

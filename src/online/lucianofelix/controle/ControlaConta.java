@@ -396,13 +396,15 @@ public class ControlaConta {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				c = PainelConta.lerCampos();
-				if (!c.equals(null) & daoConta.cadastrar(c)) {
+				if (c != null) {
 					PainelConta.limparCampos();
 					FrameInicial.setTabela(pesqNomeTabela(c.getCodiConta()));
 					PainelConta.carregarCampos(c);
 					FrameInicial.atualizaTela();
-					JOptionPane.showMessageDialog(null, "Feito");
-					iniciar(c.getCentroCusto());
+					if (daoConta.cadastrar(c)) {
+						JOptionPane.showMessageDialog(null, "Feito");
+						iniciar(c.getCentroCusto());
+					}
 				} else {
 					erro();
 				}
