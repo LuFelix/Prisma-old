@@ -240,15 +240,15 @@ public class ControlaPessoa {
 	}
 
 	/**
-	 * Retorna o nome da pessoa através do código
+	 * 
 	 * 
 	 * @param codiPessoa
 	 * @return nomePessoa
 	 * 
 	 */
 
-	public String pesqCodigoNome(String codiPessoa) {
-		Pessoa pessoa = daoP.pessoaCodigo(codiPessoa);
+	public String pesqCodigoNome(String nomePessoa) {
+		Pessoa pessoa = daoP.pessoaCodigo(nomePessoa);
 		return pessoa.getCodiPessoa();
 	}
 	/**
@@ -258,7 +258,6 @@ public class ControlaPessoa {
 	 * @return nomePessoa
 	 * 
 	 */
-
 	public String pesqNomeCodigo(String nomePessoa) {
 		Pessoa pessoa = daoP.pessoaCodigo(nomePessoa);
 		return pessoa.getNome();

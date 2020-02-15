@@ -29,9 +29,9 @@ public class TableModelCondPag extends AbstractTableModel {
 		linhas = new ArrayList<CondPagamento>();
 	}
 
-	public TableModelCondPag(List<CondPagamento> list) {
+	public TableModelCondPag(List<CondPagamento> listCondPag) {
 		daoPess = new DAOPessoaPG();
-		linhas = new ArrayList<CondPagamento>(list);
+		linhas = new ArrayList<CondPagamento>(listCondPag);
 	}
 
 	@Override

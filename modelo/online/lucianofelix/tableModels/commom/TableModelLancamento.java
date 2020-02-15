@@ -37,7 +37,7 @@ public class TableModelLancamento extends AbstractTableModel {
 			case Titular :
 				return l.getCodiPessoa();
 			case Documento :
-				return l.getCodiPedido();
+				return l.getCodiCtaReceber();
 			case Data :
 				return l.getDtHrVenc();
 			case Valor :

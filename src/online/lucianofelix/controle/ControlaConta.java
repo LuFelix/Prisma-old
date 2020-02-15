@@ -727,10 +727,9 @@ public class ControlaConta {
 	}
 	// nome do centro de custo por codigo da conta
 	public String nomeCentCustCodiConta(String codiConta) {
-		String codiCCusto = daoConta.cCustoCodiConta(codiConta);
-		cCust = daoCentCust.buscaCodigo(codiCCusto);
+		String nomeCCusto = daoConta.nomeCustoCodiConta(codiConta);
 		if (cCust != (null)) {
-			return cCust.getNomeCentroCusto();
+			return nomeCCusto;
 		} else {
 			return "";
 		}
@@ -750,7 +749,11 @@ public class ControlaConta {
 
 	public String nomeContaCodigo(String codigoConta) {
 		String nomeConta = daoConta.nomeCtaCodigo(codigoConta);
-		return null;
+		return nomeConta;
+	}
+	public String codigoContaNome(String nomeConta) {
+		String codiConta = daoConta.codigoCtaNome(nomeConta);
+		return codiConta;
 	}
 
 	public List<Conta> getListCont() {

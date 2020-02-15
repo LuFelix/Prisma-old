@@ -167,7 +167,7 @@ public abstract class DAOPessoa {
 
 	}
 	public Pessoa pessoaNome(String nomePessoa) {
-		setSql("select * from pessoas where codi_pessoa=?;");
+		setSql("select * from pessoas where nome_pessoa=?;");
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);

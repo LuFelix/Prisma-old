@@ -153,11 +153,16 @@ public class Lancamento {
 		this.dtHrReceb = dtHrReceb;
 	}
 	/**
-	 * @return the valor
+	 * @return the valor em Bigdecimal
 	 */
 	public BigDecimal getValor() {
 		return valor;
 	}
+
+	public String getValorString() {
+		return valor.toString();
+	}
+
 	/**
 	 * @param valor
 	 *            the valor to set

@@ -27,8 +27,11 @@ import online.lucianofelix.visao.PainelLancamento;
 public class ControlaLancamento {
 	static DAOLancamento daoLancamento;
 	Lancamento lanc;
+	Lancamento baixa;
 	TableModelLancamento tblMdLanc;
-	JTable tabela;
+	TableModelLancamento tblMdBaixas;
+	JTable tabelaTitulos;
+	JTable tabelaBaixas;
 
 	private String nome;
 
@@ -65,8 +68,14 @@ public class ControlaLancamento {
 	 * 
 	 * @param baixa
 	 */
-	public static void adicionaBaixaTitPedido(Lancamento baixa) {
+	public void adicionaBaixaTitPedido(Lancamento baixa) {
+		String entrada = JOptionPane.showInputDialog("Valor: ")
+				.replace(",", ".").trim();
+
+		baixa.setValor(new BigDecimal(entrada));
+
 		try {
+
 			daoLancamento.novoBaixaRec(baixa.getCodiPessoa(),
 					baixa.getCodiCtaReceber(), baixa.getValor(),
 					baixa.getCodiCondPag());
@@ -103,33 +112,52 @@ public class ControlaLancamento {
 	 * 
 	 * @param condPag
 	 */
-	public static void adicionaBaixaTitReceber(CondPagamento condPag,
-			Pessoa pess) {
+	public void adicionaBaixaTitReceber(CondPagamento condPag, Pessoa pess) {
 		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
 				".");
 		BigDecimal valor = null;
 		if (entrada != null) {
 			valor = new BigDecimal(entrada);
-			Lancamento lanc = PainelLancamento.lerCampos();
-			lanc.setCodiCondPag(condPag.getCodiCondPag());
-			lanc.setValor(valor);
-			lanc.setCodiCtaReceber(criaCodiLancRec());
-			lanc.setCodiPessoa(pess.getCodiPessoa());
-			Pedido pedi = null;
+			Lancamento baixa = PainelLancamento.lerCampos();
+			baixa.setCodiCondPag(condPag.getCodiCondPag());
+			baixa.setValor(valor);
+			baixa.setCodiCtaReceber(criaCodiLancRec());
+			baixa.setCodiPessoa(pess.getCodiPessoa());
 			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
-				daoLancamento.removerItemLancRec(pedi, lanc);
+				daoLancamento.removerItemLancRec(baixa);
 			} else {
-				adicionaBaixaTitPedido(lanc);
+				daoLancamento.alterarBaixaRec(baixa);
 			}
 		}
-		// atualizaTabelaPagamentos(lanc);
+		// PainelLancamento.atualizaTabelaPagamentos(lanc);
+	}
+	public void adicionaBaixa(Lancamento baixa) {
+		String entrada = JOptionPane.showInputDialog("Informe o Valor")
+				.replace(",", ".");
+		BigDecimal valor;
+		// controlalançamento adicionar baixaes - verificar se foi
+		// finalizado ou parcial - mostrar a difereça restante
+		int opcao = JOptionPane.showConfirmDialog(null,
+				"Confirma baixa para o título?");
+		if (opcao == 0) {
+			if (entrada != null) {
+				valor = new BigDecimal(entrada);
+				baixa.setValor(valor);
+				adicionaBaixaTitPedido(baixa);
+				JOptionPane.showMessageDialog(null,
+						"Aplicando baixa para: " + baixa.getCodiCtaReceber()
+								+ "\n Valor do Título: "
+								+ baixa.getValorString());
+
+			}
+		}
 	}
 	/**
 	 * Adiciona baixa ao título com a criacao do codigo automatica
 	 * 
 	 * @param condPag
 	 */
-	public static void adicionaBaixaTitReceber(CondPagamento condPag,
+	public void adicionaBaixaTitReceber(CondPagamento condPag,
 			String codiPess) {
 		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
 				".");
@@ -141,17 +169,30 @@ public class ControlaLancamento {
 			lanc.setValor(valor);
 			lanc.setCodiCtaReceber(criaCodiLancRec());
 			lanc.setCodiPessoa(codiPess);
-			Pedido pedi = null;
 			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
-				daoLancamento.removerItemLancRec(pedi, lanc);
+				daoLancamento.removerItemLancRec(lanc);
 			} else {
 				adicionaBaixaTitPedido(lanc);
 			}
 		}
 		// atualizaTabelaPagamentos(lanc);
 	}
+
 	/**
-	 * Criaa um codigo pára o título(número do título, deveré ser usado como
+	 * edita uma baixa para o titulo(conta a Receber) pelo pedido
+	 * 
+	 * @param baixa
+	 */
+	public void editaBaixaTitPedido(Lancamento baixa) {
+		daoLancamento.alterarBaixaRec(baixa);
+	}
+	public void removeBaixa(Lancamento baixa) {
+		daoLancamento.removerBaixa(baixa);
+
+	}
+
+	/**
+	 * Cria um codigo pára o título(número do título, deveré ser usado como
 	 * nossoNumero)
 	 * 
 	 * @return
@@ -169,9 +210,9 @@ public class ControlaLancamento {
 
 	// TODO Tabela Atual
 	public JTable pesqNomeTabela(String str) {
-		tabela = new JTable();
+		tabelaTitulos = new JTable();
 		tblMdLanc = new TableModelLancamento(daoLancamento.listUltLancRec());
-		tabela.addKeyListener(new KeyListener() {
+		tabelaTitulos.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 
@@ -193,7 +234,7 @@ public class ControlaLancamento {
 
 			@Override
 			public void keyPressed(KeyEvent tecla) {
-				int posicao = tabela.getSelectedRow();
+				int posicao = tabelaTitulos.getSelectedRow();
 				if (tecla.getExtendedKeyCode() == 40
 						|| tecla.getExtendedKeyCode() == 38) {
 					lanc = tblMdLanc.getLancamento(
@@ -215,12 +256,16 @@ public class ControlaLancamento {
 				}
 			}
 		});
-		tabela.addMouseListener(new MouseAdapter() {
+		tabelaTitulos.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				lanc = tblMdLanc.getLancamento(
 						FrameInicial.getTabela().getSelectedRow());
+				System.out.println(
+						">>>>>>>>>>>>>>>> Controlalancamento pesqNomeTabela lanc.getCodiCtaReceber: "
+								+ lanc.getCodiCtaReceber());
+
 				FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
 				FrameInicial.atualizaTela();
 				FrameInicial.getTabela().grabFocus();
@@ -228,14 +273,14 @@ public class ControlaLancamento {
 			}
 		});
 
-		tabela.setShowGrid(true);
-		tabela.setModel(tblMdLanc);
-		return tabela;
+		tabelaTitulos.setShowGrid(true);
+		tabelaTitulos.setModel(tblMdLanc);
+		return tabelaTitulos;
 	}
 	public void carregarBaixasCtaReceber(Lancamento lanc) {
-
+		lanc.setListbaixas(daoLancamento
+				.listBaixasNumCtaReceber(lanc.getCodiCtaReceber()));
 	}
-
 	/**
 	 * TODO Iniciar
 	 */
@@ -244,12 +289,11 @@ public class ControlaLancamento {
 		ControlaBotoes.limpaTodosBotoes();
 		ControlaBotoes.desHabilitaEdicaoBotoes();
 		configuraBotoes();
-
 		FrameInicial.setTabela(pesqNomeTabela(""));
-		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		// FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 		// lanc = tblMdLanc
 		// .getLancamento(FrameInicial.getTabela().getSelectedRow());
-		FrameInicial.setPainelVisualiza(new PainelLancamento());
+		FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
 		FrameInicial.atualizaTela();
 		configuraTxtPesquisa();
 
@@ -261,7 +305,7 @@ public class ControlaLancamento {
 		configuraBotoes();
 
 		FrameInicial.setTabela(pesqNomeTabela(""));
-		FrameInicial.getTabela().setRowSelectionInterval(0, 0);
+		// FrameInicial.getTabela().setRowSelectionInterval(0, 0);
 		// lanc = tblMdLanc
 		// .getLancamento(FrameInicial.getTabela().getSelectedRow());
 		FrameInicial.setPainelVisualiza(new PainelLancamento());
@@ -363,7 +407,8 @@ public class ControlaLancamento {
 	}
 	// TODO Função Salvar
 	public void funcaoSalvar() {
-		System.out.println("ControlaConta.funcaoSalvar");
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>  ControlaLancamento.funcaoSalvar");
 		ControlaBotoes.limparBtnSalvar();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
@@ -389,13 +434,15 @@ public class ControlaLancamento {
 	}
 	// TODO Função sobrescrever
 	public void funcaoSobrescrever() {
-		System.out.println("ControlaConta.funcaoSobrescrever");
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>>>ControlaLancamento.funcaoSobrescrever");
 		ControlaBotoes.limparBtnSalvar();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				lanc = PainelLancamento.lerCampos();
-				if (!lanc.equals(null) & daoLancamento.alterarLanRec(lanc)) {
+				if (lanc != null) {
+					daoLancamento.alterarLanRec(lanc);
 					FrameInicial
 							.setTabela(pesqNomeTabela(lanc.getCodiCondPag()));
 					FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
@@ -405,6 +452,17 @@ public class ControlaLancamento {
 				}
 			}
 		});
+	}
+	public BigDecimal totalBaixas(Lancamento l) {
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>>>>> ControlaLancamento.totalBaixas() ;");
+		BigDecimal totalBaixas = BigDecimal.ZERO;
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>> Tamnho da lista de Baixas: "
+				+ l.getListbaixas().size());
+		for (int i = 0; i < l.getListbaixas().size(); i++) {
+			totalBaixas = totalBaixas.add(l.getListbaixas().get(i).getValor());
+		}
+		return totalBaixas;
 	}
 
 }

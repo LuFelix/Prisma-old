@@ -51,6 +51,7 @@ import online.lucianofelix.dao.DAOCondPagamento;
 import online.lucianofelix.dao.DAOPedidoPrepSTM;
 import online.lucianofelix.dao.DAOProdutosEstoque;
 import online.lucianofelix.dao.DAOTabelaPreco;
+import online.lucianofelix.tableModels.commom.TableModelBaixas;
 import online.lucianofelix.util.JTextFieldMaiusculas;
 
 public class PainelPedidos extends JPanel {
@@ -121,7 +122,6 @@ public class PainelPedidos extends JPanel {
 	private static List<TabelaPreco> listTabPreco;
 	private static JTextArea txtAreaObsPedido;
 	private static DefaultTableModel modeloTabela;
-	private static DefaultTableModel modeloTabelaPagamentos;
 	private static Lancamento lanc;
 	private static ControlaLancamento contLanc;
 	private static DAOProdutosEstoque daoProdEstoque;
@@ -422,7 +422,11 @@ public class PainelPedidos extends JPanel {
 		}
 
 	}
-
+	/**
+	 * Adicionar uma baixa ao pedido
+	 * 
+	 * @param condPag
+	 */
 	public static void adicionaBaixaTitReceber(CondPagamento condPag) {
 		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
 				".");
@@ -430,22 +434,51 @@ public class PainelPedidos extends JPanel {
 		if (entrada != null) {
 			valor = new BigDecimal(entrada);
 			pedi = leCampos();
-			lanc = new Lancamento();
-			lanc.setCodiCondPag(condPag.getCodiCondPag());
-			lanc.setValor(valor);
-			lanc.setCodiCtaReceber(pedi.getCodiPedi());
+			Lancamento baixa = new Lancamento();
+			baixa.setCodiCondPag(condPag.getCodiCondPag());
+			baixa.setValor(valor);
+			baixa.setCodiCtaReceber(pedi.getCodiPedi());
 			JOptionPane.showMessageDialog(null,
 					"PainelPedidos adicionaBaixTitReceber CodiPedido "
-							+ pedi.getCodiPessoaCliente());
-			lanc.setCodiPessoa(pedi.getCodiPessoaCliente());
+							+ pedi.getCodiPedi());
+			baixa.setCodiPessoa(pedi.getCodiPessoaCliente());
 			JOptionPane.showMessageDialog(null,
 					"PainelPedidos adicionaBaixTitReceber codiPessoaCliente  "
 							+ pedi.getCodiPessoaCliente());
 
 			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
-				contPedi.removerPagamento(pedi, lanc);
+				contPedi.removerBaixaPedido(baixa);
 			} else {
-				contLanc.adicionaBaixaTitPedido(lanc);
+				contLanc.adicionaBaixaTitPedido(baixa);
+			}
+		}
+		atualizaTabelaPagamentos(pedi);
+	}
+	/**
+	 * Edita a baixa ao titulo
+	 * 
+	 * @param baixa
+	 */
+	public static void editaBaixaTitReceber(Lancamento baixa) {
+		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
+				".");
+		BigDecimal valor = null;
+		if (entrada != null) {
+			valor = new BigDecimal(entrada);
+			pedi = leCampos();
+			baixa.setValor(valor);
+			JOptionPane.showMessageDialog(null,
+					"PainelPedidos editaBaixTitReceber CodiPedido "
+							+ pedi.getCodiPessoaCliente());
+			baixa.setCodiPessoa(txtFCodiCliente.getText());
+			JOptionPane.showMessageDialog(null,
+					"PainelPedidos editaBaixTitReceber codiPessoaCliente  "
+							+ txtFCodiCliente.getText());
+
+			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
+				contPedi.removerBaixaPedido(baixa);
+			} else {
+				contLanc.editaBaixaTitPedido(baixa);
 			}
 		}
 		atualizaTabelaPagamentos(pedi);
@@ -515,11 +548,9 @@ public class PainelPedidos extends JPanel {
 	// TODO Atualiza tabela de pagamentos
 	public static JTable atualizaTabelaPagamentos(final Pedido pedi) {
 		System.out.println("PainelPedidos.atualizaTabelaPagamentos");
-		modeloTabelaPagamentos = new DefaultTableModel();
-		setTbl02(new JTable(modeloTabelaPagamentos));
-		Object colunas[] = {"Cod. Pedido", "Cond. Pagamento", "Valor",
-				"Data do Lançamento"};
-		modeloTabelaPagamentos.setColumnIdentifiers(colunas);
+		TableModelBaixas mdlTblBaixas = new TableModelBaixas(
+				pedi.getCodiPedi());
+		setTbl02(new JTable(mdlTblBaixas));
 		getTbl02().setRowSelectionAllowed(false);
 		getTbl02().setCellSelectionEnabled(false);
 		getTbl02().setColumnSelectionAllowed(false);
@@ -527,21 +558,13 @@ public class PainelPedidos extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int posicao = getTbl02().getSelectedRow();
-				adicionaBaixaTitReceber(daoCondPagamento.pesquisaCondPagCodigo(
-						pedi.getLancPedido().get(posicao).getCodiCondPag()));
+				Lancamento baixa = mdlTblBaixas
+						.getLancamento(getTbl02().getSelectedRow());
+				editaBaixaTitReceber(baixa);
 				carregarCampos(pedi);
 			}
 		});
-		contPedi.carregarPagamentosPedido(pedi);
-		for (int i = 0; i < pedi.getLancPedido().size(); i++) {
-			Object linha[] = {pedi.getCodiPedi(),
-					daoCondPagamento.pesquisaNomeCodigo(
-							pedi.getLancPedido().get(i).getCodiCondPag()),
-					pedi.getLancPedido().get(i).getValor(),
-					pedi.getLancPedido().get(i).getDtHrLanc()};
-			modeloTabelaPagamentos.addRow(linha);
-		}
+
 		getTbl02().setShowGrid(true);
 		scrP02.setViewportView(getTbl02());
 		return getTbl02();

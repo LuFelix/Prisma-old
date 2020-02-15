@@ -160,24 +160,30 @@ public class DAOConta {
 		}
 	}
 	/**
-	 * Retorna o codigo do centro de custo da conta por codigo da conta
+	 * Retorna o nome do centro de custo da conta por codigo da conta
 	 * 
 	 * @param String
 	 *            codigoConta
 	 * @return String codiCentroCusto
 	 * 
 	 */
-	public String cCustoCodiConta(String codigoConta) {
-		String sql = "select codi_centro_custo from contas_centro_custo where codi_conta =?;";
+	public String nomeCustoCodiConta(String codigoConta) {
+		String sql = "select nome_centro_custo from tbl_ctas_centro_custo "
+				+ "where codi_centro_custo=("
+				+ "select codi_centro_custo from tbl_contas where codi_conta=?);";
+
 		c.conectar();
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
 			prepStm.setString(1, codigoConta);
 			result = prepStm.executeQuery();
 			if (result.next()) {
-				String codiCCusto = result.getString("codigo_centro_custo");
+				String nomeCCusto = result.getString("nome_centro_custo");
+				// JOptionPane.showMessageDialog(null,
+				// ">>>>>>>>>>>>>>>>>>>>>DaoConta.nomeCCustoCodiConta "
+				// + codigoConta + " Nome CCusto " + nomeCCusto);
 				c.desconectar();
-				return codiCCusto;
+				return nomeCCusto;
 			} else {
 				return null;
 			}
@@ -203,6 +209,33 @@ public class DAOConta {
 			result = prepStm.executeQuery();
 			if (result.next()) {
 				String codiCCusto = result.getString("nome_conta");
+				c.desconectar();
+				return codiCCusto;
+			} else {
+				return null;
+			}
+		} catch (SQLException e) {
+			c.desconectar();
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	/**
+	 * Retorna o codigo da conta por nome
+	 * 
+	 * @param nomeConta
+	 * @return
+	 */
+	public String codigoCtaNome(String nomeConta) {
+		String sql = "select codi_conta from tbl_contas where nome_conta =?;";
+		c.conectar();
+		try {
+			prepStm = c.getCon().prepareStatement(sql);
+			prepStm.setString(1, nomeConta);
+			result = prepStm.executeQuery();
+			if (result.next()) {
+				String codiCCusto = result.getString("codi_conta");
 				c.desconectar();
 				return codiCCusto;
 			} else {

@@ -72,7 +72,7 @@ public class DAOCondPagamento {
 	}
 
 	// TODO Pesquisa String generico pesquisa em varios campos
-	public ArrayList<CondPagamento> pesquisaString(String str) {
+	public List<CondPagamento> pesquisaString(String str) {
 		String sql = "select * from tbl_cond_pagamento where codi_cond_pag ~* ?  or nome_cond_pag ~* ? order by nome_cond_pag;";
 		arrayCondPag = new ArrayList<CondPagamento>();
 		c.conectar();

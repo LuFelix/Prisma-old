@@ -98,6 +98,12 @@ public class DAOCentroCusto {
 		}
 	}
 
+	/**
+	 * Busca o centro de custo por codigo
+	 * 
+	 * @param codigo
+	 * @return CentroCusto
+	 */
 	public CentroCusto buscaCodigo(String codigo) {
 		String sql = "select * from tbl_ctas_centro_custo where codi_centro_custo =?;";
 		c.conectar();

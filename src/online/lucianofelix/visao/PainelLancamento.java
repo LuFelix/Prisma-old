@@ -13,6 +13,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -43,7 +45,6 @@ import online.lucianofelix.controle.ControlaCondPagamento;
 import online.lucianofelix.controle.ControlaConta;
 import online.lucianofelix.controle.ControlaLancamento;
 import online.lucianofelix.controle.ControlaPessoa;
-import online.lucianofelix.dao.DAOCondPagamento;
 import online.lucianofelix.tableModels.commom.TableModelBaixas;
 import online.lucianofelix.util.JTextFieldNumeros;
 
@@ -109,6 +110,7 @@ public class PainelLancamento extends JPanel {
 	private static Lancamento lanc;
 
 	public PainelLancamento(Lancamento l) {
+		this.lanc = l;
 		contConta = new ControlaConta();
 		contCCusto = new ControlaCentroCusto();
 		contPess = new ControlaPessoa();
@@ -117,7 +119,6 @@ public class PainelLancamento extends JPanel {
 		iniciaComponentes();
 		carregarCampos(l);
 		desHabilitaEdicao();
-		atualizaTblBaixas();
 		add(sppPrincipal);
 
 	}
@@ -224,6 +225,7 @@ public class PainelLancamento extends JPanel {
 		lblTotBaixas = new JLabel("Total de Baixas:");
 		lblTotBaixas.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		txtFTotBaixas = new JTextFieldNumeros();
+		txtFTotBaixas.setText("0");
 		txtFTotBaixas.setHorizontalAlignment(JTextField.RIGHT);
 		txtFTotBaixas.setForeground(Color.RED);
 		txtFTotBaixas.setFont(new Font("Times New Roman", Font.BOLD, 20));
@@ -233,6 +235,7 @@ public class PainelLancamento extends JPanel {
 		lblResta = new JLabel("Resta:");
 		lblResta.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		txtFResta = new JTextFieldNumeros();
+		txtFResta.setText("0");
 		txtFResta.setHorizontalAlignment(JTextField.RIGHT);
 		txtFResta.setForeground(Color.RED);
 		txtFResta.setFont(new Font("Times New Roman", Font.BOLD, 20));
@@ -252,22 +255,11 @@ public class PainelLancamento extends JPanel {
 		});
 
 		btnBaixa.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				contLanc.adicionaBaixaTitPedido(lanc);
+				carregarCampos(lanc);
 
-				String entrada = JOptionPane.showInputDialog("Informe o Valor");
-				BigDecimal valor;
-				if (entrada != null) {
-					valor = new BigDecimal(entrada);
-					lanc = lerCampos();
-					lanc.setValor(valor);
-					contLanc.adicionaBaixaTitPedido(lerCampos());
-				}
-				// controlalançamento adicionar baixaes - verificar se foi
-				// finalizado ou parcial - mostrar a difereça restante
-				JOptionPane.showConfirmDialog(null,
-						"Confirma baixa para o título?");
 			}
 		});
 
@@ -353,7 +345,6 @@ public class PainelLancamento extends JPanel {
 		sppPrincipal.add(pnlInferior);
 		setLayout(new GridLayout());
 		setBackground(Color.WHITE);
-
 		desHabilitaEdicao();
 
 	}
@@ -383,68 +374,129 @@ public class PainelLancamento extends JPanel {
 		btnBaixa.setEnabled(true);
 
 	}
-	public static void atualizaTblBaixas() {
-		DAOCondPagamento daoCondPag = new DAOCondPagamento();
-		contLanc.carregarBaixasCtaReceber(lanc);
-		TableModelBaixas mdlTblBaixas = new TableModelBaixas();
+	public void atualizaTblBaixas(Lancamento l) {
 		System.out.println(
-				">>>>>>>>>>>>>>>>  PainelLancamento Atualiza Tbl Baixas ");
-		setTbl02(new JTable(mdlTblBaixas));
-		getTbl02().setRowSelectionAllowed(false);
-		getTbl02().setCellSelectionEnabled(false);
-		getTbl02().setColumnSelectionAllowed(false);
-
-		getTbl02().addMouseListener(new MouseAdapter() {
-
+				">>>>>>>>>>>>>>>>  PainelLancamento Atualiza Tbl Baixas para o titulo "
+						+ l.getCodiCtaReceber());
+		contLanc.carregarBaixasCtaReceber(l);
+		TableModelBaixas mdlTblBaixas = new TableModelBaixas(l.getListbaixas());
+		setTbl01(new JTable(mdlTblBaixas));
+		getTbl01().setRowSelectionAllowed(false);
+		getTbl01().setCellSelectionEnabled(false);
+		getTbl01().setColumnSelectionAllowed(false);
+		getTbl01().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int posicao = getTbl02().getSelectedRow();
-				contLanc.adicionaBaixaTitReceber(
-						daoCondPag.pesquisaCondPagCodigo(lanc.getListbaixas()
-								.get(posicao).getCodiCondPag()),
-						contPess.pesqNomeCodigo(txtFTitular.getText()));
-				carregarCampos(lanc);
+				Lancamento baixa = mdlTblBaixas
+						.getLancamento(getTbl01().getSelectedRow());
+				editaBaixaTitReceber(baixa);
+				atualizaTblBaixas(l);
 			}
 		});
 
-		getTbl02().setShowGrid(true);
-		scrP02.setViewportView(getTbl02());
+		getTbl01().setShowGrid(true);
+		scrP01.setViewportView(getTbl01());
 
+	}
+	/**
+	 * Edita a baixa ao titulo
+	 * 
+	 * @param baixa
+	 */
+	public void editaBaixaTitReceber(Lancamento baixa) {
+		String entrada = JOptionPane.showInputDialog("Valor:").replace(",",
+				".");
+		BigDecimal valor = BigDecimal.ZERO;
+		if (entrada != null) {
+			valor = new BigDecimal(entrada);
+			baixa.setValor(valor);
+			// JOptionPane.showMessageDialog(null,
+			// "PainelLancamento editaBaixTitReceber(Lancamento baixa);"
+			// + " baixa.getCodiCtaReceber: "
+			// + baixa.getCodiCtaReceber());
+			// baixa.setCodiPessoa(contPess.pesqNomeCodigo(txtFTitular.getText()));
+
+			if (valor.compareTo(new BigDecimal(0)) <= 0 & valor != null) {
+				int opcao = JOptionPane.showConfirmDialog(null,
+						"Deseja mesmo remover a baixa para esse título?");
+				switch (opcao) {
+					case 0 :
+						contLanc.removeBaixa(baixa);
+						break;
+					default :
+						break;
+				}
+
+			} else {
+				int opcao = JOptionPane.showConfirmDialog(null,
+						"Deseja alterar o valor da baixa para: " + valor);
+				if (opcao == 0) {
+					contLanc.editaBaixaTitPedido(baixa);
+				}
+			}
+		}
+		carregarCampos(lanc);
 	}
 
 	public static Lancamento lerCampos() {
 		lanc = new Lancamento();
-		lanc.setCodiPessoa(txtFTitular.getText());
-		lanc.setCodiCondPag(txtFCondPag.getText());
+		lanc.setCodiCtaReceber(txtFTitulo.getText());
+		lanc.setCodiPessoa(contPess.pesqCodigoNome(txtFTitular.getText()));
+		lanc.setCodiCondPag(contCdPag.buscaCodigoNome(txtFCondPag.getText()));
 		lanc.setValor(
 				new BigDecimal(txtFTotTitulo.getText().replace(",", ".")));
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> CMB Conta "
-				+ cmbContas.getSelectedItem());
-
 		if (cmbContas.getSelectedItem() != null) {
-			lanc.setCodiConta(cmbContas.getSelectedItem().toString());
-		} else {
-			JOptionPane.showMessageDialog(null,
-					"Favor Verificar os campos informados",
-					"Ops, algo errado :(", JOptionPane.ERROR_MESSAGE);
+			lanc.setCodiConta(contConta
+					.codigoContaNome(cmbContas.getSelectedItem().toString()));
 		}
+		if (dtPkVenc.getModel().getValue() != null) {
+			Calendar data = (Calendar) dtPkVenc.getModel().getValue();
+			lanc.setDtHrVenc(new Timestamp(data.getTimeInMillis()));
+		}
+
+		System.out.println(">>>>>>>>>>>>> Data de Vencimento no dt picker: "
+				+ dtPkVenc.getModel().getValue());
+		// System.out
+		// .println(">>>>>>>>>>>>>>>>>>>>>>>>> Alterando Valores para:\n "
+		// + " Código: " + lanc.getCodiCtaReceber() + "\n"
+		// + "Pessoa: " + txtFTitular.getText() + " Código: "
+		// + lanc.getCodiPessoa() + "\n" + "CMB Conta "
+		// + cmbContas.getSelectedItem() + "\n" + "Codigo Conta: "
+		// + lanc.getCodiConta() + "\n" + "Valor: "
+		// + lanc.getValorString() + "\n" + "Data de Vencimento: "
+		// + lanc.getDtHrVenc().toString() + "\n");
 		return lanc;
 	}
 
-	public static void carregarCampos(Lancamento l) {
-		if (l.getCodiPessoa() != null & l.getCodiPessoa() != "") {
-			txtFTitular.setText(contPess.pesqNomeCodigo(l.getCodiPessoa()));
+	public void carregarCampos(Lancamento l) {
+		System.out.println(
+				">>>>>>>>>>>>>>> PainelLancamento.carregarCampos: l.getCodiconta: ");
+		if (l != null) {
+			if (l.getCodiPessoa() != null & l.getCodiPessoa() != "") {
+				txtFTitular.setText(contPess.pesqNomeCodigo(l.getCodiPessoa()));
+			}
+			txtFTitulo.setText(l.getCodiCtaReceber());
+			txtFCondPag.setText(contCdPag.buscaNomeCodigo(l.getCodiCondPag()));
+			txtFTotTitulo
+					.setText(String.valueOf(l.getValor()).replace(".", ","));
+			contLanc.carregarBaixasCtaReceber(l);
+			if (!l.getListbaixas().isEmpty()) {
+				txtFTotBaixas.setText(
+						contLanc.totalBaixas(l).toString().replace(".", ","));
+				txtFResta.setText(l.getValor().subtract(contLanc.totalBaixas(l))
+						.toString().replace(".", ","));
+			}
+			cmbCCusto.setSelectedItem(
+					contConta.nomeCentCustCodiConta(l.getCodiConta()));
+			cmbContas.setSelectedItem(
+					contConta.nomeContaCodigo(l.getCodiConta()));
+
+			atualizaTblBaixas(l);
+			carregarDatasLanc(l);
 		}
-		txtFTitulo.setText(l.getCodiPedido());
-		txtFCondPag.setText(contCdPag.buscaNomeCodigo(l.getCodiCondPag()));
-		txtFTotTitulo.setText(String.valueOf(l.getValor()).replace(".", ","));
-		cmbCCusto.setSelectedItem(contConta.nomeCentCustCodi(l.getCodiConta()));
-		cmbContas.setSelectedItem(contConta.nomeContaCodigo(l.getCodiConta()));
-		carregarDatasLanc(l);
 	}
 	public static void carregarDatasLanc(Lancamento l) {
 		DateTime dt = new DateTime(l.getDtHrLanc());
-
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>l.getDtHrLanc()  "
 				+ l.getDtHrLanc());
 		dtPkRegis.getModel().setSelected(true);

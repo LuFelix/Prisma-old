@@ -7,9 +7,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -28,7 +28,7 @@ public class ControlaCondPagamento {
 
 	private DAOCondPagamento daoCondPag;
 	private JTable tabela;
-	private ArrayList<CondPagamento> arrayCondPag;
+	private List<CondPagamento> arrayCondPag;
 	private CondPagamento condPag;
 
 	public ControlaCondPagamento() {
@@ -73,31 +73,12 @@ public class ControlaCondPagamento {
 				// TODO Auto-generated method stub
 			}
 		});
-		tabela.addMouseListener(new MouseListener() {
+		tabela.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int posicao = tabela.getSelectedRow();
 				PainelCondPagamento.irParaPoicao(posicao);
-			}
 
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				//
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				//
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				//
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				//
 			}
 		});
 		colunas.add("Código");
@@ -127,7 +108,7 @@ public class ControlaCondPagamento {
 		FrameInicial.getTabela().changeSelection(linha, 0, false, false);
 	}
 
-	public ArrayList<CondPagamento> pesqNomeArray(String nome) {
+	public List<CondPagamento> pesqNomeArray(String nome) {
 		return daoCondPag.pesquisaString(nome);
 	}
 
@@ -135,6 +116,8 @@ public class ControlaCondPagamento {
 	public JTable pesqNomeTabelaAdicionacondPagamentoAopedido(String nome) {
 		ArrayList<String> colunas = new ArrayList<String>();
 		tabela = new JTable();
+		TableModelCondPag mdlTablCondPag = new TableModelCondPag(
+				daoCondPag.pesquisaString(nome));
 		DefaultTableModel modelotabela = new DefaultTableModel();
 		modelotabela = (DefaultTableModel) tabela.getModel();
 		tabela.addKeyListener(new KeyAdapter() {
@@ -157,7 +140,9 @@ public class ControlaCondPagamento {
 					FrameInicial.getTxtfPesquisa().grabFocus();
 				} else if (tecla.getExtendedKeyCode() == 10) {
 					PainelPedidos
-							.adicionaBaixaTitReceber(arrayCondPag.get(posicao));
+
+							.adicionaBaixaTitReceber(mdlTablCondPag
+									.getCondPag(tabela.getSelectedRow()));
 				} else if (tecla.getExtendedKeyCode() == 9) {
 					FrameInicial.getBtnSalvar().grabFocus();
 
@@ -239,8 +224,11 @@ public class ControlaCondPagamento {
 
 	public String buscaNomeCodigo(String codiCP) {
 		String nomeCP = daoCondPag.pesquisaNomeCodigo(codiCP);
-
 		return nomeCP;
+	}
+	public String buscaCodigoNome(String nomeCP) {
+		String codiCP = daoCondPag.pesquisaCodigoNome(nomeCP);
+		return codiCP;
 	}
 
 	public void funcaoSalvar() {

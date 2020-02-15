@@ -446,16 +446,16 @@ public class ControlaPedido {
 	 * @param pedi
 	 * @param lanc
 	 */
-	public void alterarValorPagamento(Pedido pedi, Lancamento lanc) {
+	public void alterarValorPagamento(Lancamento lanc) {
 		if (lanc.getValor().compareTo(new BigDecimal(0)) <= 0) {
-			daoLancamento.removerItemLancRec(pedi, lanc);
+			removerBaixaPedido(lanc);
 		} else {
-			daoLancamento.alterarQuantItemRec(pedi, lanc);
+			daoLancamento.alterarQuantItemRec(lanc);
 		}
 	}
 
-	public void removerPagamento(Pedido pedi, Lancamento lanc) {
-		daoLancamento.removerItemLancRec(pedi, lanc);
+	public void removerBaixaPedido(Lancamento lanc) {
+		daoLancamento.removerBaixa(lanc);
 	}
 
 	// TODO Capturar o QR code do CUPOM FISCAL

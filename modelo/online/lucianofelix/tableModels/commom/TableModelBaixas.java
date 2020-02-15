@@ -8,9 +8,14 @@ import javax.swing.table.AbstractTableModel;
 import org.joda.time.DateTime;
 
 import online.lucianofelix.beans.Lancamento;
+import online.lucianofelix.dao.DAOLancamento;
 import online.lucianofelix.dao.DAOPessoaPG;
 
 public class TableModelBaixas extends AbstractTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7375078006660980560L;
 	private List<Lancamento> linhas;
 	private String[] colunas = new String[]{"Titular", "Documento", "Data",
 			"Valor"};
@@ -19,9 +24,11 @@ public class TableModelBaixas extends AbstractTableModel {
 	private static final int Data = 2;
 	private static final int Valor = 3;
 	DAOPessoaPG daoPess;
+	DAOLancamento daoLanc;
 
 	public TableModelBaixas() {
 		daoPess = new DAOPessoaPG();
+
 		linhas = new ArrayList<Lancamento>();
 	}
 
@@ -29,20 +36,30 @@ public class TableModelBaixas extends AbstractTableModel {
 		daoPess = new DAOPessoaPG();
 		linhas = new ArrayList<Lancamento>(list);
 	}
-
+	public TableModelBaixas(String codiCtaReceber) {
+		// JOptionPane.showMessageDialog(null,
+		// "TableModelBaixas (String codiCtaReceber); " + codiCtaReceber);
+		daoLanc = new DAOLancamento();
+		daoPess = new DAOPessoaPG();
+		linhas = new ArrayList<Lancamento>(
+				daoLanc.listBaixasNumCtaReceber(codiCtaReceber));
+	}
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Lancamento l = linhas.get(rowIndex);
+		// CurrencyUnit real = Monetary.get("BRL");
+		// Money money = Money.of((BigMoneyProvider) l.getValor());
+		// System.out.println("TableModelBaixas" + money.toString());
+
 		switch (columnIndex) {
 			case Titular :
-				return l.getCodiPessoa();
+				return daoPess.pessoaCodigo(l.getCodiPessoa()).getNome();
 			case Documento :
 				return l.getCodiPedido();
 			case Data :
-				return l.getDtHrVenc();
+				return l.getDtHrLanc();
 			case Valor :
-				return l.getValor();
-
+				return l.getValorString().replace(".", ",");
 			default :
 				throw new IndexOutOfBoundsException(
 						"columnIndex out of bounds");
@@ -72,7 +89,7 @@ public class TableModelBaixas extends AbstractTableModel {
 			case Data :
 				return DateTime.class;
 			case Valor :
-				return Float.class;
+				return String.class;
 
 			default :
 				throw new IndexOutOfBoundsException(

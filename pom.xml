@@ -82,11 +82,17 @@
 	      <artifactId>javase</artifactId>
 	      <version>3.3.0</version>
     	</dependency>
-    	<!-- https://mvnrepository.com/artifact/javax.money/money-api Biblioteca API - Trabalhar Dinheiro-->
+    	<!-- https://mvnrepository.com/artifact/javax.money/money-api API - Trabalhar Dinheiro-->
 		<dependency>
 		    <groupId>javax.money</groupId>
 		    <artifactId>money-api</artifactId>
 		    <version>1.0.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.joda/joda-money API - Trabalhar Dinheiro-->
+		<dependency>
+		    <groupId>org.joda</groupId>
+		    <artifactId>joda-money</artifactId>
+		    <version>1.0.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.yahoofinance-api/YahooFinanceAPI API para conexão com yahho finance-->
 		<dependency>
