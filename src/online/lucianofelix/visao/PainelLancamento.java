@@ -384,6 +384,7 @@ public class PainelLancamento extends JPanel {
 		getTbl01().setRowSelectionAllowed(false);
 		getTbl01().setCellSelectionEnabled(false);
 		getTbl01().setColumnSelectionAllowed(false);
+
 		getTbl01().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -471,6 +472,7 @@ public class PainelLancamento extends JPanel {
 	public void carregarCampos(Lancamento l) {
 		System.out.println(
 				">>>>>>>>>>>>>>> PainelLancamento.carregarCampos: l.getCodiconta: ");
+		limparCampos();
 		if (l != null) {
 			if (l.getCodiPessoa() != null & l.getCodiPessoa() != "") {
 				txtFTitular.setText(contPess.pesqNomeCodigo(l.getCodiPessoa()));

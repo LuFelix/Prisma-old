@@ -191,6 +191,7 @@ public class ControlaTabelaPreco {
 	// TODO Salvar
 	public void funcaoSalvar() {
 		ControlaBotoes.limparBtnSalvar();
+		PainelTabelaPreco.getTxtFNomeTabela().grabFocus();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 
 			@Override
@@ -198,6 +199,7 @@ public class ControlaTabelaPreco {
 				if (!PainelTabelaPreco.getDataInicio().equals("")
 						& !PainelTabelaPreco.getDataFim().equals("")) {
 					try {
+
 						tabPreco = PainelTabelaPreco.lerCampos();
 						daoTabPreco.cadastrar(tabPreco);
 						PainelTabelaPreco.limparCampos();

@@ -71,13 +71,9 @@ public class ControlaLancamento {
 	public void adicionaBaixaTitPedido(Lancamento baixa) {
 		String entrada = JOptionPane.showInputDialog("Valor: ")
 				.replace(",", ".").trim();
-
-		baixa.setValor(new BigDecimal(entrada));
-
 		try {
-
 			daoLancamento.novoBaixaRec(baixa.getCodiPessoa(),
-					baixa.getCodiCtaReceber(), baixa.getValor(),
+					baixa.getCodiCtaReceber(), new BigDecimal(entrada),
 					baixa.getCodiCondPag());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -374,8 +370,8 @@ public class ControlaLancamento {
 			public void keyReleased(KeyEvent tecla) {
 				nome = FrameInicial.getTxtfPesquisa().getText();
 				FrameInicial.setTabela(pesqNomeTabela(nome));
-				lanc = tblMdLanc.getLancamento(
-						FrameInicial.getTabela().getSelectedRow());
+				// lanc = tblMdLanc.getLancamento(
+				// FrameInicial.getTabela().getSelectedRow());
 				FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
 				FrameInicial.atualizaTela();
 			}
@@ -391,11 +387,13 @@ public class ControlaLancamento {
 	}
 	// TODO Funcao excluir
 	public boolean funcaoExcluir() {
-		System.out.println("ControlaConta.excluir");
-		lanc = PainelLancamento.lerCampos();
+		System.out.println("ControlaLancamento funcaoExcluir");
 		if (daoLancamento.excluirLancRec(lanc)) {
+			JOptionPane.showMessageDialog(null,
+					"Excluido lancamento codigo: " + lanc.getCodiCtaReceber()
+							+ "\n Data: " + lanc.getDtHrLanc());
 			FrameInicial.setTabela(null);
-			FrameInicial.setPainelVisualiza(null);
+			FrameInicial.setPainelVisualiza(new PainelLancamento());
 			FrameInicial.atualizaTela();
 			JOptionPane.showMessageDialog(null, "Feito!");
 			iniciar();
@@ -410,13 +408,19 @@ public class ControlaLancamento {
 		System.out.println(
 				">>>>>>>>>>>>>>>>>>>>  ControlaLancamento.funcaoSalvar");
 		ControlaBotoes.limparBtnSalvar();
+		JOptionPane.showConfirmDialog(null,
+				"O título tem documento vinculado?");
+		// Mostrar o combobox de tipo de documento e listar os documentos que
+		// não possui títulos vinculados de acorso com o tipo selecionado
+
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
 				lanc = PainelLancamento.lerCampos();
 				System.out.println(lanc.getValor() + "   "
 						+ lanc.getCodiCondPag() + " " + lanc.getDtHrLanc());
-				if (!lanc.equals(null)) {
+				if (lanc != null) {
 					daoLancamento.inserirTituRec(lanc);
 					PainelLancamento.limparCampos();
 					FrameInicial.setTabela(pesqNomeTabela(lanc.getCodiConta()));
@@ -443,22 +447,29 @@ public class ControlaLancamento {
 				lanc = PainelLancamento.lerCampos();
 				if (lanc != null) {
 					daoLancamento.alterarLanRec(lanc);
-					FrameInicial
-							.setTabela(pesqNomeTabela(lanc.getCodiCondPag()));
-					FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
-					FrameInicial.atualizaTela();
-					JOptionPane.showMessageDialog(null, "Feito!");
-					iniciar();
 				}
+				FrameInicial.setTabela(pesqNomeTabela(lanc.getCodiCondPag()));
+				FrameInicial.setPainelVisualiza(new PainelLancamento(lanc));
+				FrameInicial.atualizaTela();
+				JOptionPane.showMessageDialog(null, "Feito!");
+				iniciar();
+
 			}
 		});
 	}
+	/**
+	 * Calcula o total ja baixado
+	 * 
+	 * @param l
+	 * @return
+	 */
 	public BigDecimal totalBaixas(Lancamento l) {
 		System.out.println(
-				">>>>>>>>>>>>>>>>>>>>>> ControlaLancamento.totalBaixas() ;");
+				">>>>>>>>>>>>>>>>>>>>>> ControlaLancamento.totalBaixas() \n");
 		BigDecimal totalBaixas = BigDecimal.ZERO;
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>> Tamnho da lista de Baixas: "
-				+ l.getListbaixas().size());
+		System.out
+				.println(">>>>>>>>>>>>>>>>>>>>>> Tamanho da lista de Baixas: \n"
+						+ l.getListbaixas().size());
 		for (int i = 0; i < l.getListbaixas().size(); i++) {
 			totalBaixas = totalBaixas.add(l.getListbaixas().get(i).getValor());
 		}

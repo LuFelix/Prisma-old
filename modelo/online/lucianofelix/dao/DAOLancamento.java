@@ -215,7 +215,7 @@ public class DAOLancamento {
 	 */
 	public boolean alterarBaixaRec(Lancamento lanc) {
 		System.out.println("DAOLancamento.alterar");
-		String sql = "update tbl_ctas_baixas_receber set codi_pessoa=?, valor=? where num_cta_receber=? and codi_cond_pag=? and data_movimento=?;";
+		String sql = "update tbl_ctas_baixas_receber set codi_pessoa=?, valor=? where num_cta_receber=? and data_movimento=?;";
 		c.conectar();
 		JOptionPane.showMessageDialog(null,
 				"DAOLancamento alterarBaixaReceber data da baixa: "
@@ -225,8 +225,7 @@ public class DAOLancamento {
 			prepStm.setString(1, lanc.getCodiPessoa());
 			prepStm.setBigDecimal(2, lanc.getValor());
 			prepStm.setString(3, lanc.getCodiCtaReceber());
-			prepStm.setString(4, lanc.getCodiCondPag());
-			prepStm.setTimestamp(5, lanc.getDtHrLanc());
+			prepStm.setTimestamp(4, lanc.getDtHrLanc());
 
 			prepStm.executeUpdate();
 			c.desconectar();
@@ -462,13 +461,19 @@ public class DAOLancamento {
 		}
 
 	}
+	/**
+	 * Exclui um lancamento a receber
+	 * 
+	 * @param lanc
+	 * @return
+	 */
 	public boolean excluirLancRec(Lancamento lanc) {
 		c.conectar();
-		String sql = "delete from tbl_ctas_lanc_receber where codi_pedido=? and codi_cond_pag=?;";
+		String sql = "delete from tbl_ctas_lanc_receber where num_cta_receber=? and data_hora_registro=?;";
 		try {
 			prepStm = c.getCon().prepareStatement(sql);
-			prepStm.setString(1, lanc.getCodiPedido());
-			prepStm.setString(2, lanc.getCodiCondPag());
+			prepStm.setString(1, lanc.getCodiCtaReceber());
+			prepStm.setTimestamp(2, lanc.getDtHrLanc());
 			prepStm.executeUpdate();
 			c.desconectar();
 			return true;
@@ -538,9 +543,6 @@ public class DAOLancamento {
 			prepStm = c.getCon().prepareStatement(sql);
 			prepStm.setString(1, lanc.getCodiCtaReceber());
 			prepStm.setTimestamp(2, lanc.getDtHrLanc());
-			JOptionPane.showMessageDialog(null,
-					"DAO LANCAMENTO DATA HORA do Lancamento: "
-							+ lanc.getDtHrLanc());
 			prepStm.executeUpdate();
 			c.desconectar();
 			return true;
@@ -588,5 +590,30 @@ public class DAOLancamento {
 			e.printStackTrace();
 			return 0;
 		}
+	}
+
+	public boolean consultaLancExisteCodigo(Lancamento l) {
+		c.conectar();
+		String sql = "select * from tbl_ctas_lanc_receber where num_cta_receber=?;";
+		try {
+			prepStm = c.getCon().prepareStatement(sql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			prepStm.setString(1, l.getCodiCtaReceber());
+			ResultSet res = prepStm.executeQuery();
+			if (res.isBeforeFirst()) {
+				c.desconectar();
+				return false;
+			} else {
+				c.desconectar();
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			c.desconectar();
+			return false;
+		}
+
 	}
 }

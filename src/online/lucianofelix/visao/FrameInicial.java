@@ -164,9 +164,9 @@ public class FrameInicial {
 	private JMenuItem mnItmWritter;
 
 	public static JMenuItem mnuParamFuse;
-	public static JMenuItem mnuParamOrder;
+	public static JMenuItem mnuConfigOrder;
 	public static JMenuItem mnuParamLists;
-	private JMenuItem mnuFuncosBanco;
+	private JMenuItem mnuFuncoesBanco;
 	// +++++Sub menu do menu help
 	private JMenuItem mntmSobre;
 	// +++++Sub menu do menu help
@@ -181,7 +181,7 @@ public class FrameInicial {
 		frmPrincipal = new JFrame();
 		// System Observer to a Rapid Trade Evolution
 		frmPrincipal.setTitle(
-				"-::- STI - SIGA - Sistema Informações Gerenciais e Administrativas -::- Tendências");
+				"-::- SIFRAO - Sistema Informações Financeiras Administrativas e Operacionais -::- Tendências");
 		frmPrincipal.setResizable(true);
 		UIManager.put("Button.font",
 				new Font("Times New Roman", Font.BOLD, 16));
@@ -249,10 +249,18 @@ public class FrameInicial {
 
 		mnPrincipal = new JMenu("Principal");
 		mnImportar = new JMenu("Importar");
-		mnuParamFuse = new JMenuItem("Parâmetros Fuse");
-		mnuParamLists = new JMenuItem("Parâmetros Lists");
-		mnuParamOrder = new JMenuItem("Parâmetros Order");
-		mnuFuncosBanco = new JMenuItem("Funções de Banco ");
+		mnuParamFuse = new JMenuItem("Configurações do Fuse");
+		mnuParamLists = new JMenuItem("Configurações dos Cadastros");
+		mnuConfigOrder = new JMenuItem("Configurações do Operacional");
+		mnuConfigOrder.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new FrameConfigOrder();
+
+			}
+		});
+		mnuFuncoesBanco = new JMenuItem("Funções de Banco ");
 
 		mnHelp = new JMenu("Help");
 
@@ -275,9 +283,9 @@ public class FrameInicial {
 			}
 		});
 		mnItmFuse = new JMenuItem("Fuse");
-		mnItmLists = new JMenuItem("Lists");
-		mnItmOrder = new JMenuItem("Order");
-		mnItmWritter = new JMenuItem("Writter");
+		mnItmLists = new JMenuItem("Cadastros");
+		mnItmOrder = new JMenuItem("Operacional");
+		mnItmWritter = new JMenuItem("Relatórios");
 		mnuExibir.add(mnItmFuse);
 		mnuExibir.add(mnItmLists);
 		mnuExibir.add(mnItmOrder);
@@ -291,8 +299,10 @@ public class FrameInicial {
 			public void actionPerformed(ActionEvent e) {
 
 				JOptionPane.showMessageDialog(null,
-						"Fuse - Lists - Order - Writter \nTechnology Projects - ME\n"
-								+ "\nVersão 1.3  12/2016\n" + "Desde 2010");
+						"Módulos: Fuse - Cadastros - Operacional - Relatórios \nTechnology Projects - ME\n"
+								+ "\nVersão 0.3  12/2013\n" + "Desde 2010\n"
+								+ "\nVersão 0.4  12/2016\n" + "Desde 2010\n"
+								+ "\nVersão 0.5  12/2019\n" + "Desde 2010\n");
 			}
 		});
 		mnHelp.add(mntmSobre);
@@ -301,8 +311,8 @@ public class FrameInicial {
 		mnPrincipal.add(mnImportar);
 		mnPrincipal.add(mnuParamLists);
 		mnPrincipal.add(mnuParamFuse);
-		mnPrincipal.add(mnuParamOrder);
-		mnPrincipal.add(mnuFuncosBanco);
+		mnPrincipal.add(mnuConfigOrder);
+		mnPrincipal.add(mnuFuncoesBanco);
 
 		// Objeto de data
 		cal = new JCalendarComboBox();
@@ -353,7 +363,7 @@ public class FrameInicial {
 
 			}
 		});
-		mnuFuncosBanco.addActionListener(new ActionListener() {
+		mnuFuncoesBanco.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -801,9 +811,9 @@ public class FrameInicial {
 			}
 		});
 		painelTabulado1.add("Fuse", painelTab1);
-		painelTabulado1.add("Lists", painelTab2);
-		painelTabulado1.add("Orders", painelTab3);
-		painelTabulado1.add("Writter", painelTab4);
+		painelTabulado1.add("Cadastros", painelTab2);
+		painelTabulado1.add("Operacional", painelTab3);
+		painelTabulado1.add("Relatórios", painelTab4);
 		painelTabulado1.setSelectedIndex(1);
 
 		// painelTabulado.add("Serviços", painelTab3);

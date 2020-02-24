@@ -54,13 +54,15 @@ public class ControlaPedido {
 
 	// TODO Sobrescrever
 	public void funcaoSobrescrever() {
+		System.out.println(
+				">>>>>>>>>>>>>>>>>>ControlaPedido.funcaoSobrescrever ");
 		ControlaBotoes.limparBtnSalvar();
 		ControlaBotoes.habilitaEdicaoBotoes();
 		FrameInicial.getBtnSalvar().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pedi = PainelPedidos.leCampos();
-				Lancamento l = new Lancamento();
+
 				if (pedi.getTipoPedido().equals("Compra")) {
 					tipoMovEstoque = "Entra";
 					tipoMovConta = "Sai";
@@ -68,8 +70,8 @@ public class ControlaPedido {
 					tipoMovEstoque = "Sai";
 					tipoMovConta = "Entra";
 				}
+				Lancamento l = new Lancamento();
 				l.setCodiCondPag(pedi.getCodiCondPag());
-
 				l.setCodiPedido(pedi.getCodiPedi());
 				l.setCodiCtaReceber(pedi.getCodiPedi());
 				l.setCodiPessoa(pedi.getCodiPessoaCliente());
@@ -88,11 +90,16 @@ public class ControlaPedido {
 				// data anterior colocar nas observações do lancamento que se
 				// refere a uma mudança de forma de pagamento no pedido
 
-				daoLancamento.inserirTituRec(l);
 				try {
-
 					daoPedi.alterar(pedi);
+					if (daoLancamento.consultaLancExisteCodigo(l)) {
+						int opcao = JOptionPane.showConfirmDialog(null,
+								"Controle de Pedidos - Editar Pedido:\n Este pedido não possui FATURAS vinculadas.\n Deseja criar? ");
+						if (opcao == 0) {
+							daoLancamento.inserirTituRec(l);
+						}
 
+					}
 					PainelPedidos.limparCampos();
 					FrameInicial.setPainelVisualiza(
 							new PainelPedidos(pedi.getCodiPedi()));
@@ -120,19 +127,24 @@ public class ControlaPedido {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pedi = PainelPedidos.leCampos();
+
 				Lancamento l = new Lancamento();
-
 				l.setCodiCondPag(pedi.getCodiCondPag());
-
 				l.setCodiPedido(pedi.getCodiPedi());
 				l.setCodiCtaReceber(pedi.getCodiPedi());
 				l.setCodiPessoa(pedi.getCodiPessoaCliente());
 				l.setValor(pedi.getTotalPedi());
 				l.setCodiConta("162017514");
 				try {
-
 					daoPedi.alterar(pedi);
-					daoLancamento.inserirTituRec(l);
+					if (daoLancamento.consultaLancExisteCodigo(l)) {
+						int opcao = JOptionPane.showConfirmDialog(null,
+								"Controle de Pedido - Salvar Pedido:\n Deseja criar FATURAS financeiras para este pedido?");
+						if (opcao == 0) {
+							daoLancamento.inserirTituRec(l);
+						}
+
+					}
 					FrameInicial.setTabela(tblPedidosNomeTipo(
 							pedi.getCodiPedi(), pedi.getTipoPedido()));
 					FrameInicial.setPainelVisualiza(

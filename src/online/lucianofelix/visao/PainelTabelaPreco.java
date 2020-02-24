@@ -31,20 +31,20 @@ public class PainelTabelaPreco extends JPanel {
 
 	private JLabel lblImagem;
 	private JLabel lbl01;
-	private JLabel lbl02;
-	private JLabel lbl03;
-	private JLabel lbl04;
-	private JLabel lbl05;
+	private JLabel lblSequencia;
+	private JLabel lblCodigo;
+	private JLabel lblDataCriacao;
+	private JLabel lblNomeTabela;
 	private JLabel lbl06;
 	private JLabel lbl07;
 	private JLabel lbl08;
 	private JLabel lbl09;
 	private JLabel lbl10;
 
-	private static JTextField txtF02;
-	private static JTextField txtF03;
-	private static JTextField txtF04;
-	private static JTextField txtF05;
+	private static JTextField txtFSequencia;
+	private static JTextField txtFCodiTabela;
+	private static JTextField txtFDataCriacao;
+	private static JTextField txtFNomeTabela;
 	private static JTextField txtF06;
 	private static JTextField txtF07;
 	private static JTextField txtF08;
@@ -95,14 +95,14 @@ public class PainelTabelaPreco extends JPanel {
 		// TODO Configuração dos Labels e text fields
 		lbl01 = new JLabel("Tabela de Preço");
 		lbl01.setFont(new Font("Times New Roman", Font.BOLD, 28));
-		lbl02 = new JLabel("Sequência:");
-		txtF02 = new JTextField();
-		lbl03 = new JLabel("Código:");
+		lblSequencia = new JLabel("Sequência:");
+		txtFSequencia = new JTextField();
+		lblCodigo = new JLabel("Código:");
 		setTxtFCodiTabela(new JTextField());
-		lbl04 = new JLabel("Data Criação:");
-		txtF04 = new JTextField();
-		lbl05 = new JLabel("Nome Tabela:");
-		txtF05 = new JTextField();
+		lblDataCriacao = new JLabel("Data Criação:");
+		txtFDataCriacao = new JTextField();
+		lblNomeTabela = new JLabel("Nome Tabela:");
+		setTxtFNomeTabela(new JTextField());
 		lbl06 = new JLabel("Descrição:");
 		txtF06 = new JTextField();
 		lbl07 = new JLabel("Fornecedor: ");
@@ -131,14 +131,14 @@ public class PainelTabelaPreco extends JPanel {
 		pnlGrid.setLayout(new GridLayout(11, 2));
 		pnlGrid.setBackground(Color.WHITE);
 
-		pnlGrid.add(lbl02);
-		pnlGrid.add(txtF02);
-		pnlGrid.add(lbl03);
-		pnlGrid.add(txtF03);
-		pnlGrid.add(lbl04);
-		pnlGrid.add(txtF04);
-		pnlGrid.add(lbl05);
-		pnlGrid.add(txtF05);
+		pnlGrid.add(lblSequencia);
+		pnlGrid.add(txtFSequencia);
+		pnlGrid.add(lblCodigo);
+		pnlGrid.add(txtFCodiTabela);
+		pnlGrid.add(lblDataCriacao);
+		pnlGrid.add(txtFDataCriacao);
+		pnlGrid.add(lblNomeTabela);
+		pnlGrid.add(txtFNomeTabela);
 		pnlGrid.add(lbl06);
 		pnlGrid.add(txtF06);
 		pnlGrid.add(lbl07);
@@ -207,7 +207,7 @@ public class PainelTabelaPreco extends JPanel {
 
 		sppPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		sppPrincipal.setDividerSize(3);
-		sppPrincipal.setDividerLocation(250);
+		sppPrincipal.setDividerLocation(350);
 		sppPrincipal.setEnabled(false);
 		sppPrincipal.setBackground(Color.WHITE);
 		sppPrincipal.add(sppSuperior);
@@ -228,14 +228,16 @@ public class PainelTabelaPreco extends JPanel {
 	public static TabelaPreco lerCampos() {
 		tabPreco = new TabelaPreco();
 		tabPreco.setCodiTabela(getTxtFCodiTabela().getText());
-		tabPreco.setDataCriacao(Date.valueOf(txtF04.getText()));
+		tabPreco.setDataCriacao(Date.valueOf(txtFDataCriacao.getText()));
 		// tabPreco.setDataCriacao(Timestamp.valueOf(manData.dataAgora()));
 		tabPreco.setDataInicio(manData.sqlDate(getDataInicio().getDate()));
 		tabPreco.setDataFim(manData.sqlDate(getDataFim().getDate()));
-		if (!txtF02.getText().equals("") && !txtF02.equals(null)) {
-			tabPreco.setSeqTabelaPrecos(Integer.parseInt(txtF02.getText()));
+		if (!txtFSequencia.getText().equals("")
+				&& !txtFSequencia.equals(null)) {
+			tabPreco.setSeqTabelaPrecos(
+					Integer.parseInt(txtFSequencia.getText()));
 		}
-		tabPreco.setNomeTabela(txtF05.getText());
+		tabPreco.setNomeTabela(txtFNomeTabela.getText());
 		tabPreco.setTipoTabela(cmbTipoTabela.getSelectedItem().toString());
 		tabPreco.setDescTabela(txtF06.getText());
 		tabPreco.setCodiFornecedor(txtF07.getText());
@@ -246,17 +248,18 @@ public class PainelTabelaPreco extends JPanel {
 	// TODO Carregar Campos
 	public static void carregarCampos(TabelaPreco tabPreco) {
 		if (!tabPreco.equals(null) && !tabPreco.equals("")) {
-			txtF02.setText(String.valueOf(tabPreco.getSeqTabelaPrecos()));
+			txtFSequencia
+					.setText(String.valueOf(tabPreco.getSeqTabelaPrecos()));
 		}
 		getTxtFCodiTabela().setText(tabPreco.getCodiTabela());
-		txtF04.setText(String.valueOf(tabPreco.getDataCriacao()));
+		txtFDataCriacao.setText(String.valueOf(tabPreco.getDataCriacao()));
 		getDataInicio().setDate(tabPreco.getDataInicio());
 		getDataFim().setDate(tabPreco.getDataFim());
 		// txtFDataInicio.setText(String.valueOf(tabPreco.getDataInicio()));
 		// txtFDataFim.setText(String.valueOf(tabPreco.getDataFim()));
 		// txtFTipoTabela.setText(tabPreco.getTipoTabela());
 		cmbTipoTabela.setSelectedItem(tabPreco.getTipoTabela());
-		txtF05.setText(tabPreco.getNomeTabela());
+		txtFNomeTabela.setText(tabPreco.getNomeTabela());
 		txtF06.setText(tabPreco.getDescTabela());
 		txtF07.setText(String.valueOf(tabPreco.getCodiFornecedor()));
 		txtF08.setText(String.valueOf(tabPreco.getClasseTabela()));
@@ -264,7 +267,7 @@ public class PainelTabelaPreco extends JPanel {
 
 	public static void habilitaEdicao() {
 		getTxtFCodiTabela().setEditable(false);
-		txtF04.setEditable(false);
+		txtFDataCriacao.setEditable(false);
 		getDataInicio().setEnabled(true);
 		getDataFim().setEnabled(true);
 		txtF06.setEditable(true);
@@ -279,10 +282,11 @@ public class PainelTabelaPreco extends JPanel {
 		getTxtFCodiTabela().setText(contTab.criaCodigo());
 		getTxtFCodiTabela().setEditable(false);
 		getTxtFCodiTabela().setEnabled(false);
-		txtF04.setEditable(false);
-		txtF04.setEnabled(false);
-		txtF04.setText(String.valueOf(new Timestamp(System.currentTimeMillis()))
-				.substring(0, 10));
+		txtFDataCriacao.setEditable(false);
+		txtFDataCriacao.setEnabled(false);
+		txtFDataCriacao.setText(
+				String.valueOf(new Timestamp(System.currentTimeMillis()))
+						.substring(0, 10));
 		getDataInicio().setEnabled(true);
 		getDataFim().setEnabled(true);
 		txtF06.setEditable(true);
@@ -298,8 +302,8 @@ public class PainelTabelaPreco extends JPanel {
 	// DesabilitaEdição
 	public static void desHabilitaEdicao() {
 		getTxtFCodiTabela().setEditable(false);
-		txtF02.setEditable(false);
-		txtF04.setEditable(false);
+		txtFSequencia.setEditable(false);
+		txtFDataCriacao.setEditable(false);
 		getDataInicio().setEnabled(false);
 		getDataFim().setEnabled(false);
 		txtF06.setEditable(false);
@@ -311,10 +315,10 @@ public class PainelTabelaPreco extends JPanel {
 	}
 
 	public static void limparCampos() {
-		txtF04.setText(null);
+		txtFDataCriacao.setText(null);
 		getDataInicio().setDate(Calendar.getInstance().getTime());
 		getDataFim().setDate(null);
-		txtF05.setText(null);
+		txtFNomeTabela.setText(null);
 		txtF06.setText(null);
 		txtF07.setText(null);
 		txtF09.setText(null);
@@ -324,7 +328,7 @@ public class PainelTabelaPreco extends JPanel {
 	}
 
 	public static void adicionaAtvOp(Ativo ativo) {
-		txtF04.setText(ativo.getIdNeg());
+		txtFDataCriacao.setText(ativo.getIdNeg());
 
 	}
 
@@ -349,11 +353,34 @@ public class PainelTabelaPreco extends JPanel {
 		PainelTabelaPreco.dataFim = dataFim;
 	}
 
+	/**
+	 * @return the txtFCodiTabela
+	 */
 	public static JTextField getTxtFCodiTabela() {
-		return txtF03;
+		return txtFCodiTabela;
 	}
 
+	/**
+	 * @param txtFCodiTabela
+	 *            the txtFCodiTabela to set
+	 */
 	public static void setTxtFCodiTabela(JTextField txtFCodiTabela) {
-		PainelTabelaPreco.txtF03 = txtFCodiTabela;
+		PainelTabelaPreco.txtFCodiTabela = txtFCodiTabela;
 	}
+
+	/**
+	 * @return the txtFNomeTabela
+	 */
+	public static JTextField getTxtFNomeTabela() {
+		return txtFNomeTabela;
+	}
+
+	/**
+	 * @param txtFNomeTabela
+	 *            the txtFNomeTabela to set
+	 */
+	public static void setTxtFNomeTabela(JTextField txtFNomeTabela) {
+		PainelTabelaPreco.txtFNomeTabela = txtFNomeTabela;
+	}
+
 }
